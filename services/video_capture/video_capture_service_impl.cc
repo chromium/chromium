@@ -40,6 +40,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "media/capture/capture_switches.h"
 #include "services/video_capture/lacros/device_factory_adapter_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -209,6 +210,25 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
 };
 #endif  // BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShouldUseVCDFromAsh() {
+  // LacrosService might be null in unit tests.
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service) {
+    return false;
+  }
+  if (!lacros_service
+           ->IsSupported<crosapi::mojom::VideoCaptureDeviceFactory>()) {
+    return false;
+  }
+  // Fake VCD on Lacros side can be used only when using shared memory. Other
+  // than this use case, try to use VCD on Ash side if possible.
+  auto useLacrosFakeVCD = media::ShouldUseFakeVideoCaptureDeviceFactory() &&
+                          !switches::IsVideoCaptureUseGpuMemoryBufferEnabled();
+  return !useLacrosFakeVCD;
+}
+#endif
+
 VideoCaptureServiceImpl::VideoCaptureServiceImpl(
     mojo::PendingReceiver<mojom::VideoCaptureService> receiver,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
@@ -307,25 +327,32 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
       std::make_unique<crosapi::VideoCaptureDeviceFactoryAsh>(
           device_factory_.get());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LacrosService might be null in unit tests.
-  auto* lacros_service = chromeos::LacrosService::Get();
-
-  // For requests for fake (including file) video capture device factory, we
-  // don't need to forward the request to Ash-Chrome.
-  if (!media::ShouldUseFakeVideoCaptureDeviceFactory() && lacros_service &&
-      lacros_service
-          ->IsSupported<crosapi::mojom::VideoCaptureDeviceFactory>()) {
+  // Even though Lacros uses GPU memory by default, the camera stack in
+  // Lacros cannot access GPU memory. Therefore, most of requests are
+  // forwarded to Ash-chrome. Requests will not be forwarded to
+  // Ash-chrome only when any of the following
+  //   1. Video capture system can not communicate with crosapi.
+  //   2. Use fake/file camera with shared memory. This is for CQ tests.
+  if (ShouldUseVCDFromAsh()) {
+    if (media::ShouldUseFakeVideoCaptureDeviceFactory()) {
+      LOG(WARNING) << "Remember to add --use-fake-device-for-media-stream to "
+                      "/etc/chrome_dev.conf to use fake/file camera.";
+    }
     mojo::PendingRemote<crosapi::mojom::VideoCaptureDeviceFactory>
         device_factory_ash;
-    lacros_service->BindVideoCaptureDeviceFactory(
+    chromeos::LacrosService::Get()->BindVideoCaptureDeviceFactory(
         device_factory_ash.InitWithNewPipeAndPassReceiver());
     device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
         std::make_unique<DeviceFactoryAdapterLacros>(
             std::move(device_factory_ash)));
   } else {
-    LOG(WARNING)
-        << "Connected to an older version of ash. Use device factory in "
-           "Lacros-Chrome which is backed by Linux VCD instead of CrOS VCD.";
+    if (media::ShouldUseFakeVideoCaptureDeviceFactory()) {
+      VLOG(1) << "Use fake device factory with shared memory in Lacros-Chrome";
+    } else {
+      LOG(WARNING)
+          << "Connected to an older version of ash. Use device factory in "
+             "Lacros-Chrome which is backed by Linux VCD instead of CrOS VCD.";
+    }
     device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
         std::make_unique<DeviceFactoryImpl>(std::move(video_capture_system)));
   }
