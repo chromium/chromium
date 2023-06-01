@@ -220,7 +220,7 @@ function createSubpage(
 /**
  * Creates Route objects for each path corresponding to CrOS settings content.
  */
-function createOsSettingsRoutes(): OsSettingsRoutes {
+function createRoutes(): OsSettingsRoutes {
   const r: Partial<OsSettingsRoutes> = {};
   const {Section, Subpage} = routesMojom;
 
@@ -584,4 +584,5 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   return r as OsSettingsRoutes;
 }
 
-export const routes = createOsSettingsRoutes();
+export const createRoutesForTesting = createRoutes;
+export const routes = createRoutes();

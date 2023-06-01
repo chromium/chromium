@@ -11,7 +11,7 @@ import {Constructor} from './common/types.js';
 import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 import {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
-import {Route, Router} from './router.js';
+import {isAdvancedRoute, Route, Router} from './router.js';
 
 /**
  * A categorization of every possible Settings URL, necessary for implementing
@@ -47,11 +47,6 @@ function classifyRoute(route: Route|undefined): RouteState {
     return RouteState.DIALOG;
   }
   return RouteState.SECTION;
-}
-
-function isAdvancedRoute(route: Route): boolean {
-  const routes = Router.getInstance().routes;
-  return routes.ADVANCED && routes.ADVANCED.contains(route);
 }
 
 const ALL_STATES = new Set([

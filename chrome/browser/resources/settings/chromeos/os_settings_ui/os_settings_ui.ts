@@ -399,7 +399,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     const url = e.detail.selected;
     const path = new URL(url).pathname;
     const route = Router.getInstance().getRouteForPath(path);
-    assert(route, 'os-settings-menu has an entry with an invalid route.');
+    assert(route, `os-settings-menu has an item with invalid route: ${path}`);
     this.activeRoute_ = route;
 
     if (this.isNarrow) {

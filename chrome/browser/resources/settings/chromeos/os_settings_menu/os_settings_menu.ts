@@ -21,9 +21,8 @@ import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 
 import * as routesMojom from '../mojom-webui/routes.mojom-webui.js';
 import {OsPageAvailability} from '../os_page_availability.js';
-import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
-import {Route, Router} from '../router.js';
+import {isAdvancedRoute, Route, Router} from '../router.js';
 
 import {getTemplate} from './os_settings_menu.html.js';
 
@@ -111,8 +110,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         Router.getInstance().getQueryParameters().get('search');
     // If the route navigated to by a search result is in the advanced
     // section, the advanced menu will expand.
-    if (urlSearchQuery && routes.ADVANCED &&
-        routes.ADVANCED.contains(newRoute)) {
+    if (urlSearchQuery && isAdvancedRoute(newRoute)) {
       this.advancedOpened = true;
     }
 

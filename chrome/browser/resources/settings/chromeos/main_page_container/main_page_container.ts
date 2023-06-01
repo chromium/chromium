@@ -48,8 +48,7 @@ import {MainPageMixin} from '../main_page_mixin.js';
 import {AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
 import {OsPageAvailability} from '../os_page_availability.js';
-import {routes} from '../os_settings_routes.js';
-import {Route, Router} from '../router.js';
+import {isAdvancedRoute, isBasicRoute, Route, Router} from '../router.js';
 
 import {getTemplate} from './main_page_container.html.js';
 
@@ -191,7 +190,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     this.currentRoute_ = newRoute;
 
-    if (routes.ADVANCED && routes.ADVANCED.contains(newRoute)) {
+    if (isAdvancedRoute(newRoute)) {
       this.advancedToggleExpanded = true;
     }
 
@@ -209,9 +208,8 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     super.currentRouteChanged(newRoute, oldRoute);
   }
 
-  override containsRoute(route: Route) {
-    return !route || routes.BASIC.contains(route) ||
-        routes.ADVANCED.contains(route);
+  override containsRoute(route: Route|undefined) {
+    return !route || isBasicRoute(route) || isAdvancedRoute(route);
   }
 
   /** Stamp page in the DOM depending on page availability */
@@ -319,7 +317,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
    */
   private showBasicPage_(currentRoute: Route, hasExpandedSection: boolean):
       boolean {
-    return !hasExpandedSection || routes.BASIC.contains(currentRoute);
+    return !hasExpandedSection || isBasicRoute(currentRoute);
   }
 
   /**
@@ -329,9 +327,8 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   private showAdvancedPage_(
       currentRoute: Route, hasExpandedSection: boolean,
       advancedToggleExpanded: boolean): boolean {
-    return hasExpandedSection ?
-        (routes.ADVANCED && routes.ADVANCED.contains(currentRoute)) :
-        advancedToggleExpanded;
+    return hasExpandedSection ? isAdvancedRoute(currentRoute) :
+                                advancedToggleExpanded;
   }
 
   private showAdvancedSettings_(visibility?: boolean): boolean {
