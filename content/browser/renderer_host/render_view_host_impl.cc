@@ -560,9 +560,9 @@ bool RenderViewHostImpl::CreateRenderView(
   // subframes. For this reason we simply use the main frame's browsing context
   // group. Note that we cannot use this RenderViewHost's site_instance_group(),
   // which may not match in a popup case. For example, if A opens a
-  // cross-browsing-context-group popup to B, A can have a RenderViewHost in the
-  // popup, but it needs to know B's BrowsingContextGroupInfo, which is the
-  // current page in the popup.
+  // cross-browsing-context-group popup to B, the RenderViewHost for the opener
+  // in B's process should have A's BrowsingContextGroupInfo, which is the
+  // current page in the opener.
   params->browsing_context_group_info = blink::BrowsingContextGroupInfo(
       frame_tree_->GetMainFrame()->GetSiteInstance()->browsing_instance_token(),
       frame_tree_->GetMainFrame()
