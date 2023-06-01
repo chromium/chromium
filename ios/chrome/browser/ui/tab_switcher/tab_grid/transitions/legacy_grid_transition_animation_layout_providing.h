@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_GRID_TRANSITION_ANIMATION_LAYOUT_PROVIDING_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_GRID_TRANSITION_ANIMATION_LAYOUT_PROVIDING_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_GRID_TRANSITION_ANIMATION_LAYOUT_PROVIDING_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_GRID_TRANSITION_ANIMATION_LAYOUT_PROVIDING_H_
 
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation.h"
 
 @class GridTransitionLayout;
 
 // Objects conforming to this protocol can provide information for the
 // animation of the transitions from and to a grid.
-@protocol GridTransitionAnimationLayoutProviding
+@protocol LegacyGridTransitionAnimationLayoutProviding
 
 // YES if the currently selected cell is visible in the grid.
 @property(nonatomic, readonly, getter=isSelectedCellVisible)
@@ -40,4 +40,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_GRID_TRANSITION_ANIMATION_LAYOUT_PROVIDING_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_GRID_TRANSITION_ANIMATION_LAYOUT_PROVIDING_H_

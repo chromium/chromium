@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation.h"
 
 #import "ios/chrome/browser/shared/ui/util/property_animator_group.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_to_tab_transition_view.h"
@@ -70,9 +70,9 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 
   return ((1 - resizeRatio) - kMinResizeRatio) * kResizeRatioMultiplier;
 }
-}
+}  // namespace
 
-@interface GridTransitionAnimation ()
+@interface LegacyGridTransitionAnimation ()
 // The property animator group backing the public `animator` property.
 @property(nonatomic, readonly) PropertyAnimatorGroup* animations;
 // The layout of the grid for this animation.
@@ -88,7 +88,7 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 @property(nonatomic, assign) CGFloat resizeDampingCorrection;
 @end
 
-@implementation GridTransitionAnimation
+@implementation LegacyGridTransitionAnimation
 
 - (instancetype)initWithLayout:(GridTransitionLayout*)layout
                       duration:(NSTimeInterval)duration
@@ -126,8 +126,9 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
 }
 
 - (void)didMoveToSuperview {
-  if (!self.superview)
+  if (!self.superview) {
     return;
+  }
 
   [self prepareForTransition];
 
@@ -232,8 +233,9 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
   [self.animations addAnimator:roundCorners];
 
   // Single cell case.
-  if (self.layout.inactiveItems.count == 0)
+  if (self.layout.inactiveItems.count == 0) {
     return;
+  }
 
   // Additional animations for multiple cells.
   // D: Scale up inactive cells.
@@ -323,8 +325,9 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
   // If the active item is appearing, the main tab view is shown. If not, it's
   // hidden, and may be faded in if it's expected to be different in content
   // from the existing cell snapshot.
-  if (!self.layout.activeItem.isAppearing)
+  if (!self.layout.activeItem.isAppearing) {
     activeCell.mainTabView.alpha = 0.0;
+  }
 
   // A: Zoom the active cell into position.
   UIViewPropertyAnimator* zoomActiveCell =
@@ -387,8 +390,9 @@ CGFloat CalculateResizeDampingCorrection(GridTransitionLayout* layout) {
     [self.animations addAnimator:crossfadeContent];
   }
   // If there's only a single cell, that's all.
-  if (self.layout.inactiveItems.count == 0)
+  if (self.layout.inactiveItems.count == 0) {
     return;
+  }
 
   // Additional animations for multiple cells.
   // E: Scale down inactive cells.

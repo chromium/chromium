@@ -9,13 +9,13 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
-@protocol GridTransitionAnimationLayoutProviding;
+@protocol LegacyGridTransitionAnimationLayoutProviding;
 
 // Handler for the transitions between the TabGrid and the Browser.
 @interface LegacyTabGridTransitionHandler : NSObject
 
 - (instancetype)initWithLayoutProvider:
-    (id<GridTransitionAnimationLayoutProviding>)layoutProvider
+    (id<LegacyGridTransitionAnimationLayoutProviding>)layoutProvider
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

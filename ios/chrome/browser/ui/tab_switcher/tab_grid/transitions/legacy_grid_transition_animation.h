@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_GRID_TRANSITION_ANIMATION_H_
-#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_GRID_TRANSITION_ANIMATION_H_
+#ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_GRID_TRANSITION_ANIMATION_H_
+#define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_GRID_TRANSITION_ANIMATION_H_
 
 #import <UIKit/UIKit.h>
 
@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, GridAnimationDirection) {
 // A view that encapsulates an animation used to transition into a grid.
 // A transition animator should place this view at the appropriate place in the
 // view hierarchy and then call `-beginAnimations` on its `animator` property.
-@interface GridTransitionAnimation : UIView
+@interface LegacyGridTransitionAnimation : UIView
 
 // The animator object this animation uses; it will have the same duration
 // that this object is initialized with.
@@ -55,4 +55,4 @@ typedef NS_ENUM(NSUInteger, GridAnimationDirection) {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_GRID_TRANSITION_ANIMATION_H_
+#endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TRANSITIONS_LEGACY_GRID_TRANSITION_ANIMATION_H_

@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_tab_grid_transition_handler.h"
 
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation_layout_providing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,10 +21,10 @@ const CGFloat kReducedMotionDuration = 0.25;
 }  // namespace
 
 @interface LegacyTabGridTransitionHandler ()
-@property(nonatomic, weak) id<GridTransitionAnimationLayoutProviding>
+@property(nonatomic, weak) id<LegacyGridTransitionAnimationLayoutProviding>
     layoutProvider;
 // Animation object for the transition.
-@property(nonatomic, strong) GridTransitionAnimation* animation;
+@property(nonatomic, strong) LegacyGridTransitionAnimation* animation;
 @end
 
 @implementation LegacyTabGridTransitionHandler
@@ -32,7 +32,7 @@ const CGFloat kReducedMotionDuration = 0.25;
 #pragma mark - Public
 
 - (instancetype)initWithLayoutProvider:
-    (id<GridTransitionAnimationLayoutProviding>)layoutProvider {
+    (id<LegacyGridTransitionAnimationLayoutProviding>)layoutProvider {
   self = [super init];
   if (self) {
     _layoutProvider = layoutProvider;
@@ -63,7 +63,7 @@ const CGFloat kReducedMotionDuration = 0.25;
   GridAnimationDirection direction = GridAnimationDirectionContracting;
   CGFloat duration = self.animationDisabled ? 0 : kBrowserToGridDuration;
 
-  self.animation = [[GridTransitionAnimation alloc]
+  self.animation = [[LegacyGridTransitionAnimation alloc]
       initWithLayout:[self transitionLayoutForTabInViewController:browser
                                                        activePage:activePage]
             duration:duration
@@ -152,7 +152,7 @@ const CGFloat kReducedMotionDuration = 0.25;
   GridAnimationDirection direction = GridAnimationDirectionExpanding;
   CGFloat duration = self.animationDisabled ? 0 : kGridToBrowserDuration;
 
-  self.animation = [[GridTransitionAnimation alloc]
+  self.animation = [[LegacyGridTransitionAnimation alloc]
       initWithLayout:[self transitionLayoutForTabInViewController:browser
                                                        activePage:activePage]
             duration:duration

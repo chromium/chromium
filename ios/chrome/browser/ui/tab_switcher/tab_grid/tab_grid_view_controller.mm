@@ -439,7 +439,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return l10n_util::GetNSString(stringID);
 }
 
-#pragma mark - GridTransitionAnimationLayoutProviding properties
+#pragma mark - LegacyGridTransitionAnimationLayoutProviding properties
 
 - (BOOL)isSelectedCellVisible {
   if (self.activePage != self.currentPage) {
