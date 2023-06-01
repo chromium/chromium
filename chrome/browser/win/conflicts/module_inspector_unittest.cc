@@ -193,9 +193,6 @@ TEST_F(ModuleInspectorTest, MultipleModules) {
 }
 
 TEST_F(ModuleInspectorTest, InspectionResultsCache) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kInspectionResultsCache);
-
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
 
@@ -226,12 +223,9 @@ TEST_F(ModuleInspectorTest, InspectionResultsCache) {
   ASSERT_EQ(inspected_modules()[0].basename, inspection_result.basename);
 }
 
-// Tests that when OnModuleDatabaseIdle() notificate is received, the cache is
+// Tests that when OnModuleDatabaseIdle() notification is received, the cache is
 // flushed to disk.
 TEST_F(ModuleInspectorTest, InspectionResultsCache_OnModuleDatabaseIdle) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kInspectionResultsCache);
-
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
 
@@ -268,9 +262,6 @@ TEST_F(ModuleInspectorTest, InspectionResultsCache_OnModuleDatabaseIdle) {
 // Tests that when the timer expires before the OnModuleDatabaseIdle()
 // notification, the cache is flushed to disk.
 TEST_F(ModuleInspectorTest, InspectionResultsCache_TimerExpired) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kInspectionResultsCache);
-
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
 
@@ -328,9 +319,6 @@ TEST_F(ModuleInspectorTest, MojoConnectionError) {
 // the connection error handler.
 // Regression test for https://crbug.com/1213241.
 TEST_F(ModuleInspectorTest, WaitingOnCacheConnectionError) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kInspectionResultsCache);
-
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
 

@@ -8,7 +8,6 @@
 #include <map>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "chrome/browser/win/conflicts/module_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -40,10 +39,6 @@ enum class ReadCacheResult {
   kFailInvalidMD5 = 8,
   kMaxValue = kFailInvalidMD5
 };
-
-BASE_FEATURE(kInspectionResultsCache,
-             "InspectionResultsCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The InspectionResultsCache maps ModuleInfoKey to a ModuleInspectionResult.
 // The uint32_t is a time stamp that keep tracks of when the inspection result
