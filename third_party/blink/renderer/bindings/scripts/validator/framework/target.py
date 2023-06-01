@@ -72,7 +72,7 @@ def _get_function_likes(target_store):
     for interface in target_store.get(INTERFACES):
         function_likes.extend(interface.operations)
         function_likes.extend(interface.constructors)
-        function_likes.extend(interface.named_constructors)
+        function_likes.extend(interface.legacy_factory_functions)
         if interface.iterable:
             function_likes.extend(interface.iterable.operations)
         if interface.maplike:

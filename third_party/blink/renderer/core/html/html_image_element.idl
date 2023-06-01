@@ -23,10 +23,11 @@
 [
     ActiveScriptWrappable,
     Exposed=Window,
-    HTMLConstructor,
-    NamedConstructor=Image(optional unsigned long width, optional unsigned long height),
-    NamedConstructor_CallWith=Document
+    LegacyFactoryFunction=Image(optional unsigned long width, optional unsigned long height),
+    LegacyFactoryFunction_CallWith=Document
 ] interface HTMLImageElement : HTMLElement {
+    [HTMLConstructor] constructor();
+
     [CEReactions, Reflect] attribute DOMString alt;
     [CEReactions, Reflect, URL] attribute USVString src;
     [CEReactions, Reflect] attribute DOMString srcset;

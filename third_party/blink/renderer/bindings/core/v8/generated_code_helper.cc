@@ -291,7 +291,7 @@ ExecutionContext* ExecutionContextFromV8Wrappable(const DOMParser* parser) {
   return parser->GetWindow();
 }
 
-v8::MaybeLocal<v8::Value> CreateNamedConstructorFunction(
+v8::MaybeLocal<v8::Value> CreateLegacyFactoryFunctionFunction(
     ScriptState* script_state,
     v8::FunctionCallback callback,
     const char* func_name,

@@ -276,6 +276,26 @@ Summary: HTML Elements have special constructor behavior. Interface object of gi
 
 Usage: Must take no arguments, and must not appear on anything other than an interface. It must appear once on an interface, and the interface cannot be annotated with `[Constructor]` or `[LegacyNoInterfaceObject]` extended attributes. It must not be used on a callback interface.
 
+### [LegacyFactoryFunction]
+
+Standard: [LegacyFactoryFunction](https://webidl.spec.whatwg.org/#LegacyFactoryFunction)
+
+Summary: If you want to allow JavaScript to create a DOM object of XXX using a different name constructor (i.e. allow JavaScript to create an XXX object using "new YYY()", where YYY != XXX), you can use `[LegacyFactoryFunction]`.
+
+Usage: The possible usage is `[LegacyFactoryFunction=YYY(...)]`. Just as with constructors. `[LegacyFactoryFunction]` can be specified on interfaces. The spec allows multiple legacy factory functions, but the Blink IDL compiler currently only supports at most one.
+
+```webidl
+[
+    LegacyFactoryFunction=Audio(DOMString data),
+] interface HTMLAudioElement {
+    ...
+};
+```
+
+The semantics are the same as constructors, except that the name changes: JavaScript can make a DOM object by `new Audio()` instead of by `new HTMLAudioElement()`.
+
+Whether you should allow an interface to have a legacy factory function or not depends on the spec of each interface.
+
 ### [LegacyLenientSetter]
 
 Standard: [LegacyLenientSetter](https://webidl.spec.whatwg.org/#LenientSetter)
@@ -375,26 +395,6 @@ By default, interface members are configurable (i.e. you can modify a property d
 ### [LegacyWindowAlias]
 
 Standard: [LegacyWindowAlias](https://webidl.spec.whatwg.org/#LegacyWindowAlias)
-
-### [NamedConstructor]
-
-Standard: [NamedConstructor](https://webidl.spec.whatwg.org/#NamedConstructor)
-
-Summary: If you want to allow JavaScript to create a DOM object of XXX using a different name constructor (i.e. allow JavaScript to create an XXX object using "new YYY()", where YYY != XXX), you can use `[NamedConstructor]`.
-
-Usage: The possible usage is `[NamedConstructor=YYY(...)]`. Just as with constructors, an empty argument list can be omitted, as: `[NamedConstructor=YYY]`. `[NamedConstructor]` can be specified on interfaces. The spec allows multiple named constructors, but the Blink IDL compiler currently only supports at most one.
-
-```webidl
-[
-    NamedConstructor=Audio(DOMString data),
-] interface HTMLAudioElement {
-    ...
-};
-```
-
-The semantics are the same as `[Constructor]`, except that the name changes: JavaScript can make a DOM object by `new Audio()` instead of by `new HTMLAudioElement()`.
-
-Whether you should allow an interface to have a named constructor or not depends on the spec of each interface.
 
 ### [NewObject]
 
@@ -1229,6 +1229,14 @@ interface TCPSocket {
 };
 ```
 
+### [LegacyFactoryFunction_CallWith]
+
+Summary: The same as `[CallWith]` but applied to the legacy factory functions (aka the named constructors).
+
+### [LegacyFactoryFunction_RaisesException]
+
+Summary: The same as `[RaisesException]` but applied to the legacy factory functions (aka the named constructors).
+
 ### [LegacyWindowAlias_Measure]
 
 Summary: The same as `[Measure]` but applied to the property exposed as `[LegacyWindowAlias]`.
@@ -1240,14 +1248,6 @@ Summary: The same as `[MeasureAs]` but applied to the property exposed as `[Lega
 ### [LegacyWindowAlias_RuntimeEnabled]
 
 Summary: The same as `[RuntimeEnabled]` but applied to the property exposed as `[LegacyWindowAlias]`.
-
-### [NamedConstructor_CallWith]
-
-Summary: The same as `[CallWith]` but applied to the named constructors.
-
-### [NamedConstructor_RaisesException]
-
-Summary: The same as `[RaisesException]` but applied to the named constructors.
 
 ### [NoAllocDirectCall]
 

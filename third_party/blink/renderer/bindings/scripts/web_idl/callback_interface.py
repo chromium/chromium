@@ -57,8 +57,8 @@ class CallbackInterface(UserDefinedType, WithExtendedAttributes,
             self.constants = constants
             self.constructors = []
             self.constructor_groups = []
-            self.named_constructors = []
-            self.named_constructor_groups = []
+            self.legacy_factory_functions = []
+            self.legacy_factory_function_groups = []
             self.operations = operations
             self.operation_groups = []
 
@@ -120,13 +120,13 @@ class CallbackInterface(UserDefinedType, WithExtendedAttributes,
         return ()
 
     @property
-    def named_constructors(self):
-        """Returns named constructors."""
+    def legacy_factory_functions(self):
+        """Returns legacy factory functions."""
         return ()
 
     @property
-    def named_constructor_groups(self):
-        """Returns groups of overloaded named constructors."""
+    def legacy_factory_function_groups(self):
+        """Returns groups of overloaded legacy factory functions."""
         return ()
 
     @property

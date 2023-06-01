@@ -67,7 +67,7 @@ def backward_compatible_api_func(cg_context):
     if name:
         pass
     elif cg_context.constructor:
-        if cg_context.is_named_constructor:
+        if cg_context.is_legacy_factory_function:
             name = "CreateForJSConstructor"
         else:
             name = "Create"
@@ -159,14 +159,14 @@ def callback_function_name(cg_context,
     elif cg_context.constant:
         kind = "Constant"
     elif cg_context.constructor_group:
-        if cg_context.is_named_constructor:
-            kind = "NamedConstructor"
+        if cg_context.is_legacy_factory_function:
+            kind = "LegacyFactoryFunction"
         else:
             property_name = ""
             kind = "Constructor"
     elif cg_context.exposed_construct:
-        if cg_context.is_named_constructor:
-            kind = "NamedConstructorProperty"
+        if cg_context.is_legacy_factory_function:
+            kind = "LegacyFactoryFunctionProperty"
         elif cg_context.legacy_window_alias:
             kind = "LegacyWindowAlias"
         else:
@@ -437,7 +437,7 @@ def bind_callback_local_vars(code_node, cg_context):
                 CodeGenAccumulator.require_include_headers([
                     "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_exception_state.h"
                 ]))
-        if cg_context.is_named_constructor:
+        if cg_context.is_legacy_factory_function:
             init_args.append("\"{}\"".format(cg_context.property_.identifier))
         else:
             init_args.append("${class_like_name}")
@@ -876,7 +876,8 @@ def _make_bindings_logging_id(cg_context):
         logging_id = "{}.{}".format(logging_id, "get")
     elif cg_context.attribute_set:
         logging_id = "{}.{}".format(logging_id, "set")
-    elif cg_context.constructor_group and not cg_context.is_named_constructor:
+    elif (cg_context.constructor_group
+          and not cg_context.is_legacy_factory_function):
         logging_id = "{}.{}".format(cg_context.class_like.identifier,
                                     "constructor")
     return logging_id
@@ -945,7 +946,7 @@ def make_check_constructor_call(cg_context):
                    "ExceptionMessages::ConstructorCalledAsFunction());\n"
                    "return;")),
     ])
-    if not cg_context.is_named_constructor:
+    if not cg_context.is_legacy_factory_function:
         node.append(
             CxxLikelyIfNode(
                 cond=("ConstructorMode::Current(${isolate}) == "
@@ -2223,7 +2224,8 @@ def make_exposed_construct_callback_def(cg_context, function_name):
     return func_def
 
 
-def make_named_constructor_property_callback_def(cg_context, function_name):
+def make_legacy_factory_function_property_callback_def(cg_context,
+                                                       function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
@@ -2243,32 +2245,34 @@ def make_named_constructor_property_callback_def(cg_context, function_name):
     assert isinstance(constructor_group, web_idl.ConstructorGroup)
     assert isinstance(constructor_group.owner, web_idl.Interface)
     named_ctor_v8_bridge = v8_bridge_class_name(constructor_group.owner)
-    cgc = CodeGenContext(
-        interface=constructor_group.owner,
-        constructor_group=constructor_group,
-        is_named_constructor=True,
-        class_name=named_ctor_v8_bridge)
+    cgc = CodeGenContext(interface=constructor_group.owner,
+                         constructor_group=constructor_group,
+                         is_legacy_factory_function=True,
+                         class_name=named_ctor_v8_bridge)
     named_ctor_name = callback_function_name(cgc)
     named_ctor_def = make_constructor_callback_def(cgc, named_ctor_name)
 
     return_value_cache_return_early = """\
-static const V8PrivateProperty::SymbolKey kPrivatePropertyNamedConstructor;
-auto&& v8_private_named_constructor =
-    V8PrivateProperty::GetSymbol(${isolate}, kPrivatePropertyNamedConstructor);
-v8::Local<v8::Value> v8_named_constructor;
-if (!v8_private_named_constructor.GetOrUndefined(${v8_receiver})
-         .ToLocal(&v8_named_constructor)) {
+static const V8PrivateProperty::SymbolKey
+    kPrivatePropertyLegacyFactoryFunction;
+auto&& v8_private_legacy_factory_function =
+    V8PrivateProperty::GetSymbol(
+        ${isolate},
+        kPrivatePropertyLegacyFactoryFunction);
+v8::Local<v8::Value> v8_legacy_factory_function;
+if (!v8_private_legacy_factory_function.GetOrUndefined(${v8_receiver})
+         .ToLocal(&v8_legacy_factory_function)) {
   return;
 }
-if (!v8_named_constructor->IsUndefined()) {
-  bindings::V8SetReturnValue(${info}, v8_named_constructor);
+if (!v8_legacy_factory_function->IsUndefined()) {
+  bindings::V8SetReturnValue(${info}, v8_legacy_factory_function);
   return;
 }
 """
 
     pattern = """\
 v8::Local<v8::Value> v8_value;
-if (!bindings::CreateNamedConstructorFunction(
+if (!bindings::CreateLegacyFactoryFunctionFunction(
          ${script_state},
          {callback},
          "{func_name}",
@@ -2279,7 +2283,7 @@ if (!bindings::CreateNamedConstructorFunction(
 }
 bindings::V8SetReturnValue(${info}, v8_value);
 """
-    create_named_constructor_function = _format(
+    create_legacy_factory_function_function = _format(
         pattern,
         callback=named_ctor_name,
         func_name=constructor_group.identifier,
@@ -2287,12 +2291,12 @@ bindings::V8SetReturnValue(${info}, v8_value);
         v8_bridge=named_ctor_v8_bridge)
 
     return_value_cache_update_value = """\
-v8_private_named_constructor.Set(${v8_receiver}, v8_value);
+v8_private_legacy_factory_function.Set(${v8_receiver}, v8_value);
 """
 
     body.extend([
         TextNode(return_value_cache_return_early),
-        TextNode(create_named_constructor_function),
+        TextNode(create_legacy_factory_function_function),
         TextNode(return_value_cache_update_value),
     ])
 
@@ -5519,17 +5523,18 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
                 exposed_construct=exposed_construct,
                 prop_callback_name=prop_callback_name))
 
-    def process_named_constructor_group(named_constructor_group,
-                                        is_context_dependent,
-                                        exposure_conditional, world):
+    def process_legacy_factory_function_group(legacy_factory_function_group,
+                                              is_context_dependent,
+                                              exposure_conditional, world):
         cgc = cg_context.make_copy(
-            exposed_construct=named_constructor_group,
-            is_named_constructor=True,
+            exposed_construct=legacy_factory_function_group,
+            is_legacy_factory_function=True,
             for_world=world,
             v8_callback_type=CodeGenContext.V8_ACCESSOR_NAME_GETTER_CALLBACK)
         prop_callback_name = callback_function_name(cgc)
-        prop_callback_node = make_named_constructor_property_callback_def(
-            cgc, prop_callback_name)
+        prop_callback_node = (
+            make_legacy_factory_function_property_callback_def(
+                cgc, prop_callback_name))
 
         callback_def_nodes.extend([
             prop_callback_node,
@@ -5541,7 +5546,7 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
                 is_context_dependent=is_context_dependent,
                 exposure_conditional=exposure_conditional,
                 world=world,
-                exposed_construct=named_constructor_group,
+                exposed_construct=legacy_factory_function_group,
                 prop_callback_name=prop_callback_name))
 
     def process_operation_group(operation_group, is_context_dependent,
@@ -5598,12 +5603,13 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
         iterate(interface.constructor_groups, process_constructor_group)
         iterate(interface.exposed_constructs, process_exposed_construct)
         iterate(interface.legacy_window_aliases, process_exposed_construct)
-        named_constructor_groups = [
+        legacy_factory_function_groups = [
             group for construct in interface.exposed_constructs
-            for group in construct.named_constructor_groups
-            if construct.named_constructor_groups
+            for group in construct.legacy_factory_function_groups
+            if construct.legacy_factory_function_groups
         ]
-        iterate(named_constructor_groups, process_named_constructor_group)
+        iterate(legacy_factory_function_groups,
+                process_legacy_factory_function_group)
     if not class_like.is_callback_interface:
         iterate(class_like.operation_groups, process_operation_group)
     if interface and interface.stringifier:
@@ -7312,7 +7318,7 @@ def _collect_include_headers(class_like):
             if x:
                 operations.extend(x.operations)
         for exposed_construct in class_like.exposed_constructs:
-            operations.extend(exposed_construct.named_constructors)
+            operations.extend(exposed_construct.legacy_factory_functions)
     for operation in operations:
         collect_from_idl_type(operation.return_type)
         for argument in operation.arguments:
