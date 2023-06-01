@@ -1004,7 +1004,7 @@ bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
       context_state_->progress_reporter());
   GrSemaphoresSubmitted flush_result = GrSemaphoresSubmitted::kNo;
   if (GrDirectContext* direct_context = gr_context()) {
-    direct_context->flush(surface, flush_info, nullptr);
+    flush_result = direct_context->flush(surface, flush_info, nullptr);
   }
   if (scoped_write_access) {
     scoped_write_access->ApplyBackendSurfaceEndState();
