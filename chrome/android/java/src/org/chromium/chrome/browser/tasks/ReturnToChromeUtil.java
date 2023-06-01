@@ -587,9 +587,23 @@ public final class ReturnToChromeUtil {
             TabModelObserver observer = new TabModelObserver() {
                 @Override
                 public void willAddTab(Tab tab, int type) {
-                    assert TextUtils.equals(lastActiveTabUrl, tab.getUrl().getSpec())
-                        : "The URL of first Tab restored doesn't match the URL of the last active Tab read from the Tab state metadata file!";
+                    boolean isTabExpected =
+                            TextUtils.equals(lastActiveTabUrl, tab.getUrl().getSpec());
+                    assert isTabExpected
+                        : "The URL of first Tab restored doesn't match the URL of the last active "
+                          + "Tab read from the Tab state metadata file! Existing Tab count = %d"
+                          + tabModelSelector.getModel(false).getCount()
+                          + ".";
+                    if (!isTabExpected) {
+                        return;
+                    }
                     showHomeSurfaceUiOnNtp(ntpTab, tab, homeSurfaceTracker);
+                    tabModelSelector.getModel(false).removeObserver(this);
+                }
+
+                @Override
+                public void restoreCompleted() {
+                    // This would be no-op if the observer has been removed in willAddTab().
                     tabModelSelector.getModel(false).removeObserver(this);
                 }
             };

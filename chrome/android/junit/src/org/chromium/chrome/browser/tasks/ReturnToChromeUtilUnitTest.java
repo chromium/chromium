@@ -828,6 +828,7 @@ public class ReturnToChromeUtilUnitTest {
                 mTabCreater, mHomeSurfaceTracker, mTabModelSelector, JUnitTestGURLs.URL_1, null);
         verify(mCurrentTabModel).addObserver(mTabModelObserverCaptor.capture());
 
+        // Verifies if the added Tab matches the tracking URL, call showHomeSurfaceUi().
         mTabModelObserverCaptor.getValue().willAddTab(mTab1, TabLaunchType.FROM_RESTORE);
         verify(mNewTabPage).showHomeSurfaceUi(eq(mTab1));
         verify(mHomeSurfaceTracker).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), eq(mTab1));
