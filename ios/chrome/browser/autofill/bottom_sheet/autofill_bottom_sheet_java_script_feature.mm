@@ -54,6 +54,10 @@ AutofillBottomSheetJavaScriptFeature::~AutofillBottomSheetJavaScriptFeature() =
 void AutofillBottomSheetJavaScriptFeature::AttachListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     web::WebFrame* frame) {
+  // TODO(crbug.com/1383214): Properly handle WebFrame destruction.
+  if (!frame) {
+    return;
+  }
   base::Value::List renderer_id_list =
       base::Value::List::with_capacity(renderer_ids.size());
   for (auto renderer_id : renderer_ids) {
@@ -66,5 +70,9 @@ void AutofillBottomSheetJavaScriptFeature::AttachListeners(
 
 void AutofillBottomSheetJavaScriptFeature::DetachListenersAndRefocus(
     web::WebFrame* frame) {
+  // TODO(crbug.com/1383214): Properly handle WebFrame destruction.
+  if (!frame) {
+    return;
+  }
   CallJavaScriptFunction(frame, "bottomSheet.detachListenersAndRefocus", {});
 }
