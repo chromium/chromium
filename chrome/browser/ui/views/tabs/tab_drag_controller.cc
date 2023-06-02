@@ -329,8 +329,10 @@ TabDragController::~TabDragController() {
 
   widget_observation_.Reset();
 
-  if (current_state_ == DragState::kDraggingWindow)
+  if (current_state_ == DragState::kDraggingWindow) {
+    VLOG(1) << "EndMoveLoop in TabDragController dtor";
     GetAttachedBrowserWidget()->EndMoveLoop();
+  }
 
   if (event_source_ == ui::mojom::DragEventSource::kTouch) {
     TabDragContext* capture_context =
@@ -659,8 +661,10 @@ void TabDragController::EndDrag(EndDragReason reason) {
 
   // End the move loop if we're in one. Note that the drag will end (just below)
   // before the move loop actually exits.
-  if (current_state_ == DragState::kDraggingWindow && in_move_loop_)
+  if (current_state_ == DragState::kDraggingWindow && in_move_loop_) {
+    VLOG(1) << "EndMoveLoop in EndDrag";
     GetAttachedBrowserWidget()->EndMoveLoop();
+  }
 
   EndDragImpl(reason != END_DRAG_COMPLETE && source_context_ ? CANCELED
                                                              : NORMAL);
@@ -961,6 +965,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     // Does not immediately exit the move loop - that only happens when control
     // returns to the event loop. The rest of this method will complete before
     // control returns to RunMoveLoop().
+    VLOG(1) << "EndMoveLoop in DragBrowserToNewTabStrip";
     browser_widget->EndMoveLoop();
 
     // Ideally we would always swap the tabs now, but on non-ash Windows, it

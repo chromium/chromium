@@ -1161,9 +1161,12 @@ void BrowserManager::StartWithLogFile(bool launching_at_login_screen,
           command_line->GetSwitchValueASCII(switches::kLoggingLevel).c_str()));
     }
 
-    // TODO(crbug.com/1423163): Remove after root causing the issue.
-    argv.push_back(
-        "--vmodule=command_storage_backend=1,session_service_commands=1");
+    argv.push_back(std::string("--vmodule=")
+                   // TODO(crbug.com/1423163): Remove after fix.
+                   + "command_storage_backend=1,session_service_commands=1"
+                   // TODO(crbug.com/1371493): Remove after fix.
+                   + ",wayland_window_drag_controller=1,wayland_data_source=1" +
+                   ",tab_drag_controller=1");
 
     if (launching_at_login_screen &&
         !command_line->HasSwitch(switches::kDisableLoggingRedirect)) {

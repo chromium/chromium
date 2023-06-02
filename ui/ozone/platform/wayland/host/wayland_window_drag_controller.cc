@@ -129,7 +129,7 @@ bool WaylandWindowDragController::StartDragSession(
     return false;
   }
 
-  DVLOG(1) << "Starting DND session.";
+  VLOG(1) << "Starting DND session.";
   state_ = State::kAttached;
   origin_window_ = origin;
   drag_source_ = drag_source;
@@ -185,7 +185,7 @@ void WaylandWindowDragController::StopDragging() {
   if (state_ != State::kDetached)
     return;
 
-  DVLOG(1) << "End drag loop requested. state=" << state_;
+  VLOG(1) << "End drag loop requested. state=" << state_;
 
   // This function is supposed to be called to indicate that the window was just
   // snapped into a tab strip. So switch to |kAttached| state, store the focused
@@ -193,6 +193,7 @@ void WaylandWindowDragController::StopDragging() {
   state_ = State::kAttaching;
   pointer_grab_owner_ =
       window_manager_->GetCurrentPointerOrTouchFocusedWindow();
+  VLOG(1) << "Quiting Loop : StopDragging";
   QuitLoop();
 }
 
@@ -375,7 +376,7 @@ void WaylandWindowDragController::OnDragDrop() {
   }
 
   DCHECK_GE(state_, State::kAttached);
-  DVLOG(1) << "Dropped. state=" << state_;
+  VLOG(1) << "Dropped. state=" << state_;
 
   DCHECK(data_offer_);
   data_offer_->FinishOffer();
@@ -396,8 +397,8 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
   DCHECK_GE(state_, State::kAttached);
   DCHECK(data_source_);
 
-  DVLOG(1) << "Drop received. state=" << state_;
-
+  VLOG(1) << "DataSourceFinish received. completed=" << completed
+          << ", state=" << state_;
   // Release DND objects.
   data_offer_.reset();
   data_source_.reset();
@@ -430,10 +431,12 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
   State state_when_dropped = std::exchange(
       state_, completed || !IsExtendedDragAvailable() ? State::kDropped
                                                       : State::kCancelled);
-  if (state_when_dropped == State::kDetached)
+  if (state_when_dropped == State::kDetached) {
+    VLOG(1) << "Quiting Loop : Detached";
     QuitLoop();
-  else
+  } else {
     HandleDropAndResetState();
+  }
 
   data_device_->ResetDragDelegate();
   window_manager_->RemoveObserver(this);
@@ -510,6 +513,7 @@ void WaylandWindowDragController::OnWindowRemoved(WaylandWindow* window) {
   }
 
   if (should_cancel_drag) {
+    LOG(ERROR) << "OnDataSourceFinish";
     OnDataSourceFinish(/*completed=*/false);
   }
 }
@@ -539,7 +543,7 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
 // about to finish.
 void WaylandWindowDragController::HandleDropAndResetState() {
   DCHECK(state_ == State::kDropped || state_ == State::kCancelled);
-  DVLOG(1) << "Notifying drop. window=" << pointer_grab_owner_;
+  VLOG(1) << "Notifying drop. window=" << pointer_grab_owner_;
 
   // StopDragging() may get called in response to bogus input events, eg:
   // wl_pointer.button release, which would imply in multiple calls to this
@@ -573,11 +577,12 @@ void WaylandWindowDragController::HandleDropAndResetState() {
 void WaylandWindowDragController::RunLoop() {
   DCHECK_EQ(state_, State::kDetached);
   DCHECK(dragged_window_);
-
-  DVLOG(1) << "Starting drag loop. widget=" << dragged_window_->GetWidget()
-           << " offset=" << drag_offset_.ToString();
-
   auto old_dispatcher = std::move(nested_dispatcher_);
+
+  VLOG(1) << "Starting drag loop. widget=" << dragged_window_->GetWidget()
+          << " offset=" << drag_offset_.ToString()
+          << ", has old dispatcher=" << !!old_dispatcher;
+
   nested_dispatcher_ =
       PlatformEventSource::GetInstance()->OverrideDispatcher(this);
 
@@ -587,17 +592,19 @@ void WaylandWindowDragController::RunLoop() {
   quit_loop_closure_ = loop.QuitClosure();
   loop.Run();
 
-  if (!alive)
+  if (!alive) {
+    VLOG(1) << "Exited drag loop: destroyed";
     return;
+  }
 
   nested_dispatcher_ = std::move(old_dispatcher);
 
-  DVLOG(1) << "Quitting drag loop " << state_;
+  VLOG(1) << "Exited drag loop: state=" << state_;
 }
 
 void WaylandWindowDragController::QuitLoop() {
   DCHECK(!quit_loop_closure_.is_null());
-
+  VLOG(1) << "Quit Loop: resetting nested dispatcher=" << !!nested_dispatcher_;
   nested_dispatcher_.reset();
   std::move(quit_loop_closure_).Run();
 }
