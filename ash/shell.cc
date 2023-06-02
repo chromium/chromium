@@ -1170,10 +1170,8 @@ void Shell::Init(
   }
 
   // Manages lifetime of DiagnosticApp logs.
-  if (features::IsLogControllerForDiagnosticsAppEnabled()) {
-    diagnostics_log_controller_ =
-        std::make_unique<diagnostics::DiagnosticsLogController>();
-  }
+  diagnostics_log_controller_ =
+      std::make_unique<diagnostics::DiagnosticsLogController>();
 
   pcie_peripheral_notification_controller_ =
       std::make_unique<PciePeripheralNotificationController>(

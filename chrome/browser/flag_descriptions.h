@@ -3246,9 +3246,6 @@ extern const char kEnableKeyboardBacklightToggleDescription[];
 extern const char kEnableLibinputToHandleTouchpadName[];
 extern const char kEnableLibinputToHandleTouchpadDescription[];
 
-extern const char kEnableLogControllerForDiagnosticsAppName[];
-extern const char kEnableLogControllerForDiagnosticsAppDescription[];
-
 extern const char kEnableNeuralPalmAdaptiveHoldName[];
 extern const char kEnableNeuralPalmAdaptiveHoldDescription[];
 

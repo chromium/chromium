@@ -8862,14 +8862,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kLensPingVariations,
                                     "EnableLensPing")},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-log-controller-for-diagnostics-app",
-     flag_descriptions::kEnableLogControllerForDiagnosticsAppName,
-     flag_descriptions::kEnableLogControllerForDiagnosticsAppDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kEnableLogControllerForDiagnosticsApp)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_ANDROID)
     {"biometric-reauth-password-filling",
      flag_descriptions::kBiometricReauthForPasswordFillingName,

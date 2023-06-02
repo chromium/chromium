@@ -21,23 +21,13 @@ DiagnosticsManager::DiagnosticsManager(SessionLogHandler* session_log_handler,
     : webui_(webui) {
   // Configure providers with logs from DiagnosticsLogController when flag
   // enabled.
-  if (features::IsLogControllerForDiagnosticsAppEnabled() &&
-      DiagnosticsLogController::IsInitialized()) {
+  if (DiagnosticsLogController::IsInitialized()) {
     system_data_provider_ = std::make_unique<SystemDataProvider>(
         DiagnosticsLogController::Get()->GetTelemetryLog());
     system_routine_controller_ = std::make_unique<SystemRoutineController>(
         DiagnosticsLogController::Get()->GetRoutineLog());
     network_health_provider_ = std::make_unique<NetworkHealthProvider>(
         DiagnosticsLogController::Get()->GetNetworkingLog());
-  } else {
-    // TODO(b/226574520): Remove else block as part of DiagnosticsLogController
-    // flag clean up.
-    system_data_provider_ = std::make_unique<SystemDataProvider>(
-        session_log_handler->GetTelemetryLog());
-    system_routine_controller_ = std::make_unique<SystemRoutineController>(
-        session_log_handler->GetRoutineLog());
-    network_health_provider_ = std::make_unique<NetworkHealthProvider>(
-        session_log_handler->GetNetworkingLog());
   }
 }
 

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
@@ -56,10 +55,7 @@ void DiagnosticsDialog::ShowDialog(DiagnosticsDialog::DiagnosticsPage page,
   DiagnosticsDialog* dialog = new DiagnosticsDialog(page);
 
   // Ensure log controller configuration matches current session.
-  if (features::IsLogControllerForDiagnosticsAppEnabled()) {
-    diagnostics::DiagnosticsLogController::Get()
-        ->ResetAndInitializeLogWriters();
-  }
+  diagnostics::DiagnosticsLogController::Get()->ResetAndInitializeLogWriters();
 
   dialog->ShowSystemDialog(parent);
 }

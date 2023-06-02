@@ -5688,13 +5688,6 @@ const char kEnableKeyboardBacklightToggleDescription[] =
     "Enable toggling of the keyboard backlight. By "
     "default, this flag is enabled.";
 
-const char kEnableLogControllerForDiagnosticsAppName[] =
-    "Enable DiagnosticsLogController for Diagnostics App";
-const char kEnableLogControllerForDiagnosticsAppDescription[] =
-    "Uses DiagnosticsLogController to manage the lifetime of Diagnostics App "
-    "logs.  Enables creation of combined diagnostics log after Diagnostics "
-    "App is closed.";
-
 const char kEnableNeuralPalmAdaptiveHoldName[] = "Palm Rejection Adaptive Hold";
 const char kEnableNeuralPalmAdaptiveHoldDescription[] =
     "Enable adaptive hold in palm rejection.  Not compatible with all devices.";

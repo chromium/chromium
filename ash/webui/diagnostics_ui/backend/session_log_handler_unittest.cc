@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
@@ -26,7 +25,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/values.h"
@@ -434,9 +432,6 @@ TEST_F(SessionLogHandlerTest, CleanUpDialogOnDeconstruct) {
 // Validates CreateSessionLog task does not trigger a Use-After-Free error
 // when SessionLogHandler is destroyed before task is run. See crbug/1328708.
 TEST_F(SessionLogHandlerTest, NoUseAfterFree) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      ash::features::kEnableLogControllerForDiagnosticsApp);
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
   ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
   base::Value::List args;

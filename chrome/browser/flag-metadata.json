@@ -2824,11 +2824,6 @@
     "expiry_milestone": 80
   },
   {
-    "name": "enable-log-controller-for-diagnostics-app",
-    "owners": [ "ashleydp", "jimmyxgong", "michaelcheco", "cros-peripherals@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-logging-js-console-messages",
     "owners": [ "hazems" ],
     // Never expires because it is used by developers to enable logging JS

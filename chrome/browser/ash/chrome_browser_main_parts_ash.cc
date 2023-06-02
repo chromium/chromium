@@ -1400,13 +1400,11 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
   dark_resume_controller_ = std::make_unique<system::DarkResumeController>(
       std::move(wake_lock_provider));
 
-  if (features::IsLogControllerForDiagnosticsAppEnabled()) {
-    // DiagnosticsBrowserDelegate has to be initialized after ProfilerHelper and
-    // UserManager. Initializing in PostProfileInit to ensure Profile data is
-    // available and shell has been initialized.
-    diagnostics::DiagnosticsLogController::Initialize(
-        std::make_unique<diagnostics::DiagnosticsBrowserDelegateImpl>());
-  }
+  // DiagnosticsBrowserDelegate has to be initialized after ProfilerHelper and
+  // UserManager. Initializing in PostProfileInit to ensure Profile data is
+  // available and shell has been initialized.
+  diagnostics::DiagnosticsLogController::Initialize(
+      std::make_unique<diagnostics::DiagnosticsBrowserDelegateImpl>());
 
   // Start background collection of memory pressure data for Chrome OS.
   memory_pressure_detail_ = base::MakeRefCounted<MemoryMetrics>(
