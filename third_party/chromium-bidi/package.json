@@ -25,6 +25,11 @@
     "wpt": "wireit",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
+  "nyc": {
+    "exclude": [
+      "**/*.spec.ts"
+    ]
+  },
   "wireit": {
     "build": {
       "dependencies": [
