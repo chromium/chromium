@@ -3561,7 +3561,7 @@
       },
       'linux-blink-heap-verification': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_gtests',
