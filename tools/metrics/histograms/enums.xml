@@ -79968,7 +79968,33 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="PartnerCustomizationProviderDelegate">
+  <int value="0" label="None valid"/>
+  <int value="1" label="Phenotype config"/>
+  <int value="2" label="GService flag"/>
+  <int value="3" label="Preload APK"/>
+</enum>
+
+<enum name="PartnerCustomizationUsage">
+  <int value="0" label="Homepage"/>
+  <int value="1" label="Bookmarks"/>
+  <int value="2" label="Incognito"/>
+</enum>
+
+<enum name="PartnerDelegateUnusedReason">
+  <int value="0" label="Phenotype: before Android Pie"/>
+  <int value="1" label="Phenotype: flag can't commit"/>
+  <int value="2" label="Phenotype: config empty"/>
+  <int value="3" label="GServices: get timestamp exception"/>
+  <int value="4" label="GServices: timestamp missing"/>
+  <int value="5" label="PreloadApk: can't resolve provider"/>
+  <int value="6" label="PreloadApk: not system provider"/>
+</enum>
+
 <enum name="PartnerHomepageCustomizationDelegate">
+  <obsolete>
+    Deprecated as of 2023-05. Use PartnerCustomizationProviderDelegate.
+  </obsolete>
   <int value="0" label="Phenotype config"/>
   <int value="1" label="GService flag"/>
   <int value="2" label="Preload APK"/>

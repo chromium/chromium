@@ -8,12 +8,14 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.SystemClock;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.DelegateUnusedReason;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.version_info.VersionInfo;
 
@@ -26,8 +28,24 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
     private static final String PARTNER_HOMEPAGE_PATH = "homepage";
 
     private static String sProviderAuthority = PROVIDER_AUTHORITY;
-    private static Boolean sIgnoreSystemPackageCheck;
+    private static Boolean sIgnoreSystemPackageCheckForTesting;
     private static Boolean sValid;
+
+    /** Provides a way to do some post-process timing for the validation function. */
+    interface DelegateValidationCompletion {
+        /**
+         * When validation has completed, notify the closure of how long that took, regardless of
+         * outcome.
+         */
+        void validated(long startTime);
+    }
+
+    /**
+     * A completion to call after determining isValid that includes timing information. Typically
+     * {@code null} on Chromium but can be set from Downstream.
+     */
+    @Nullable
+    private DelegateValidationCompletion mValidationCompletion;
 
     @Override
     public @Nullable String getHomepage() {
@@ -85,6 +103,8 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
                 ContextUtils.getApplicationContext().getPackageManager().resolveContentProvider(
                         sProviderAuthority, 0);
         if (providerInfo == null) {
+            PartnerCustomizationsUma.logDelegateUnusedReason(
+                    DelegateUnusedReason.PRELOAD_APK_CANNOT_RESOLVE_PROVIDER);
             return false;
         }
         if ((providerInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
@@ -95,7 +115,7 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
         // is rejected unless Chrome Android is a local build.
         // When sIgnoreBrowserProviderSystemPackageCheck is true, accept non-system package.
         // When sIgnoreBrowserProviderSystemPackageCheck is false, reject non-system package.
-        if (sIgnoreSystemPackageCheck != null && sIgnoreSystemPackageCheck) {
+        if (sIgnoreSystemPackageCheckForTesting != null && sIgnoreSystemPackageCheckForTesting) {
             return true;
         }
 
@@ -104,7 +124,7 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
                         + ", is not a system package. "
                         + "This could be a malicious attempt from a third party "
                         + "app, so skip reading the browser content provider.");
-        if (sIgnoreSystemPackageCheck != null && !sIgnoreSystemPackageCheck) {
+        if (sIgnoreSystemPackageCheckForTesting != null && !sIgnoreSystemPackageCheckForTesting) {
             return false;
         }
         if (VersionInfo.isLocalBuild()) {
@@ -114,14 +134,33 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
                             + "to make debugging customization easier.");
             return true;
         }
+        // ProviderInfo was present, but flags don't indicate it was a System APK (above), and none
+        // of our overrides apply.
+        PartnerCustomizationsUma.logDelegateUnusedReason(
+                DelegateUnusedReason.PRELOAD_APK_NOT_SYSTEM_PROVIDER);
         return false;
     }
 
-    private boolean isValid() {
+    /**
+     * May be called by Downstream to determine if the default Upstream delegate is actually being
+     * used.
+     */
+    boolean isValid() {
         if (sValid == null) {
+            long validationStartTime = SystemClock.elapsedRealtime();
             sValid = isValidInternal();
+            if (mValidationCompletion != null) {
+                mValidationCompletion.validated(validationStartTime);
+            }
         }
         return sValid;
+    }
+
+    /** Sets a function to call when validation has been performed. */
+    void setValidationCompletion(DelegateValidationCompletion validationCompletion) {
+        assert mValidationCompletion
+                == null : "Coding error: setValidationCompletion may only be called once!";
+        mValidationCompletion = validationCompletion;
     }
 
     static Uri buildQueryUri(String path) {
@@ -146,6 +185,6 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
      */
     @VisibleForTesting
     static void ignoreBrowserProviderSystemPackageCheckForTesting(boolean ignore) {
-        sIgnoreSystemPackageCheck = ignore;
+        sIgnoreSystemPackageCheckForTesting = ignore;
     }
 }
