@@ -973,6 +973,8 @@ component("ash") {
     "scoped_animation_disabler.h",
     "screen_util.cc",
     "screen_util.h",
+    "sensor_info/sensor_types.cc",
+    "sensor_info/sensor_types.h",
     "session/fullscreen_controller.cc",
     "session/fullscreen_controller.h",
     "session/fullscreen_notification_bubble.cc",
