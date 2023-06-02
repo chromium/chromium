@@ -37,6 +37,9 @@ readonly TIMEOUT_MULTIPLIER="${TIMEOUT_MULTIPLIER:-8}"
 # Whether to update the WPT expectations after running the tests.
 readonly UPDATE_EXPECTATIONS="${UPDATE_EXPECTATIONS:-false}"
 
+# Whether to enable verbose logging.
+readonly VERBOSE="${VERBOSE:-false}"
+
 # The path to the WPT report file.
 readonly WPT_REPORT="${WPT_REPORT:-wptreport.json}"
 
@@ -71,6 +74,14 @@ declare -a WPT_RUN_ARGS=(
   --skip-implementation-status=backlog
   --timeout-multiplier "$TIMEOUT_MULTIPLIER"
 )
+
+if [[ "$VERBOSE" == "true" ]]; then
+  WPT_RUN_ARGS+=(
+    --debug-test
+    --log-mach -
+    --log-mach-level info
+  )
+fi
 
 if [[ "$CHROMEDRIVER" == "true" ]]; then
   log "Using chromedriver with mapper..."

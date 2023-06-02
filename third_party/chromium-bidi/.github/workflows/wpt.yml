@@ -136,7 +136,6 @@ jobs:
       - name: Run WPT tests (mapper, headful)
         if: matrix.head == 'headful' && matrix.kind == 'mapper'
         timeout-minutes: 60
-        # For verbose logging, add --log-mach - --log-mach-level info
         run: >
           xvfb-run --auto-servernum
           npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
@@ -149,7 +148,6 @@ jobs:
       - name: Run WPT tests (mapper, headless)
         if: matrix.head == 'headless' && matrix.kind == 'mapper'
         timeout-minutes: 60
-        # For verbose logging, add --log-mach - --log-mach-level info
         run: npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
@@ -160,7 +158,6 @@ jobs:
       - name: Run WPT tests (chromedriver, new headless)
         if: matrix.head == 'headless' && matrix.kind == 'chromedriver'
         timeout-minutes: 60
-        # For verbose logging, add --log-mach - --log-mach-level info
         run: npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
