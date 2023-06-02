@@ -33,9 +33,10 @@ void PasswordManagerClient::ShowPasswordManagerErrorMessage(
     ErrorMessageFlowType flow_type,
     password_manager::PasswordStoreBackendErrorType error_type) {}
 
-void PasswordManagerClient::ShowTouchToFill(
+void PasswordManagerClient::ShowKeyboardReplacingSurface(
     PasswordManagerDriver* driver,
-    autofill::mojom::SubmissionReadinessState submission_readiness) {}
+    autofill::mojom::SubmissionReadinessState submission_readiness,
+    bool is_webauthn_form) {}
 #endif
 
 scoped_refptr<device_reauth::DeviceAuthenticator>

@@ -39,10 +39,6 @@ static_library("browser") {
     "//mojo/public/cpp/system",
     "//net",
   ]
-
-  if (is_android) {
-    public_deps += [ "//components/webauthn/android" ]
-  }
 }
 
 source_set("test_support") {
