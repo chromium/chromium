@@ -60,7 +60,7 @@ from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
                     GetDefaultHostOs, RmTree, UpdatePackage)
 
 from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
-                         STAGE0_JSON_SHA256, THIRD_PARTY_DIR, THIS_DIR,
+                         STAGE0_JSON_SHA256, THIRD_PARTY_DIR,
                          VERSION_STAMP_PATH, GetLatestRevision)
 
 EXCLUDED_TESTS = [
@@ -89,7 +89,7 @@ EXCLUDED_TESTS_WINDOWS = [
     os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
 ]
 
-CLANG_SCRIPTS_DIR = os.path.join(THIS_DIR, '..', 'clang', 'scripts')
+CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
 
 RUST_GIT_URL = ('https://chromium.googlesource.com/external/' +
                 'github.com/rust-lang/rust')

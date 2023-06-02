@@ -55,13 +55,13 @@ EXE = '.exe' if sys.platform == 'win32' else ''
 def InstallRustBetaSysroot(rust_git_hash, target_triples):
     if os.path.exists(RUST_BETA_SYSROOT_DIR):
         RmTree(RUST_BETA_SYSROOT_DIR)
-    InstallBetaPackage(FetchBetaPackage('cargo', RUST_REVISION),
+    InstallBetaPackage(FetchBetaPackage('cargo', rust_git_hash),
                        RUST_BETA_SYSROOT_DIR)
-    InstallBetaPackage(FetchBetaPackage('rustc', RUST_REVISION),
+    InstallBetaPackage(FetchBetaPackage('rustc', rust_git_hash),
                        RUST_BETA_SYSROOT_DIR)
     for t in target_triples:
         InstallBetaPackage(
-            FetchBetaPackage('rust-std', RUST_REVISION, triple=t),
+            FetchBetaPackage('rust-std', rust_git_hash, triple=t),
             RUST_BETA_SYSROOT_DIR)
     return RUST_BETA_SYSROOT_DIR
 
