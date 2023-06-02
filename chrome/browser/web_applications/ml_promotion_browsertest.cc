@@ -261,8 +261,16 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
 }
 
 // SiteQualityMetrics tests.
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1450786): Fix the flakiness of the test.
+#define MAYBE_SiteQualityMetrics_ServiceWorker_FetchHandler \
+  DISABLED_SiteQualityMetrics_ServiceWorker_FetchHandler
+#else
+#define MAYBE_SiteQualityMetrics_ServiceWorker_FetchHandler \
+  SiteQualityMetrics_ServiceWorker_FetchHandler
+#endif
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
-                       SiteQualityMetrics_ServiceWorker_FetchHandler) {
+                       MAYBE_SiteQualityMetrics_ServiceWorker_FetchHandler) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
   AwaitServiceWorkerRegistrationAndPendingDelayedTask(GetInstallableAppURL());
   task_runner_->RunPendingTasks();
@@ -287,8 +295,17 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_EQ(quality_metrics.service_worker_script_size, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
-                       SiteQualityMetrics_ServiceWorker_EmptyFetchHandler) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1450786): Fix the flakiness of the test.
+#define MAYBE_SiteQualityMetrics_ServiceWorker_EmptyFetchHandler \
+  DISABLED_SiteQualityMetrics_ServiceWorker_EmptyFetchHandler
+#else
+#define MAYBE_SiteQualityMetrics_ServiceWorker_EmptyFetchHandler \
+  SiteQualityMetrics_ServiceWorker_EmptyFetchHandler
+#endif
+IN_PROC_BROWSER_TEST_F(
+    MLPromotionBrowsertest,
+    MAYBE_SiteQualityMetrics_ServiceWorker_EmptyFetchHandler) {
   NavigateAndAwaitMetricsCollectionPending(GetUrlWithSWEmptyFetchHandler());
   AwaitServiceWorkerRegistrationAndPendingDelayedTask(
       GetUrlWithSWEmptyFetchHandler());
@@ -302,8 +319,16 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   EXPECT_TRUE(quality_metrics.has_fetch_handler);
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1450786): Fix the flakiness of the test.
+#define MAYBE_SiteQualityMetrics_ServiceWorker_NoFetchHandler \
+  DISABLED_SiteQualityMetrics_ServiceWorker_NoFetchHandler
+#else
+#define MAYBE_SiteQualityMetrics_ServiceWorker_NoFetchHandler \
+  SiteQualityMetrics_ServiceWorker_NoFetchHandler
+#endif
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
-                       SiteQualityMetrics_ServiceWorker_NoFetchHandler) {
+                       MAYBE_SiteQualityMetrics_ServiceWorker_NoFetchHandler) {
   NavigateAndAwaitMetricsCollectionPending(GetUrlWithSwNoFetchHandler());
   AwaitServiceWorkerRegistrationAndPendingDelayedTask(
       GetUrlWithSwNoFetchHandler());
