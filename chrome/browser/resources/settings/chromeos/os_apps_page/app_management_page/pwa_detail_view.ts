@@ -22,7 +22,7 @@ import {AppManagementStoreMixin} from './store_mixin.js';
 const AppManagementPwaDetailViewElementBase =
     AppManagementStoreMixin(PolymerElement);
 
-class AppManagementPwaDetailViewElement extends
+export class AppManagementPwaDetailViewElement extends
     AppManagementPwaDetailViewElementBase {
   static get is() {
     return 'app-management-pwa-detail-view';

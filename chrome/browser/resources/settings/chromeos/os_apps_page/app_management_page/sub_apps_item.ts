@@ -15,7 +15,7 @@ import {getTemplate} from './sub_apps_item.html.js';
 const AppManagementSubAppsItemElementBase =
     AppManagementStoreMixin(I18nMixin(PolymerElement));
 
-class AppManagementSubAppsItemElement extends
+export class AppManagementSubAppsItemElement extends
     AppManagementSubAppsItemElementBase {
   static get is() {
     return 'app-management-sub-apps-item';
