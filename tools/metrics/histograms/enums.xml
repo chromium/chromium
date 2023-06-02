@@ -39681,7 +39681,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1760" label="BaseWithDataHref"/>
   <int value="1761" label="BaseWithNewlinesInTarget"/>
   <int value="1762" label="BaseWithOpenBracketInTarget"/>
-  <int value="1763" label="BaseWouldBeBlockedByDefaultSrc"/>
+  <int value="1763" label="OBSOLETE_BaseWouldBeBlockedByDefaultSrc"/>
   <int value="1764" label="V8AssigmentExpressionLHSIsCallInSloppy"/>
   <int value="1765" label="V8AssigmentExpressionLHSIsCallInStrict"/>
   <int value="1766" label="V8PromiseConstructorReturnedUndefined"/>

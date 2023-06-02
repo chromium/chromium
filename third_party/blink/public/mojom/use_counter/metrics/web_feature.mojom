@@ -1242,7 +1242,7 @@ enum WebFeature {
   kBaseWithDataHref = 1760,
   kBaseWithNewlinesInTarget = 1761,
   kBaseWithOpenBracketInTarget = 1762,
-  kBaseWouldBeBlockedByDefaultSrc = 1763,
+  kOBSOLETE_BaseWouldBeBlockedByDefaultSrc = 1763,
   kV8AssigmentExpressionLHSIsCallInSloppy = 1764,
   kV8AssigmentExpressionLHSIsCallInStrict = 1765,
   kV8PromiseConstructorReturnedUndefined = 1766,
