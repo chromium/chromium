@@ -27,12 +27,8 @@ class WebNNCommandQueueTest : public TestBase {
 };
 
 void WebNNCommandQueueTest::SetUp() {
-  TestBase::SetUp();
-  // Skip all tests for this fixture.
-  if (!display_) {
-    return;
-  }
-
+  SKIP_TEST_IF(!UseGPUInTests());
+  ASSERT_TRUE(InitializeGLDisplay());
   ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
   ASSERT_NE(d3d11_device.Get(), nullptr);
   ComPtr<IDXGIDevice> dxgi_device;
