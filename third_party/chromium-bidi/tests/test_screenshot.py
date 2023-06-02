@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import base64
-from io import BytesIO
+import io
 
 import pytest
 from anys import ANY_STR
@@ -39,6 +39,13 @@ def assert_images_equal(img1: Image, img2: Image):
     assert equal_alphas
     assert equal_size
     assert equal_content
+
+
+def save_png(png_bytes_or_str: bytes | str, output_file: str):
+    """Save the given PNG (bytes or base64 string representation) to the given output file."""
+    png_bytes = png_bytes_or_str if isinstance(
+        png_bytes_or_str, bytes) else base64.b64decode(png_bytes_or_str)
+    Image.open(io.BytesIO(png_bytes)).save(output_file, 'PNG')
 
 
 @pytest.mark.asyncio
@@ -89,6 +96,6 @@ async def test_screenshot(websocket, context_id, png_base64):
     resp = await read_JSON_message(websocket)
     assert resp["result"] == {'data': ANY_STR}
 
-    img1 = Image.open(BytesIO(base64.b64decode(resp["result"]["data"])))
-    img2 = Image.open(BytesIO(base64.b64decode(png_base64)))
+    img1 = Image.open(io.BytesIO(base64.b64decode(resp["result"]["data"])))
+    img2 = Image.open(io.BytesIO(base64.b64decode(png_base64)))
     assert_images_equal(img1, img2)
