@@ -1131,7 +1131,8 @@ D3DImageBacking::ProduceSkiaGraphite(
       static_cast<WGPUBackendType>(adapter_properties.backendType), {});
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
-      context_state->gpu_main_graphite_recorder(), manager, this, tracker);
+      context_state->gpu_main_graphite_recorder(), manager, this, tracker,
+      static_cast<int>(plane_index_));
 #else
   return nullptr;
 #endif

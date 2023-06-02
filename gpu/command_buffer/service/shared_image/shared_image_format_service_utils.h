@@ -124,6 +124,13 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     int plane_index = 0,
     bool mipmapped = false);
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
+    viz::SharedImageFormat format,
+    int plane_index = 0,
+    bool mipmapped = false);
+#endif
+
 #if BUILDFLAG(SKIA_USE_METAL)
 GPU_GLES2_EXPORT skgpu::graphite::MtlTextureInfo GetGraphiteMetalTextureInfo(
     viz::SharedImageFormat format,

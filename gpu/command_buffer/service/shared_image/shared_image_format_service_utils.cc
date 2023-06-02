@@ -270,7 +270,7 @@ wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format) {
       wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopySrc;
 
   // The below usages are not supported for multiplanar formats in Dawn.
-  if (format.is_single_plane()) {
+  if (format.is_single_plane() && !format.IsLegacyMultiplanar()) {
     usage |= wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopyDst;
   }
 
@@ -293,21 +293,30 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
   } else {
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
 #if BUILDFLAG(SKIA_USE_DAWN)
-    // TODO(crbug.com/1445450): Add support for multiplanar formats, passing
-    // |plane_index|.
-    wgpu::TextureFormat wgpu_format = ToDawnFormat(format, plane_index);
-    if (wgpu_format != wgpu::TextureFormat::Undefined) {
-      skgpu::graphite::DawnTextureInfo dawn_texture_info;
-      dawn_texture_info.fSampleCount = 1;
-      dawn_texture_info.fFormat = wgpu_format;
-      dawn_texture_info.fUsage = GetSupportedDawnTextureUsage(format);
-      dawn_texture_info.fMipmapped =
-          mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
-      return dawn_texture_info;
-    }
+    return GetGraphiteDawnTextureInfo(format, plane_index, mipmapped);
 #endif
   }
   NOTREACHED_NORETURN();
 }
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
+    viz::SharedImageFormat format,
+    int plane_index,
+    bool mipmapped) {
+  skgpu::graphite::DawnTextureInfo dawn_texture_info;
+  // TODO(crbug.com/1445450): Add support for multiplanar formats, passing
+  // |plane_index|.
+  wgpu::TextureFormat wgpu_format = ToDawnFormat(format, plane_index);
+  if (wgpu_format != wgpu::TextureFormat::Undefined) {
+    dawn_texture_info.fSampleCount = 1;
+    dawn_texture_info.fFormat = wgpu_format;
+    dawn_texture_info.fUsage = GetSupportedDawnTextureUsage(format);
+    dawn_texture_info.fMipmapped =
+        mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
+  }
+  return dawn_texture_info;
+}
+#endif
 
 }  // namespace gpu
