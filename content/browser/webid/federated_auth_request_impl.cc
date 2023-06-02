@@ -1393,6 +1393,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       if (IsFedCmLoginHintEnabled()) {
         FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
         if (accounts.empty()) {
+          render_frame_host().AddMessageToConsole(
+              blink::mojom::ConsoleMessageLevel::kError,
+              "Accounts were received, but none matched the loginHint.");
           // If there are no accounts after filtering based on the login hint,
           // treat this exactly the same as if we had received an empty accounts
           // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.

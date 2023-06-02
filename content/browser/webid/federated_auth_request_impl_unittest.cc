@@ -105,6 +105,9 @@ constexpr char kEmail[] = "ken@idp.example";
 constexpr char kToken[] = "[not a real token]";
 constexpr char kEmptyToken[] = "";
 
+constexpr char kLoginHintNoMatchMessage[] =
+    "Accounts were received, but none matched the loginHint.";
+
 static const std::initializer_list<IdentityRequestAccount> kSingleAccount{{
     kAccountId,                 // id
     kEmail,                     // email
@@ -3868,7 +3871,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       {FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty},
-      /*standalone_console_messages=*/{},
+      {kLoginHintNoMatchMessage},
       /*selected_idp_config_url=*/absl::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;
@@ -3932,7 +3935,7 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
       {FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty},
-      /*standalone_console_messages=*/{},
+      {kLoginHintNoMatchMessage},
       /*selected_idp_config_url=*/absl::nullopt};
 
   MockConfiguration configuration = kConfigurationValid;

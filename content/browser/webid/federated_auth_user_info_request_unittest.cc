@@ -256,16 +256,11 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
 
     // Add a subframe that navigates to kPersonalizedButtonFrameUrl.
-    content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+    iframe_render_frame_host_ = content::RenderFrameHostTester::For(main_rfh())
+                                    ->AppendChild("subframe");
     iframe_render_frame_host_ =
-        static_cast<TestRenderFrameHost*>(contents()
-                                              ->GetPrimaryFrameTree()
-                                              .root()
-                                              ->child_at(0)
-                                              ->current_frame_host());
-    iframe_render_frame_host_ = static_cast<TestRenderFrameHost*>(
         NavigationSimulator::NavigateAndCommitFromDocument(
-            GURL(kPersonalizedButtonFrameUrl), iframe_render_frame_host_));
+            GURL(kPersonalizedButtonFrameUrl), iframe_render_frame_host_);
   }
 
   void RunUserInfoTest(
@@ -313,6 +308,14 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
   }
 
   bool DidFetchAnyEndpoint() { return network_manager_->DidFetchAnyEndpoint(); }
+
+  void ExpectConsoleMessage(const std::string& message) {
+    std::vector<std::string> messages =
+        RenderFrameHostTester::For(iframe_render_frame_host_)
+            ->GetConsoleMessages();
+    ASSERT_EQ(messages.size(), 1u);
+    EXPECT_EQ(messages[0], message);
+  }
 
  protected:
   raw_ptr<RenderFrameHost, DanglingUntriaged> iframe_render_frame_host_;
@@ -364,6 +367,9 @@ TEST_F(FederatedAuthUserInfoRequestTest, NoSignedInAccount) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.UserInfo.NumAccounts", 0);
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.UserInfo.TimeToRequestCompleted", 0);
+  ExpectConsoleMessage(
+      "getUserInfo() failed because the user has not yet used FedCM on this "
+      "site with the provided IDP.");
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest, NotInApprovedClientsList) {
@@ -386,6 +392,9 @@ TEST_F(FederatedAuthUserInfoRequestTest, NotInApprovedClientsList) {
                                        FedCmMetrics::NumAccounts::kZero, 1);
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.UserInfo.TimeToRequestCompleted", 1);
+  ExpectConsoleMessage(
+      "getUserInfo() failed because no account received was a returning "
+      "account.");
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest, InApprovedClientsList) {
@@ -414,6 +423,10 @@ TEST_F(FederatedAuthUserInfoRequestTest, ConfigFetchFailed) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.UserInfo.NumAccounts", 0);
   histogram_tester_.ExpectTotalCount(
       "Blink.FedCm.UserInfo.TimeToRequestCompleted", 0);
+
+  ExpectConsoleMessage(
+      "getUserInfo() failed because the config and well-known files resulted "
+      "were invalid.");
 }
 
 TEST_F(FederatedAuthUserInfoRequestTest,

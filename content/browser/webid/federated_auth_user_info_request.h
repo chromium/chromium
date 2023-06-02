@@ -99,6 +99,7 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
       nullptr;
   // Owned by |FederatedAuthRequestImpl|
   raw_ptr<FedCmMetrics> metrics_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
 
   std::unique_ptr<FederatedProviderFetcher> provider_fetcher_;
   bool does_idp_have_failing_signin_status_{false};

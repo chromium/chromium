@@ -17,6 +17,57 @@
 #include "url/url_constants.h"
 
 namespace content {
+namespace {
+
+std::string GetConsoleErrorMessage(
+    FederatedAuthUserInfoRequest::RequestStatus error) {
+  switch (error) {
+    case FederatedAuthUserInfoRequest::RequestStatus::kNotSameOrigin: {
+      return "getUserInfo() caller is not same origin as the config URL.";
+    }
+    case FederatedAuthUserInfoRequest::RequestStatus::kNotIframe: {
+      return "getUserInfo() caller is not an iframe.";
+    }
+    case FederatedAuthUserInfoRequest::RequestStatus::
+        kNotPotentiallyTrustworthy: {
+      return "getUserInfo() failed because the config URL is not potentially "
+             "trustworthy.";
+    }
+    case FederatedAuthUserInfoRequest::RequestStatus::kNoApiPermission: {
+      return "getUserInfo() is disabled because FedCM is disabled.";
+    }
+    case FederatedAuthUserInfoRequest::RequestStatus::kNotSignedInWithIdp: {
+      return "getUserInfo() is disabled because the IDP Sign-In Status is "
+             "signed-out.";
+    }
+    case FederatedAuthUserInfoRequest::RequestStatus::
+        kNoAccountSharingPermission: {
+      return "getUserInfo() failed because the user has not yet used FedCM on "
+             "this site with the provided IDP.";
+    }
+    case FederatedAuthUserInfoRequest::RequestStatus::
+        kInvalidConfigOrWellKnown: {
+      return "getUserInfo() failed because the config and well-known files "
+             "resulted were invalid.";
+    }
+    case FederatedAuthUserInfoRequest::RequestStatus::
+        kInvalidAccountsResponse: {
+      return "getUserInfo() failed because of an invalid accounts response.";
+    }
+    case FederatedAuthUserInfoRequest::RequestStatus::
+        kNoReturningUserFromFetchedAccounts: {
+      return "getUserInfo() failed because no account received was a returning "
+             "account.";
+    }
+    case FederatedAuthUserInfoRequest::RequestStatus::kUnhandledRequest:
+    case FederatedAuthUserInfoRequest::RequestStatus::kSuccess: {
+      NOTREACHED();
+      return "";
+    }
+  }
+}
+
+}  // namespace
 
 using FederatedApiPermissionStatus =
     FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
@@ -51,6 +102,7 @@ FederatedAuthUserInfoRequest::FederatedAuthUserInfoRequest(
     : network_manager_(std::move(network_manager)),
       permission_delegate_(permission_delegate),
       metrics_(metrics),
+      render_frame_host_(render_frame_host),
       client_id_(provider->client_id),
       idp_config_url_(provider->config_url),
       origin_(render_frame_host->GetLastCommittedOrigin()) {
@@ -239,6 +291,13 @@ void FederatedAuthUserInfoRequest::Complete(
 }
 
 void FederatedAuthUserInfoRequest::CompleteWithError(RequestStatus error) {
+  // Do not add a console error for an unhandled request: the RenderFrameHost
+  // may have been destroyed.
+  if (error != RequestStatus::kUnhandledRequest) {
+    render_frame_host_->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        GetConsoleErrorMessage(error));
+  }
   Complete(blink::mojom::RequestUserInfoStatus::kError, absl::nullopt, error);
 }
 
