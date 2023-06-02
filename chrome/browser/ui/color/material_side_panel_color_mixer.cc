@@ -61,6 +61,8 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysPrimary};
   mixer[kColorSidePanelCustomizeChromeThemeCheckmarkForeground] = {
       ui::kColorSysOnPrimary};
+  mixer[kColorSidePanelCustomizeChromeThemeSnapshotBackground] = {
+      ui::kColorSysTonalContainer};
   mixer[kColorSidePanelCustomizeChromeWebStoreOptionBorder] = {
       ui::kColorSysNeutralOutline};
 }
