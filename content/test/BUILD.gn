@@ -2152,7 +2152,6 @@ test("content_browsertests") {
   if (is_fuchsia) {
     use_test_server = true
 
-    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/audio_output.shard.test-cml",
       "//build/config/fuchsia/test/fonts.shard.test-cml",
@@ -2754,12 +2753,11 @@ test("content_unittests") {
       "../browser/renderer_host/media/fuchsia_media_codec_provider_impl_unittest.cc",
     ]
 
-    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
-    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
-    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
-
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/fonts.shard.test-cml",
+
+      # TODO(https://crbug.com/1185811): Investigate removing the requirement
+      # for VmexResource.
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//build/config/fuchsia/test/network.shard.test-cml",
       "//build/config/fuchsia/test/platform_video_codecs.shard.test-cml",

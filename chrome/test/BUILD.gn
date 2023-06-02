@@ -4884,7 +4884,6 @@ if (!is_android) {
     if (is_fuchsia) {
       use_test_server = true
 
-      test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
       excluded_paths = fuchsia_package_exclusions
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/audio_output.shard.test-cml",
@@ -9401,11 +9400,11 @@ test("unit_tests") {
 
     data += [ "//testing/buildbot/filters/fuchsia.unit_tests.filter" ]
 
-    # TODO(https://crbug.com/1185811): Investigate removing the requirement for
-    # job_policy_ambient_mark_vmo_exec for the sake of V8's allocator in tests.
-    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/fonts.shard.test-cml",
+
+      # TODO(https://crbug.com/1185811): Investigate removing the requirement
+      # for VmexResource.
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//build/config/fuchsia/test/network.shard.test-cml",
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
@@ -10940,7 +10939,6 @@ if (!is_android) {
     if (is_fuchsia) {
       use_test_server = true
 
-      test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/fonts.shard.test-cml",
         "//build/config/fuchsia/test/network.shard.test-cml",
@@ -11009,7 +11007,6 @@ if (!is_android) {
     if (is_fuchsia) {
       use_test_server = true
 
-      test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/network.shard.test-cml",
         "//build/config/fuchsia/test/present_view.shard.test-cml",
