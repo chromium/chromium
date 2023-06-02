@@ -16,4 +16,3 @@ per-file *.mojom=file://ipc/SECURITY_OWNERS
 per-file *_param_traits*.*=set noparent
 per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
 
-per-file ax_language_detection*=chrishall@chromium.org
