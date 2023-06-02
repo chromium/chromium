@@ -15,7 +15,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
   var mainFrameId = TestRunner.resourceTreeModel.mainFrame.id;
   var databaseName = 'testDatabase1';
   var storageKey = 'http://127.0.0.1:8000/';
-  var databaseId = new Resources.IndexedDBModel.DatabaseId({storageKey}, databaseName);
+  var databaseId = new Resources.IndexedDBModel.DatabaseId(storageKey, databaseName);
 
   function dumpDatabase() {
     TestRunner.addResult('Dumping database:');
@@ -46,7 +46,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
     TestRunner.addResult('');
 }
 
-  step2();
+  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step2, false);
 
   function step2() {
     ApplicationTestRunner.createDatabaseWithVersion(mainFrameId, databaseName, 2147483647, step3);

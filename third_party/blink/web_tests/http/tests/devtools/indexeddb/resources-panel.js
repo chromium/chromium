@@ -93,9 +93,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
     TestRunner.deprecatedRunAfterPendingDispatches(() => TestRunner.navigate(originalURL, navigatedBack));
   }
 
-  async function navigatedBack() {
+  function navigatedBack() {
     TestRunner.addResult('Navigated back.');
-    await new Promise(resolve => setTimeout(resolve, 0));
     indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, databaseLoaded2);
     UI.panels.resources.sidebar.indexedDBListTreeElement.refreshIndexedDB();
     TestRunner.addResult('Refreshing.');

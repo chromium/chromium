@@ -27,9 +27,12 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   function waitRefreshDatabase() {
     var view = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0].view;
+    const promise = new Promise((resolve) => {
+      TestRunner.addSniffer(Resources.IDBDatabaseView.prototype, 'updatedForTests', resolve, false);
+    });
 
     view.getComponent().refreshDatabaseButtonClicked();
-    return indexedDBModel.once(Resources.IndexedDBModel.Events.DatabaseLoaded);
+    return promise;
   }
 
   function waitRefreshDatabaseRightClick() {
@@ -62,7 +65,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   ApplicationTestRunner.dumpIndexedDBTree();
 
   // Create database
-  ApplicationTestRunner.createDatabaseAsync(databaseName);
+  await ApplicationTestRunner.createDatabaseAsync(databaseName);
   await new Promise(waitDatabaseAdded);
   var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
   databaseId = idbDatabaseTreeElement.databaseId;
@@ -78,6 +81,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   // Create first objectstore
   await ApplicationTestRunner.createObjectStoreAsync(databaseName, objectStoreName1, indexName, keyPath);
   await waitRefreshDatabase();
+  await new Promise(resolve => setTimeout(resolve, 0));
   TestRunner.addResult('Created first objectstore.');
   ApplicationTestRunner.dumpIndexedDBTree();
 

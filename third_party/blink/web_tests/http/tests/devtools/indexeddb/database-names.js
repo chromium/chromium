@@ -18,17 +18,13 @@ import {ApplicationTestRunner} from 'application_test_runner';
     TestRunner.addResult('Dumping database names:');
     var storageKeys = TestRunner.storageKeyManager.storageKeys();
     var storageKey = storageKeys[0];
-    var buckets =
-        indexedDBModel.databaseNamesByStorageKeyAndBucket.get(storageKey) || [];
-    for (const [_bucketName, dbIds] of buckets) {
-      for (const dbId of dbIds) {
-        TestRunner.addResult('    ' + dbId.name);
-      }
-    }
+    var names = indexedDBModel.databaseNamesByStorageKey.get(storageKey);
+    for (let name of names || [])
+      TestRunner.addResult('    ' + name);
     TestRunner.addResult('');
- }
+  }
 
-  step2();
+  TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step2, false);
 
   function step2() {
     dumpDatabaseNames();
