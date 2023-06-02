@@ -106114,7 +106114,7 @@ Full version information for the fingerprint enum values:
   <int value="6" label="Can not get the name of extracted file"/>
   <int value="7" label="Can not create extracted file on disk"/>
   <int value="8" label="Can not write the extracted file on disk"/>
-  <int value="9" label="Can not set the extract time to file"/>
+  <int value="9" label="Can not set the extract time to file (Deprecated)"/>
   <int value="10" label="Can not close extracted file (Deprecated)"/>
   <int value="11" label="Can not create file memory mapping"/>
   <int value="12" label="File CRC mismatch"/>

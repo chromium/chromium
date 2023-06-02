@@ -245,14 +245,8 @@ bool SevenZipDelegateImpl::EntryDone(seven_zip::Result result,
 
   if (!entry.last_modified_time.is_null()) {
     FILETIME filetime = entry.last_modified_time.ToFileTime();
-    if (!SetFileTime(current_file.GetPlatformFile(), nullptr, nullptr,
-                     &filetime)) {
-      PLOG(ERROR) << "Error returned by SetFileTime";
-      // TODO(crbug/1368654): This should not be a fatal error.
-      error_code_ = ::GetLastError();
-      unpack_error_ = UNPACK_SET_FILE_TIME_ERROR;
-      return false;
-    }
+    // Make a best-effort attempt to set the file time.
+    SetFileTime(current_file.GetPlatformFile(), nullptr, nullptr, &filetime);
   }
 
   return true;
