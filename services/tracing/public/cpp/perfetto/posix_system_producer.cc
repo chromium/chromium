@@ -222,37 +222,58 @@ void PosixSystemProducer::OnConnect() {
   }
 }
 
-void PosixSystemProducer::OnDisconnect() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(GetService());
-  // Currently our data sources don't support the concept of the service
-  // disappearing and thus can't shut down cleanly (they would attempt to flush
-  // data across the broken socket). Add a CHECK to catch this if its a problem.
-  //
-  // TODO(nuskos): Fix this, make it so we cleanly shut down on IPC errors.
-  CHECK(!IsTracingActive());
-  // This PostTask is needed because we want to clean up the state AFTER the
-  // |ProducerEndpoint| has finished cleaning up.
+void PosixSystemProducer::FinishDisconnectingAndThenDelayedReconnect(
+    State previous_state) {
+  // This PostTask is needed because we want to clean up the state
+  // AFTER the |ProducerEndpoint| has finished cleaning up.
   task_runner()->GetOrCreateTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<PosixSystemProducer> weak_ptr) {
+          [](base::WeakPtr<PosixSystemProducer> weak_ptr,
+             State previous_state) {
             if (!weak_ptr) {
               return;
             }
-            if (weak_ptr->state_ == State::kConnecting) {
+            if (previous_state == State::kConnecting) {
               base::AutoLock lock(weak_ptr->lock_);
-              // We never connected, which means this disconnect is
-              // an error from connecting, which means we don't need
-              // to keep this endpoint (and associated memory around
-              // forever) this prevents the memory leak from getting
-              // excessive.
+              // We never connected, which means this disconnect
+              // is an error from connecting, which means we don't
+              // need to keep this endpoint (and associated memory
+              // around forever) this prevents the memory leak
+              // from getting excessive.
               weak_ptr->services_.erase(weak_ptr->services_.end() - 1);
             }
             weak_ptr->state_ = State::kDisconnected;
             weak_ptr->DelayedReconnect();
           },
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), previous_state));
+}
+
+void PosixSystemProducer::OnDisconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(GetService());
+  // If we never connected then we don't need to keep this service around
+  // because no one will have pointers to its non-existent SMB.
+  // We shouldn't have reentrancy.
+  if (state_ == State::kDisconnecting) {
+    return;
+  }
+  // Inform the service that no further IPCs should be accepted.
+  State old_state = state_;
+  state_ = State::kDisconnecting;
+  GetService()->Disconnect();
+
+  // If we aren't tracing then we are done just finish cleaning up the service
+  if (!IsTracingActive()) {
+    FinishDisconnectingAndThenDelayedReconnect(old_state);
+    return;
+  }
+
+  // If we are tracing then we need to get the system back into a "normal" state
+  // of no tracing.
+  for (auto* const data_source : PerfettoTracedProcess::Get()->data_sources()) {
+    StopDataSource(data_source->data_source_id());
+  }
 }
 
 void PosixSystemProducer::OnTracingSetup() {
@@ -508,6 +529,12 @@ void PosixSystemProducer::InvokeStoredOnDisconnectCallbacks() {
     std::move(callback).Run();
   }
   on_disconnect_callbacks_.clear();
+  if (state_ == State::kDisconnecting) {
+    // Since this is invoked after stopping all data sources this service was
+    // active and we were connected.
+    FinishDisconnectingAndThenDelayedReconnect(
+        /* previous_state = */ State::kConnected);
+  }
 }
 
 void PosixSystemProducer::Connect() {
@@ -531,6 +558,9 @@ void PosixSystemProducer::Connect() {
       // session but still have an open connection so just reregister
       // everything.
       OnConnect();
+      break;
+    case State::kDisconnecting:
+      // We aren't currently fully disconnected wait for the state to settle.
       break;
   }
 }
@@ -608,6 +638,7 @@ perfetto::TracingService::ProducerEndpoint* PosixSystemProducer::GetService() {
     case State::kConnecting:
     case State::kConnected:
     case State::kUnregistered:
+    case State::kDisconnecting:
       return services_.back().get();
     default:
       return nullptr;
