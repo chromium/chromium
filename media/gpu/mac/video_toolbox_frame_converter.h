@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -67,9 +68,9 @@ class VideoToolboxFrameConverter
   GetCommandBufferStubCB get_stub_cb_;
   bool initialized_ = false;
 
-  gpu::CommandBufferStub* stub_ = nullptr;
+  raw_ptr<gpu::CommandBufferStub> stub_ = nullptr;
   gpu::SequenceId wait_sequence_id_;
-  gpu::SharedImageStub* sis_ = nullptr;
+  raw_ptr<gpu::SharedImageStub> sis_ = nullptr;
   bool texture_rectangle_ = false;
 };
 
