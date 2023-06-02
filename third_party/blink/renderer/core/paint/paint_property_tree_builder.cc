@@ -2629,9 +2629,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
   if (const auto* scroll_translation = properties_->ScrollTranslation()) {
     context_.current.transform = scroll_translation;
     // See comments for ScrollTranslation in object_paint_properties.h for the
-    // reason of adding ScrollOriginInt().
+    // reason of adding ScrollOrigin().
     context_.current.paint_offset +=
-        PhysicalOffset(To<LayoutBox>(object_).ScrollOriginInt());
+        PhysicalOffset(To<LayoutBox>(object_).ScrollOrigin());
     // A scroller creates a layout shift root, so we just calculate one scroll
     // offset delta without accumulation.
     context_.current.scroll_offset_to_layout_shift_root_delta =
@@ -2664,10 +2664,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateOutOfFlowContext() {
     if (properties_->Scroll())
       context_.fixed_position.scroll = properties_->Scroll();
     if (properties_->ScrollTranslation()) {
-      // Also undo the ScrollOriginInt part in paint offset that was added when
+      // Also undo the ScrollOrigin part in paint offset that was added when
       // ScrollTranslation was updated.
       context_.fixed_position.paint_offset -=
-          PhysicalOffset(To<LayoutBox>(object_).ScrollOriginInt());
+          PhysicalOffset(To<LayoutBox>(object_).ScrollOrigin());
     }
   } else if (object_.CanContainFixedPositionObjects()) {
     context_.fixed_position = context_.current;

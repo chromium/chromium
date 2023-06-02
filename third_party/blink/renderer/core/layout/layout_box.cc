@@ -1784,9 +1784,9 @@ PhysicalOffset LayoutBox::OriginAdjustmentForScrollbars() const {
              : ComputeScrollbarsInternal(kClampToContentBox).Offset();
 }
 
-gfx::Point LayoutBox::ScrollOriginInt() const {
+gfx::Point LayoutBox::ScrollOrigin() const {
   NOT_DESTROYED();
-  return GetScrollableArea() ? GetScrollableArea()->ScrollOriginInt()
+  return GetScrollableArea() ? GetScrollableArea()->ScrollOrigin()
                              : gfx::Point();
 }
 

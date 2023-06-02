@@ -519,7 +519,7 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
     if (local_ancestor) {
       if (local_ancestor->IsScrollContainer()) {
         PhysicalOffset scroll_offset =
-            -(PhysicalOffset(local_ancestor->ScrollOriginInt()) +
+            -(PhysicalOffset(local_ancestor->ScrollOrigin()) +
               PhysicalOffset(
                   local_ancestor->PixelSnappedScrolledContentOffset()));
         intersection_rect.Move(scroll_offset);

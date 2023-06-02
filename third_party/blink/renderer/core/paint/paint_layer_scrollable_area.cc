@@ -600,12 +600,12 @@ void PaintLayerScrollableArea::EnqueueScrollEventIfNeeded() {
 }
 
 gfx::Vector2d PaintLayerScrollableArea::MinimumScrollOffsetInt() const {
-  return -ScrollOriginInt().OffsetFromOrigin();
+  return -ScrollOrigin().OffsetFromOrigin();
 }
 
 gfx::Vector2d PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
   if (!GetLayoutBox() || !GetLayoutBox()->IsScrollContainer())
-    return -ScrollOriginInt().OffsetFromOrigin();
+    return -ScrollOrigin().OffsetFromOrigin();
 
   gfx::Size content_size = ContentsSize();
 
@@ -632,7 +632,7 @@ gfx::Vector2d PaintLayerScrollableArea::MaximumScrollOffsetInt() const {
   // based on stale layout overflow data (http://crbug.com/576933).
   content_size.SetToMax(visible_size);
 
-  return -ScrollOriginInt().OffsetFromOrigin() +
+  return -ScrollOrigin().OffsetFromOrigin() +
          gfx::Vector2d(content_size.width() - visible_size.width(),
                        content_size.height() - visible_size.height());
 }
@@ -672,8 +672,7 @@ PhysicalRect PaintLayerScrollableArea::VisibleScrollSnapportRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   const ComputedStyle* style = GetLayoutBox()->Style();
   PhysicalRect layout_content_rect(LayoutContentRect(scrollbar_inclusion));
-  layout_content_rect.Move(
-      PhysicalOffset(-ScrollOriginInt().OffsetFromOrigin()));
+  layout_content_rect.Move(PhysicalOffset(-ScrollOrigin().OffsetFromOrigin()));
   NGPhysicalBoxStrut padding(
       MinimumValueForLength(style->ScrollPaddingTop(),
                             layout_content_rect.Height()),
@@ -908,12 +907,12 @@ void PaintLayerScrollableArea::UpdateScrollOrigin() {
   gfx::Point new_origin =
       ToFlooredPoint(-scrollable_overflow.offset) +
       ToFlooredVector2d(GetLayoutBox()->OriginAdjustmentForScrollbars());
-  if (new_origin != scroll_origin_int_) {
+  if (new_origin != scroll_origin_) {
     scroll_origin_changed_ = true;
     // ScrollOrigin affects paint offsets of the scrolling contents.
     GetLayoutBox()->SetSubtreeShouldCheckForPaintInvalidation();
   }
-  scroll_origin_int_ = new_origin;
+  scroll_origin_ = new_origin;
 }
 
 void PaintLayerScrollableArea::UpdateScrollDimensions() {

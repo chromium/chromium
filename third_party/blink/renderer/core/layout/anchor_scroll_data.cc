@@ -113,7 +113,7 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
       new_scroll_container_ids.push_back(scrollable_area->GetScrollElementId());
       new_accumulated_scroll_offset += scrollable_area->GetScrollOffset();
       new_accumulated_scroll_origin +=
-          scrollable_area->ScrollOriginInt().OffsetFromOrigin();
+          scrollable_area->ScrollOrigin().OffsetFromOrigin();
     }
   }
 

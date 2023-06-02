@@ -113,10 +113,10 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   if (painting_background_in_contents_space) {
     // Layout overflow, combined with the visible content size.
     auto document_rect = layout_view_.DocumentRect();
-    // DocumentRect is relative to ScrollOriginInt. Add ScrollOriginInt to let
-    // it be in the space of ContentsProperties(). See ScrollTranslation in
+    // DocumentRect is relative to ScrollOrigin. Add ScrollOrigin to let it be
+    // in the space of ContentsProperties(). See ScrollTranslation in
     // object_paint_properties.h for details.
-    document_rect.Move(PhysicalOffset(layout_view_.ScrollOriginInt()));
+    document_rect.Move(PhysicalOffset(layout_view_.ScrollOrigin()));
     background_rect.Unite(document_rect);
     background_client = &layout_view_.GetScrollableArea()
                              ->GetScrollingBackgroundDisplayItemClient();
