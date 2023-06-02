@@ -10,14 +10,18 @@
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
 
 @protocol BadgeConsumer;
-@protocol BadgeItem;
-class Browser;
 @protocol BrowserCoordinatorCommands;
+class OverlayPresenter;
+class WebStateList;
 
 // A mediator object that updates the consumer when the state of badges changes.
 @interface BadgeMediator : NSObject <BadgeDelegate>
 
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                    overlayPresenter:(OverlayPresenter*)overlayPresenter
+                         isIncognito:(BOOL)isIncognito
+    NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Stops observing all objects.

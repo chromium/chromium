@@ -213,7 +213,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self.viewController setBadgeView:self.badgeViewController.view];
   [self.badgeViewController didMoveToParentViewController:self.viewController];
   // Create BadgeMediator and set the viewController as its consumer.
-  self.badgeMediator = [[BadgeMediator alloc] initWithBrowser:self.browser];
+  OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kInfobarBanner);
+  self.badgeMediator =
+      [[BadgeMediator alloc] initWithWebStateList:self.webStateList
+                                 overlayPresenter:overlayPresenter
+                                      isIncognito:isIncognito];
   self.badgeMediator.consumer = self.badgeViewController;
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.

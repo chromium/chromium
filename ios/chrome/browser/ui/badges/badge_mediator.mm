@@ -21,8 +21,6 @@
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -87,23 +85,23 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 @implementation BadgeMediator
 
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                    overlayPresenter:(OverlayPresenter*)overlayPresenter
+                         isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
-    DCHECK(browser);
     // Create the incognito badge if `browser` is off-the-record.
-    if (browser->GetBrowserState()->IsOffTheRecord()) {
+    if (isIncognito) {
       _offTheRecordBadge =
           [[BadgeStaticItem alloc] initWithBadgeType:kBadgeTypeIncognito];
     }
     // Set up the OverlayPresenterObserver for the infobar banner presentation.
     _overlayPresenterObserver =
         std::make_unique<OverlayPresenterObserverBridge>(self);
-    _overlayPresenter =
-        OverlayPresenter::FromBrowser(browser, OverlayModality::kInfobarBanner);
+    _overlayPresenter = overlayPresenter;
     _overlayPresenter->AddObserver(_overlayPresenterObserver.get());
     // Set up the WebStateList and its observer.
-    _webStateList = browser->GetWebStateList();
+    _webStateList = webStateList;
     _webState = _webStateList->GetActiveWebState();
 
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);

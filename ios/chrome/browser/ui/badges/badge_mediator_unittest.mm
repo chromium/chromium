@@ -84,15 +84,18 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
       : badge_consumer_([[FakeBadgeConsumer alloc] init]),
         browser_state_(TestChromeBrowserState::Builder().Build()),
         browser_(std::make_unique<TestBrowser>(browser_state())) {
-    OverlayPresenter::FromBrowser(browser(), OverlayModality::kInfobarBanner)
-        ->SetPresentationContext(&overlay_presentation_context_);
-    badge_mediator_ = [[BadgeMediator alloc] initWithBrowser:browser()];
+    overlay_presenter_ = OverlayPresenter::FromBrowser(
+        browser(), OverlayModality::kInfobarBanner);
+    overlay_presenter_->SetPresentationContext(&overlay_presentation_context_);
+    badge_mediator_ =
+        [[BadgeMediator alloc] initWithWebStateList:web_state_list()
+                                   overlayPresenter:overlay_presenter_
+                                        isIncognito:is_off_the_record()];
     badge_mediator_.consumer = badge_consumer_;
   }
 
   ~BadgeMediatorTest() override {
-    OverlayPresenter::FromBrowser(browser(), OverlayModality::kInfobarBanner)
-        ->SetPresentationContext(nullptr);
+    overlay_presenter_->SetPresentationContext(nullptr);
     [badge_mediator_ disconnect];
   }
 
@@ -155,6 +158,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
   std::unique_ptr<Browser> browser_;
   FakeOverlayPresentationContext overlay_presentation_context_;
   BadgeMediator* badge_mediator_ = nil;
+  OverlayPresenter* overlay_presenter_ = nullptr;
 };
 
 // Test that the BadgeMediator responds with no displayed and fullscreen badge
@@ -268,7 +272,10 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestRestartWithInfobar) {
   badge_consumer_ = nil;
 
   badge_consumer_ = [[FakeBadgeConsumer alloc] init];
-  badge_mediator_ = [[BadgeMediator alloc] initWithBrowser:browser()];
+  badge_mediator_ =
+      [[BadgeMediator alloc] initWithWebStateList:web_state_list()
+                                 overlayPresenter:overlay_presenter_
+                                      isIncognito:is_off_the_record()];
   badge_mediator_.consumer = badge_consumer_;
   ASSERT_TRUE(badge_consumer_.displayedBadge);
   EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
