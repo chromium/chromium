@@ -13,27 +13,24 @@
 
 namespace media {
 
-NSArray<AVCaptureDevice*>* GetVideoCaptureDevices(bool use_discovery_session) {
+NSArray<AVCaptureDevice*>* GetVideoCaptureDevices() {
   NSArray<AVCaptureDevice*>* devices = nil;
   if (@available(macOS 10.15, iOS 10.0, *)) {
-    if (use_discovery_session) {
-      // Query for all camera device types available on apple platform. The
-      // others in the enum are only supported on iOS/iPadOS.
-      NSArray* captureDeviceType = @[
-        AVCaptureDeviceTypeBuiltInWideAngleCamera,
+    // Query for all camera device types available on apple platform. The
+    // others in the enum are only supported on iOS/iPadOS.
+    NSArray* captureDeviceType = @[
+      AVCaptureDeviceTypeBuiltInWideAngleCamera,
 #if BUILDFLAG(IS_MAC)
-        AVCaptureDeviceTypeExternalUnknown
+      AVCaptureDeviceTypeExternalUnknown
 #endif
-      ];
+    ];
 
-      AVCaptureDeviceDiscoverySession* deviceDiscoverySession =
-          [AVCaptureDeviceDiscoverySession
-              discoverySessionWithDeviceTypes:captureDeviceType
-                                    mediaType:AVMediaTypeVideo
-                                     position:
-                                         AVCaptureDevicePositionUnspecified];
-      devices = deviceDiscoverySession.devices;
-    }
+    AVCaptureDeviceDiscoverySession* deviceDiscoverySession =
+        [AVCaptureDeviceDiscoverySession
+            discoverySessionWithDeviceTypes:captureDeviceType
+                                  mediaType:AVMediaTypeVideo
+                                   position:AVCaptureDevicePositionUnspecified];
+    devices = deviceDiscoverySession.devices;
   }
 
 #if BUILDFLAG(IS_MAC) || (!defined(__IPHONE_10_0) || \

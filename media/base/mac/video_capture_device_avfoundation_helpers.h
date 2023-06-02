@@ -11,10 +11,8 @@
 
 namespace media {
 
-// Use an AVCaptureDeviceDiscoverySession for enumerating cameras, instead of
-// the deprecated [AVDeviceCapture devices].
-MEDIA_EXPORT NSArray<AVCaptureDevice*>* GetVideoCaptureDevices(
-    bool use_discovery_session);
+// Enumerate available cameras.
+MEDIA_EXPORT NSArray<AVCaptureDevice*>* GetVideoCaptureDevices();
 
 }  // namespace media
 

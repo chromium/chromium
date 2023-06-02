@@ -53,8 +53,7 @@ GetVideoCaptureDeviceNames() {
   NSMutableDictionary<NSString*, DeviceNameAndTransportType*>* device_names =
       [[NSMutableDictionary alloc] init];
 
-  NSArray<AVCaptureDevice*>* devices = GetVideoCaptureDevices(
-      base::FeatureList::IsEnabled(media::kUseAVCaptureDeviceDiscoverySession));
+  NSArray<AVCaptureDevice*>* devices = GetVideoCaptureDevices();
 
   for (AVCaptureDevice* device in devices) {
     if ([device hasMediaType:AVMediaTypeVideo] ||

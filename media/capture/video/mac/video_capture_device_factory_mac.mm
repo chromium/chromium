@@ -42,8 +42,7 @@ media::VideoCaptureFormats GetDeviceSupportedFormats(
     const media::VideoCaptureDeviceDescriptor& descriptor) {
   media::VideoCaptureFormats formats;
 
-  NSArray<AVCaptureDevice*>* devices = media::GetVideoCaptureDevices(
-      base::FeatureList::IsEnabled(media::kUseAVCaptureDeviceDiscoverySession));
+  NSArray<AVCaptureDevice*>* devices = media::GetVideoCaptureDevices();
 
   AVCaptureDevice* device = nil;
   for (device in devices) {
