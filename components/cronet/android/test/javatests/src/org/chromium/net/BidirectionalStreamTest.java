@@ -54,29 +54,24 @@ public class BidirectionalStreamTest {
     private static final String TAG = BidirectionalStreamTest.class.getSimpleName();
 
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private ExperimentalCronetEngine mCronetEngine;
 
     @Before
     public void setUp() throws Exception {
-        // Load library first to create MockCertVerifier.
-        System.loadLibrary("cronet_tests");
-        ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
-        CronetTestUtil.setMockCertVerifierForTesting(
-                builder, QuicTestServer.createMockCertVerifier());
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder)
+                        -> CronetTestUtil.setMockCertVerifierForTesting(
+                                builder, QuicTestServer.createMockCertVerifier()));
 
-        mCronetEngine = builder.build();
+        mCronetEngine = mTestRule.getTestFramework().startEngine();
         assertTrue(Http2TestServer.startHttp2TestServer(getContext()));
     }
 
     @After
     public void tearDown() throws Exception {
         assertTrue(Http2TestServer.shutdownHttp2TestServer());
-        if (mCronetEngine != null) {
-            mCronetEngine.shutdown();
-        }
     }
 
     private static void checkResponseInfo(UrlResponseInfo responseInfo, String expectedUrl,
@@ -139,37 +134,38 @@ public class BidirectionalStreamTest {
     @Test
     @SmallTest
     public void testBuilderCheck() throws Exception {
+        ExperimentalCronetEngine engine = mTestRule.getTestFramework().getEngine();
         if (mTestRule.testingJavaImpl()) {
-            runBuilderCheckJavaImpl();
+            runBuilderCheckJavaImpl(engine);
         } else {
-            runBuilderCheckNativeImpl();
+            runBuilderCheckNativeImpl(engine);
         }
     }
 
-    private void runBuilderCheckNativeImpl() throws Exception {
+    private static void runBuilderCheckNativeImpl(ExperimentalCronetEngine engine)
+            throws Exception {
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         try {
-            mCronetEngine.newBidirectionalStreamBuilder(null, callback, callback.getExecutor());
+            engine.newBidirectionalStreamBuilder(null, callback, callback.getExecutor());
             fail("URL not null-checked");
         } catch (NullPointerException e) {
             assertThat(e).hasMessageThat().isEqualTo("URL is required.");
         }
         try {
-            mCronetEngine.newBidirectionalStreamBuilder(
+            engine.newBidirectionalStreamBuilder(
                     Http2TestServer.getServerUrl(), null, callback.getExecutor());
             fail("Callback not null-checked");
         } catch (NullPointerException e) {
             assertThat(e).hasMessageThat().isEqualTo("Callback is required.");
         }
         try {
-            mCronetEngine.newBidirectionalStreamBuilder(
-                    Http2TestServer.getServerUrl(), callback, null);
+            engine.newBidirectionalStreamBuilder(Http2TestServer.getServerUrl(), callback, null);
             fail("Executor not null-checked");
         } catch (NullPointerException e) {
             assertThat(e).hasMessageThat().isEqualTo("Executor is required.");
         }
         // Verify successful creation doesn't throw.
-        BidirectionalStream.Builder builder = mCronetEngine.newBidirectionalStreamBuilder(
+        BidirectionalStream.Builder builder = engine.newBidirectionalStreamBuilder(
                 Http2TestServer.getServerUrl(), callback, callback.getExecutor());
         try {
             builder.addHeader(null, "value");
@@ -191,13 +187,11 @@ public class BidirectionalStreamTest {
         }
     }
 
-    private void runBuilderCheckJavaImpl() {
+    private void runBuilderCheckJavaImpl(ExperimentalCronetEngine engine) {
         try {
             TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
-            CronetTestRule.createJavaEngineBuilder(CronetTestRule.getContext())
-                    .build()
-                    .newBidirectionalStreamBuilder(
-                            Http2TestServer.getServerUrl(), callback, callback.getExecutor());
+            engine.newBidirectionalStreamBuilder(
+                    Http2TestServer.getServerUrl(), callback, callback.getExecutor());
             fail("JavaCronetEngine doesn't support BidirectionalStream."
                     + " Expected UnsupportedOperationException");
         } catch (UnsupportedOperationException e) {

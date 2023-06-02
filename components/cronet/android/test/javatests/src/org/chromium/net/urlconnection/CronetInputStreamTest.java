@@ -9,12 +9,10 @@ import static com.google.common.truth.Truth.assertThat;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.net.CronetTestRule;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -24,9 +22,6 @@ import java.util.concurrent.Callable;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 public class CronetInputStreamTest {
-    @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
-
     // public to squelch lint warning about naming
     public CronetInputStream underTest;
 

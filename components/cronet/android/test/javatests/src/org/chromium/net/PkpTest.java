@@ -50,7 +50,7 @@ public class PkpTest {
     private static final boolean DISABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS = false;
 
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private CronetEngine mCronetEngine;
     private ExperimentalCronetEngine.Builder mBuilder;
@@ -407,7 +407,7 @@ public class PkpTest {
     private void createCronetEngineBuilder(boolean bypassPinningForLocalAnchors, boolean knownRoot)
             throws Exception {
         // Set common CronetEngine parameters
-        mBuilder = new ExperimentalCronetEngine.Builder(getContext());
+        mBuilder = mTestRule.getTestFramework().createNewSecondaryBuilder(getContext());
         mBuilder.enablePublicKeyPinningBypassForLocalTrustAnchors(bypassPinningForLocalAnchors);
         JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
         JSONObject experimentalOptions = new JSONObject()

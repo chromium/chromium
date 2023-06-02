@@ -19,7 +19,6 @@ import androidx.test.filters.SmallTest;
 
 import com.google.common.truth.Correspondence;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -32,15 +31,11 @@ import java.util.List;
  */
 @RunWith(AndroidJUnit4.class)
 public class CronetEngineBuilderTest {
-    @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
-
     /**
      * Tests the comparison of two strings that contain versions.
      */
     @Test
     @SmallTest
-    @CronetTestRule.OnlyRunNativeCronet
     public void testVersionComparison() {
         assertVersionIsHigher("22.44", "22.43.12");
         assertVersionIsLower("22.43.12", "022.124");

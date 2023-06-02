@@ -47,7 +47,7 @@ public class NQETest {
     private static final String TAG = NQETest.class.getSimpleName();
 
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private EmbeddedTestServer mTestServer;
     private String mUrl;
@@ -93,9 +93,7 @@ public class NQETest {
     @SmallTest
     @OnlyRunNativeCronet
     public void testNotEnabled() throws Exception {
-        ExperimentalCronetEngine.Builder cronetEngineBuilder =
-                new ExperimentalCronetEngine.Builder(getContext());
-        final ExperimentalCronetEngine cronetEngine = cronetEngineBuilder.build();
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         Executor networkQualityExecutor = Executors.newSingleThreadExecutor();
         TestNetworkQualityRttListener rttListener =
                 new TestNetworkQualityRttListener(networkQualityExecutor);
@@ -120,20 +118,20 @@ public class NQETest {
         callback.blockForDone();
         assertThat(rttListener.rttObservationCount()).isEqualTo(0);
         assertThat(throughputListener.throughputObservationCount()).isEqualTo(0);
-        cronetEngine.shutdown();
     }
 
     @Test
     @SmallTest
     @OnlyRunNativeCronet
     public void testListenerRemoved() throws Exception {
-        ExperimentalCronetEngine.Builder cronetEngineBuilder =
-                new ExperimentalCronetEngine.Builder(getContext());
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder) -> builder.enableNetworkQualityEstimator(true));
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
+
         TestExecutor networkQualityExecutor = new TestExecutor();
         TestNetworkQualityRttListener rttListener =
                 new TestNetworkQualityRttListener(networkQualityExecutor);
-        cronetEngineBuilder.enableNetworkQualityEstimator(true);
-        final ExperimentalCronetEngine cronetEngine = cronetEngineBuilder.build();
+
         cronetEngine.configureNetworkQualityEstimatorForTesting(true, true, false);
 
         cronetEngine.addRttListener(rttListener);
@@ -146,7 +144,6 @@ public class NQETest {
         callback.blockForDone();
         networkQualityExecutor.runAllTasks();
         assertThat(rttListener.rttObservationCount()).isEqualTo(0);
-        cronetEngine.shutdown();
     }
 
     // Returns whether a file contains a particular string.
@@ -175,27 +172,29 @@ public class NQETest {
                                          .expectIntRecord("NQE.Prefs.ReadCount", 1)
                                          .allowExtraRecordsForHistogramsAbove()
                                          .build();
-        ExperimentalCronetEngine.Builder cronetEngineBuilder =
-                new ExperimentalCronetEngine.Builder(getContext());
         assertThat(RttThroughputValues.INVALID_RTT_THROUGHPUT).isLessThan(0);
         Executor listenersExecutor = Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
         TestNetworkQualityRttListener rttListener =
                 new TestNetworkQualityRttListener(listenersExecutor);
         TestNetworkQualityThroughputListener throughputListener =
                 new TestNetworkQualityThroughputListener(listenersExecutor);
-        cronetEngineBuilder.enableNetworkQualityEstimator(true).enableHttp2(true).enableQuic(false);
+        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+            builder.enableNetworkQualityEstimator(true).enableHttp2(true).enableQuic(false);
 
-        // The pref may not be written if the computed Effective Connection Type (ECT) matches the
-        // default ECT for the current connection type. Force the ECT to "Slow-2G". Since "Slow-2G"
-        // is not the default ECT for any connection type, this ensures that the pref is written to.
-        JSONObject nqeOptions = new JSONObject().put("force_effective_connection_type", "Slow-2G");
-        JSONObject experimentalOptions =
-                new JSONObject().put("NetworkQualityEstimator", nqeOptions);
+            // The pref may not be written if the computed Effective Connection Type (ECT) matches
+            // the default ECT for the current connection type. Force the ECT to "Slow-2G". Since
+            // "Slow-2G" is not the default ECT for any connection type, this ensures that the pref
+            // is written to.
+            JSONObject nqeOptions =
+                    new JSONObject().put("force_effective_connection_type", "Slow-2G");
+            JSONObject experimentalOptions =
+                    new JSONObject().put("NetworkQualityEstimator", nqeOptions);
 
-        cronetEngineBuilder.setExperimentalOptions(experimentalOptions.toString());
+            builder.setExperimentalOptions(experimentalOptions.toString());
+            builder.setStoragePath(getTestStorage(getContext()));
+        });
 
-        cronetEngineBuilder.setStoragePath(getTestStorage(getContext()));
-        final ExperimentalCronetEngine cronetEngine = cronetEngineBuilder.build();
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         cronetEngine.configureNetworkQualityEstimatorForTesting(true, true, true);
 
         cronetEngine.addRttListener(rttListener);
@@ -240,8 +239,8 @@ public class NQETest {
 
         // Verify that effective connection type callback is received and
         // effective connection type is correctly set.
-        assertThat(cronetEngine.getEffectiveConnectionType())
-                .isNotEqualTo(EffectiveConnectionType.TYPE_UNKNOWN);
+        assertTrue(
+                cronetEngine.getEffectiveConnectionType() != EffectiveConnectionType.TYPE_UNKNOWN);
 
         // Verify that the HTTP RTT, transport RTT and downstream throughput
         // estimates are available.
@@ -353,8 +352,8 @@ public class NQETest {
 
             // Verify that effective connection type callback is received and
             // effective connection type is correctly set.
-            assertThat(cronetEngine.getEffectiveConnectionType())
-                    .isNotEqualTo(EffectiveConnectionType.TYPE_UNKNOWN);
+            assertTrue(cronetEngine.getEffectiveConnectionType()
+                    != EffectiveConnectionType.TYPE_UNKNOWN);
 
             cronetEngine.shutdown();
 
@@ -374,26 +373,29 @@ public class NQETest {
     @SmallTest
     @OnlyRunNativeCronet
     public void testQuicDisabledWithParams() throws Exception {
-        ExperimentalCronetEngine.Builder cronetEngineBuilder =
-                new ExperimentalCronetEngine.Builder(getContext());
         Executor listenersExecutor = Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
         TestNetworkQualityRttListener rttListener =
                 new TestNetworkQualityRttListener(listenersExecutor);
         TestNetworkQualityThroughputListener throughputListener =
                 new TestNetworkQualityThroughputListener(listenersExecutor);
 
-        // Force the effective connection type to "2G".
-        JSONObject nqeOptions = new JSONObject().put("force_effective_connection_type", "Slow-2G");
-        // Add one more extra param two times to ensure robustness.
-        nqeOptions.put("some_other_param_1", "value1");
-        nqeOptions.put("some_other_param_2", "value2");
-        JSONObject experimentalOptions =
-                new JSONObject().put("NetworkQualityEstimator", nqeOptions);
-        experimentalOptions.put("SomeOtherFieldTrialName", new JSONObject());
+        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+            // Force the effective connection type to "2G".
+            JSONObject nqeOptions =
+                    new JSONObject().put("force_effective_connection_type", "Slow-2G");
+            // Add one more extra param two times to ensure robustness.
+            nqeOptions.put("some_other_param_1", "value1");
+            nqeOptions.put("some_other_param_2", "value2");
+            JSONObject experimentalOptions =
+                    new JSONObject().put("NetworkQualityEstimator", nqeOptions);
+            experimentalOptions.put("SomeOtherFieldTrialName", new JSONObject());
 
-        cronetEngineBuilder.enableNetworkQualityEstimator(true).enableHttp2(true).enableQuic(false);
-        cronetEngineBuilder.setExperimentalOptions(experimentalOptions.toString());
-        final ExperimentalCronetEngine cronetEngine = cronetEngineBuilder.build();
+            builder.enableNetworkQualityEstimator(true).enableHttp2(true).enableQuic(false);
+            builder.setExperimentalOptions(experimentalOptions.toString());
+        });
+
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
+
         cronetEngine.configureNetworkQualityEstimatorForTesting(true, true, false);
 
         cronetEngine.addRttListener(rttListener);
@@ -438,7 +440,5 @@ public class NQETest {
         // from Cronet embedders were correctly read by NetworkQualityEstimator.
         assertThat(cronetEngine.getEffectiveConnectionType())
                 .isEqualTo(EffectiveConnectionType.TYPE_SLOW_2G);
-
-        cronetEngine.shutdown();
     }
 }

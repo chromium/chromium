@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.net.CallbackException;
 import org.chromium.net.CronetTestRule;
-import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.NativeTestServer;
 import org.chromium.net.TestUrlRequestCallback;
@@ -45,13 +44,11 @@ public class UploadDataProvidersTest {
             + "Proin elementum, libero laoreet fringilla faucibus, metus tortor vehicula ante, "
             + "lacinia lorem eros vel sapien.";
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
-    private CronetTestFramework mTestFramework;
+    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
     private File mFile;
 
     @Before
     public void setUp() throws Exception {
-        mTestFramework = mTestRule.startCronetTestFramework();
         assertTrue(NativeTestServer.startNativeTestServer(getContext()));
         // Add url interceptors after native application context is initialized.
         mFile = new File(getContext().getCacheDir().getPath() + "/tmpfile");
@@ -66,7 +63,6 @@ public class UploadDataProvidersTest {
     @After
     public void tearDown() throws Exception {
         NativeTestServer.shutdownNativeTestServer();
-        mTestFramework.mCronetEngine.shutdown();
         assertTrue(mFile.delete());
     }
 
@@ -74,7 +70,7 @@ public class UploadDataProvidersTest {
     @SmallTest
     public void testFileProvider() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
         UploadDataProvider dataProvider = UploadDataProviders.create(mFile);
         builder.setUploadDataProvider(dataProvider, callback.getExecutor());
@@ -92,7 +88,7 @@ public class UploadDataProvidersTest {
                 ParcelFileDescriptor.open(mFile, ParcelFileDescriptor.MODE_READ_ONLY);
         assertTrue(descriptor.getFileDescriptor().valid());
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
         UploadDataProvider dataProvider = UploadDataProviders.create(descriptor);
         builder.setUploadDataProvider(dataProvider, callback.getExecutor());
@@ -107,7 +103,7 @@ public class UploadDataProvidersTest {
     @SmallTest
     public void testBadFileDescriptorProvider() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
         ParcelFileDescriptor[] pipe = ParcelFileDescriptor.createPipe();
         try {
@@ -127,7 +123,7 @@ public class UploadDataProvidersTest {
     @SmallTest
     public void testBufferProvider() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
         UploadDataProvider dataProvider = UploadDataProviders.create(LOREM.getBytes("UTF-8"));
         builder.setUploadDataProvider(dataProvider, callback.getExecutor());
@@ -145,7 +141,7 @@ public class UploadDataProvidersTest {
     // Tests that ByteBuffer's limit cannot be changed by the caller.
     public void testUploadChangeBufferLimit() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
         builder.addHeader("Content-Type", "useless/string");
         builder.setUploadDataProvider(new UploadDataProvider() {
@@ -189,7 +185,7 @@ public class UploadDataProvidersTest {
     @SmallTest
     public void testNoErrorWhenCanceledDuringStart() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
         final ConditionVariable first = new ConditionVariable();
         final ConditionVariable second = new ConditionVariable();
@@ -222,7 +218,7 @@ public class UploadDataProvidersTest {
     @SmallTest
     public void testNoErrorWhenExceptionDuringStart() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
         final ConditionVariable first = new ConditionVariable();
         final String exceptionMessage = "Bad Length";
@@ -260,7 +256,7 @@ public class UploadDataProvidersTest {
     public void testCreateByteBufferUploadWithArrayOffset() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         // This URL will trigger a rewind().
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getRedirectToEchoBody(), callback, callback.getExecutor());
         builder.addHeader("Content-Type", "useless/string");
         byte[] uploadData = LOREM.getBytes("UTF-8");

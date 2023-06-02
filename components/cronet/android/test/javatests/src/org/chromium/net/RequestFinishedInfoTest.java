@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
@@ -43,9 +42,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(AndroidJUnit4.class)
 public class RequestFinishedInfoTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
-    CronetTestFramework mTestFramework;
     private EmbeddedTestServer mTestServer;
     private String mUrl;
 
@@ -72,12 +70,10 @@ public class RequestFinishedInfoTest {
     public void setUp() throws Exception {
         mTestServer = EmbeddedTestServer.createAndStartServer(getContext());
         mUrl = mTestServer.getURL("/echo?status=200");
-        mTestFramework = mTestRule.startCronetTestFramework();
     }
 
     @After
     public void tearDown() throws Exception {
-        mTestFramework.mCronetEngine.shutdown();
         mTestServer.stopAndDestroyServer();
     }
 
@@ -118,11 +114,13 @@ public class RequestFinishedInfoTest {
     @SuppressWarnings("deprecation")
     public void testRequestFinishedListener() throws Exception {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         ExperimentalUrlRequest.Builder urlRequestBuilder =
-                (ExperimentalUrlRequest.Builder) mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                        mUrl, callback, callback.getExecutor());
+                (ExperimentalUrlRequest.Builder) mTestRule.getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         Date startTime = new Date();
         urlRequestBuilder.addRequestAnnotation("request annotation")
                 .addRequestAnnotation(this)
@@ -147,11 +145,13 @@ public class RequestFinishedInfoTest {
         DirectExecutor testExecutor = new DirectExecutor();
         TestRequestFinishedListener requestFinishedListener =
                 new TestRequestFinishedListener(testExecutor);
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         ExperimentalUrlRequest.Builder urlRequestBuilder =
-                (ExperimentalUrlRequest.Builder) mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                        mUrl, callback, callback.getExecutor());
+                (ExperimentalUrlRequest.Builder) mTestRule.getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         Date startTime = new Date();
         urlRequestBuilder.addRequestAnnotation("request annotation")
                 .addRequestAnnotation(this)
@@ -177,12 +177,13 @@ public class RequestFinishedInfoTest {
     public void testRequestFinishedListenerDifferentThreads() throws Exception {
         TestRequestFinishedListener firstListener = new TestRequestFinishedListener();
         TestRequestFinishedListener secondListener = new TestRequestFinishedListener();
-        mTestFramework.mCronetEngine.addRequestFinishedListener(firstListener);
-        mTestFramework.mCronetEngine.addRequestFinishedListener(secondListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(firstListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(secondListener);
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         ExperimentalUrlRequest.Builder urlRequestBuilder =
-                (ExperimentalUrlRequest.Builder) mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                        mUrl, callback, callback.getExecutor());
+                (ExperimentalUrlRequest.Builder) mTestRule.getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         Date startTime = new Date();
         urlRequestBuilder.addRequestAnnotation("request annotation")
                 .addRequestAnnotation(this)
@@ -217,10 +218,12 @@ public class RequestFinishedInfoTest {
     public void testRequestFinishedListenerFailedRequest() throws Exception {
         String connectionRefusedUrl = "http://127.0.0.1:3";
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder urlRequestBuilder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                connectionRefusedUrl, callback, callback.getExecutor());
+        UrlRequest.Builder urlRequestBuilder =
+                mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                        connectionRefusedUrl, callback, callback.getExecutor());
         Date startTime = new Date();
         urlRequestBuilder.build().start();
         callback.blockForDone();
@@ -265,11 +268,14 @@ public class RequestFinishedInfoTest {
     @OnlyRunNativeCronet
     public void testRequestFinishedListenerThrowInTerminalCallback() throws Exception {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setFailure(TestUrlRequestCallback.FailureType.THROW_SYNC,
                 TestUrlRequestCallback.ResponseStep.ON_SUCCEEDED);
-        mTestFramework.mCronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor())
+        mTestRule.getTestFramework()
+                .getEngine()
+                .newUrlRequestBuilder(mUrl, callback, callback.getExecutor())
                 .build()
                 .start();
         callback.blockForDone();
@@ -283,7 +289,9 @@ public class RequestFinishedInfoTest {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         requestFinishedListener.makeListenerThrow();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        mTestFramework.mCronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor())
+        mTestRule.getTestFramework()
+                .getEngine()
+                .newUrlRequestBuilder(mUrl, callback, callback.getExecutor())
                 .setRequestFinishedListener(requestFinishedListener)
                 .build()
                 .start();
@@ -298,9 +306,12 @@ public class RequestFinishedInfoTest {
     public void testRequestFinishedListenerThrowInEngineListener() throws Exception {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         requestFinishedListener.makeListenerThrow();
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        mTestFramework.mCronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor())
+        mTestRule.getTestFramework()
+                .getEngine()
+                .newUrlRequestBuilder(mUrl, callback, callback.getExecutor())
                 .build()
                 .start();
         callback.blockForDone();
@@ -316,12 +327,15 @@ public class RequestFinishedInfoTest {
         TestExecutor testExecutor = new TestExecutor();
         TestRequestFinishedListener requestFinishedListener =
                 new TestRequestFinishedListener(testExecutor);
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder urlRequestBuilder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                mUrl, callback, callback.getExecutor());
+        UrlRequest.Builder urlRequestBuilder =
+                mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                        mUrl, callback, callback.getExecutor());
         UrlRequest request = urlRequestBuilder.build();
-        mTestFramework.mCronetEngine.removeRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().removeRequestFinishedListener(
+                requestFinishedListener);
         request.start();
         callback.blockForDone();
         testExecutor.runAllTasks();
@@ -336,7 +350,8 @@ public class RequestFinishedInfoTest {
     @OnlyRunNativeCronet
     public void testRequestFinishedListenerCanceledRequest() throws Exception {
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
         TestUrlRequestCallback callback = new TestUrlRequestCallback() {
             @Override
             public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
@@ -345,7 +360,7 @@ public class RequestFinishedInfoTest {
             }
         };
         ExperimentalUrlRequest.Builder urlRequestBuilder =
-                mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                         mUrl, callback, callback.getExecutor());
         Date startTime = new Date();
         urlRequestBuilder.addRequestAnnotation("request annotation")
@@ -381,10 +396,11 @@ public class RequestFinishedInfoTest {
         Executor executor = new RejectAllTasksExecutor();
         TestRequestFinishedListener requestFinishedListener =
                 new TestRequestFinishedListener(executor);
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         ExperimentalUrlRequest.Builder urlRequestBuilder =
-                mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                         mUrl, callback, callback.getExecutor());
         // Empty headers are invalid and will cause start() to throw an exception.
         UrlRequest request = urlRequestBuilder.addHeader("", "").build();
@@ -444,10 +460,12 @@ public class RequestFinishedInfoTest {
         final TestUrlRequestCallback callback = new TestUrlRequestCallback();
         TestRequestFinishedListener requestFinishedListener =
                 new AssertCallbackDoneRequestFinishedListener(callback);
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
         ExperimentalUrlRequest.Builder urlRequestBuilder =
-                (ExperimentalUrlRequest.Builder) mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                        mUrl, callback, callback.getExecutor());
+                (ExperimentalUrlRequest.Builder) mTestRule.getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         Date startTime = new Date();
         urlRequestBuilder.addRequestAnnotation("request annotation")
                 .addRequestAnnotation(this)
@@ -482,8 +500,9 @@ public class RequestFinishedInfoTest {
         TestRequestFinishedListener requestFinishedListener =
                 new AssertCallbackDoneRequestFinishedListener(callback);
         ExperimentalUrlRequest.Builder urlRequestBuilder =
-                (ExperimentalUrlRequest.Builder) mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                        mUrl, callback, callback.getExecutor());
+                (ExperimentalUrlRequest.Builder) mTestRule.getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(mUrl, callback, callback.getExecutor());
         Date startTime = new Date();
         urlRequestBuilder.addRequestAnnotation(requestAnnotation)
                 .setRequestFinishedListener(requestFinishedListener)
@@ -514,9 +533,11 @@ public class RequestFinishedInfoTest {
         };
         TestRequestFinishedListener requestFinishedListener =
                 new AssertCallbackDoneRequestFinishedListener(callback);
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
-        UrlRequest.Builder urlRequestBuilder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                mUrl, callback, callback.getExecutor());
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
+        UrlRequest.Builder urlRequestBuilder =
+                mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                        mUrl, callback, callback.getExecutor());
         urlRequestBuilder.build().start();
         callback.blockForDone();
         assertTrue(callback.mOnErrorCalled);
@@ -546,9 +567,11 @@ public class RequestFinishedInfoTest {
         final TestUrlRequestCallback callback = new TestUrlRequestCallback();
         TestRequestFinishedListener requestFinishedListener =
                 new AssertCallbackDoneRequestFinishedListener(callback);
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
-        UrlRequest.Builder urlRequestBuilder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
-                connectionRefusedUrl, callback, callback.getExecutor());
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
+        UrlRequest.Builder urlRequestBuilder =
+                mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
+                        connectionRefusedUrl, callback, callback.getExecutor());
         urlRequestBuilder.build().start();
         callback.blockForDone();
         assertTrue(callback.mOnErrorCalled);
@@ -583,9 +606,10 @@ public class RequestFinishedInfoTest {
 
         TestRequestFinishedListener requestFinishedListener =
                 new AssertCallbackDoneRequestFinishedListener(callback);
-        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        mTestRule.getTestFramework().getEngine().addRequestFinishedListener(
+                requestFinishedListener);
         ExperimentalUrlRequest.Builder urlRequestBuilder =
-                mTestFramework.mCronetEngine.newUrlRequestBuilder(
+                mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                         mUrl, callback, callback.getExecutor());
         Date startTime = new Date();
         urlRequestBuilder.addRequestAnnotation("request annotation")

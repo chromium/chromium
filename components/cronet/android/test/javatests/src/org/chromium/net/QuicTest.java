@@ -36,10 +36,9 @@ import java.util.concurrent.Executors;
 @RunWith(AndroidJUnit4.class)
 public class QuicTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private static final String TAG = QuicTest.class.getSimpleName();
-    private ExperimentalCronetEngine.Builder mBuilder;
 
     @Before
     public void setUp() throws Exception {
@@ -47,34 +46,38 @@ public class QuicTest {
         System.loadLibrary("cronet_tests");
         QuicTestServer.startQuicTestServer(getContext());
 
-        mBuilder = new ExperimentalCronetEngine.Builder(getContext());
-        mBuilder.enableNetworkQualityEstimator(true).enableQuic(true);
-        mBuilder.addQuicHint(QuicTestServer.getServerHost(), QuicTestServer.getServerPort(),
-                QuicTestServer.getServerPort());
+        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+            builder.enableNetworkQualityEstimator(true).enableQuic(true);
+            builder.addQuicHint(QuicTestServer.getServerHost(), QuicTestServer.getServerPort(),
+                    QuicTestServer.getServerPort());
 
-        // The pref may not be written if the computed Effective Connection Type (ECT) matches the
-        // default ECT for the current connection type. Force the ECT to "Slow-2G". Since "Slow-2G"
-        // is not the default ECT for any connection type, this ensures that the pref is written to.
-        JSONObject nqeParams = new JSONObject().put("force_effective_connection_type", "Slow-2G");
+            // The pref may not be written if the computed Effective Connection Type (ECT) matches
+            // the default ECT for the current connection type. Force the ECT to "Slow-2G". Since
+            // "Slow-2G" is not the default ECT for any connection type, this ensures that the pref
+            // is written to.
+            JSONObject nqeParams =
+                    new JSONObject().put("force_effective_connection_type", "Slow-2G");
 
-        // TODO(mgersh): Enable connection migration once it works, see http://crbug.com/634910
-        JSONObject quicParams = new JSONObject()
-                                        .put("connection_options", "PACE,IW10,FOO,DEADBEEF")
-                                        .put("max_server_configs_stored_in_properties", 2)
-                                        .put("idle_connection_timeout_seconds", 300)
-                                        .put("migrate_sessions_on_network_change_v2", false)
-                                        .put("migrate_sessions_early_v2", false)
-                                        .put("race_cert_verification", true);
-        JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
-        JSONObject experimentalOptions = new JSONObject()
-                                                 .put("QUIC", quicParams)
-                                                 .put("HostResolverRules", hostResolverParams)
-                                                 .put("NetworkQualityEstimator", nqeParams);
-        mBuilder.setExperimentalOptions(experimentalOptions.toString());
-        mBuilder.setStoragePath(getTestStorage(getContext()));
-        mBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, 1000 * 1024);
-        CronetTestUtil.setMockCertVerifierForTesting(
-                mBuilder, QuicTestServer.createMockCertVerifier());
+            // TODO(mgersh): Enable connection migration once it works, see http://crbug.com/634910
+            JSONObject quicParams = new JSONObject()
+                                            .put("connection_options", "PACE,IW10,FOO,DEADBEEF")
+                                            .put("max_server_configs_stored_in_properties", 2)
+                                            .put("idle_connection_timeout_seconds", 300)
+                                            .put("migrate_sessions_on_network_change_v2", false)
+                                            .put("migrate_sessions_early_v2", false)
+                                            .put("race_cert_verification", true);
+            JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
+            JSONObject experimentalOptions = new JSONObject()
+                                                     .put("QUIC", quicParams)
+                                                     .put("HostResolverRules", hostResolverParams)
+                                                     .put("NetworkQualityEstimator", nqeParams);
+            builder.setExperimentalOptions(experimentalOptions.toString());
+            builder.setStoragePath(getTestStorage(getContext()));
+            builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, 1000 * 1024);
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    builder, QuicTestServer.createMockCertVerifier());
+        });
+        mTestRule.getTestFramework().startEngine();
     }
 
     @After
@@ -86,7 +89,7 @@ public class QuicTest {
     @LargeTest
     @OnlyRunNativeCronet
     public void testQuicLoadUrl() throws Exception {
-        ExperimentalCronetEngine cronetEngine = mBuilder.build();
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         String quicURL = QuicTestServer.getServerURL() + "/simple.txt";
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
 
@@ -158,7 +161,7 @@ public class QuicTest {
     @OnlyRunNativeCronet
     @SuppressWarnings("deprecation")
     public void testNQEWithQuic() throws Exception {
-        ExperimentalCronetEngine cronetEngine = mBuilder.build();
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         String quicURL = QuicTestServer.getServerURL() + "/simple.txt";
 
         TestNetworkQualityRttListener rttListener =
@@ -224,7 +227,7 @@ public class QuicTest {
     @SmallTest
     @OnlyRunNativeCronet
     public void testMetricsWithQuic() throws Exception {
-        ExperimentalCronetEngine cronetEngine = mBuilder.build();
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().getEngine();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
         cronetEngine.addRequestFinishedListener(requestFinishedListener);
 

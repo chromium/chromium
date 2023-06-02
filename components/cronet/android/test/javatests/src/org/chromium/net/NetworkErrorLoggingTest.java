@@ -27,9 +27,7 @@ import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 @RunWith(AndroidJUnit4.class)
 public class NetworkErrorLoggingTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
-
-    private CronetEngine mCronetEngine;
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     @Before
     public void setUp() throws Exception {
@@ -39,24 +37,22 @@ public class NetworkErrorLoggingTest {
     @After
     public void tearDown() throws Exception {
         assertTrue(Http2TestServer.shutdownHttp2TestServer());
-        if (mCronetEngine != null) {
-            mCronetEngine.shutdown();
-        }
     }
 
     @Test
     @SmallTest
     @OnlyRunNativeCronet
     public void testManualReportUpload() throws Exception {
-        ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
-        CronetTestUtil.setMockCertVerifierForTesting(
-                builder, QuicTestServer.createMockCertVerifier());
-        mCronetEngine = builder.build();
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder)
+                        -> CronetTestUtil.setMockCertVerifierForTesting(
+                                builder, QuicTestServer.createMockCertVerifier()));
+
         String url = Http2TestServer.getReportingCollectorUrl();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
-                mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
+                mTestRule.getTestFramework().startEngine().newUrlRequestBuilder(
+                        url, callback, callback.getExecutor());
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
                 TestUploadDataProvider.SuccessCallbackMode.SYNC, callback.getExecutor());
         dataProvider.addRead("[{\"type\": \"test_report\"}]".getBytes());
@@ -74,16 +70,16 @@ public class NetworkErrorLoggingTest {
     @SmallTest
     @OnlyRunNativeCronet
     public void testUploadNELReportsFromHeaders() throws Exception {
-        ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
-        builder.setExperimentalOptions("{\"NetworkErrorLogging\": {\"enable\": true}}");
-        CronetTestUtil.setMockCertVerifierForTesting(
-                builder, QuicTestServer.createMockCertVerifier());
-        mCronetEngine = builder.build();
+        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+            builder.setExperimentalOptions("{\"NetworkErrorLogging\": {\"enable\": true}}");
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    builder, QuicTestServer.createMockCertVerifier());
+        });
         String url = Http2TestServer.getSuccessWithNELHeadersUrl();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
-                mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
+                mTestRule.getTestFramework().startEngine().newUrlRequestBuilder(
+                        url, callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
@@ -109,43 +105,44 @@ public class NetworkErrorLoggingTest {
     @SmallTest
     @OnlyRunNativeCronet
     public void testUploadNELReportsFromPreloadedPolicy() throws Exception {
-        ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
-        String serverOrigin = Http2TestServer.getServerUrl();
-        String collectorUrl = Http2TestServer.getReportingCollectorUrl();
-        builder.setExperimentalOptions(""
-                + "{\"NetworkErrorLogging\": {"
-                + "  \"enable\": true,"
-                + "  \"preloaded_report_to_headers\": ["
-                + "    {"
-                + "      \"origin\": \"" + serverOrigin + "\","
-                + "      \"value\": {"
-                + "        \"group\": \"nel\","
-                + "        \"max_age\": 86400,"
-                + "        \"endpoints\": ["
-                + "          {\"url\": \"" + collectorUrl + "\"}"
-                + "        ]"
-                + "      }"
-                + "    }"
-                + "  ],"
-                + "  \"preloaded_nel_headers\": ["
-                + "    {"
-                + "      \"origin\": \"" + serverOrigin + "\","
-                + "      \"value\": {"
-                + "        \"report_to\": \"nel\","
-                + "        \"max_age\": 86400,"
-                + "        \"success_fraction\": 1.0"
-                + "      }"
-                + "    }"
-                + "  ]"
-                + "}}");
-        CronetTestUtil.setMockCertVerifierForTesting(
-                builder, QuicTestServer.createMockCertVerifier());
-        mCronetEngine = builder.build();
+        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+            String serverOrigin = Http2TestServer.getServerUrl();
+            String collectorUrl = Http2TestServer.getReportingCollectorUrl();
+            builder.setExperimentalOptions(""
+                    + "{\"NetworkErrorLogging\": {"
+                    + "  \"enable\": true,"
+                    + "  \"preloaded_report_to_headers\": ["
+                    + "    {"
+                    + "      \"origin\": \"" + serverOrigin + "\","
+                    + "      \"value\": {"
+                    + "        \"group\": \"nel\","
+                    + "        \"max_age\": 86400,"
+                    + "        \"endpoints\": ["
+                    + "          {\"url\": \"" + collectorUrl + "\"}"
+                    + "        ]"
+                    + "      }"
+                    + "    }"
+                    + "  ],"
+                    + "  \"preloaded_nel_headers\": ["
+                    + "    {"
+                    + "      \"origin\": \"" + serverOrigin + "\","
+                    + "      \"value\": {"
+                    + "        \"report_to\": \"nel\","
+                    + "        \"max_age\": 86400,"
+                    + "        \"success_fraction\": 1.0"
+                    + "      }"
+                    + "    }"
+                    + "  ]"
+                    + "}}");
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    builder, QuicTestServer.createMockCertVerifier());
+        });
+
         String url = Http2TestServer.getEchoMethodUrl();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder requestBuilder =
-                mCronetEngine.newUrlRequestBuilder(url, callback, callback.getExecutor());
+                mTestRule.getTestFramework().startEngine().newUrlRequestBuilder(
+                        url, callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);

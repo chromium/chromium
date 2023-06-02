@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CompareDefaultWithCronet;
-import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunCronetHttpURLConnection;
 import org.chromium.net.NativeTestServer;
 import org.chromium.net.NetworkException;
@@ -47,19 +46,17 @@ import java.net.URL;
 @RunWith(AndroidJUnit4.class)
 public class CronetChunkedOutputStreamTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
     private static final String UPLOAD_DATA_STRING = "Nifty upload data!";
     private static final byte[] UPLOAD_DATA = UPLOAD_DATA_STRING.getBytes();
     private static final int REPEAT_COUNT = 100000;
 
-    private CronetTestFramework mTestFramework;
     private HttpURLConnection mConnection;
 
     @Before
     public void setUp() throws Exception {
-        mTestFramework = mTestRule.startCronetTestFramework();
-        mTestRule.setStreamHandlerFactory(mTestFramework.mCronetEngine);
+        mTestRule.setStreamHandlerFactory(mTestRule.getTestFramework().getEngine());
         assertTrue(NativeTestServer.startNativeTestServer(getContext()));
     }
 
@@ -68,7 +65,6 @@ public class CronetChunkedOutputStreamTest {
         if (mConnection != null) {
             mConnection.disconnect();
         }
-        mTestFramework.shutdownEngine();
         NativeTestServer.shutdownNativeTestServer();
     }
 

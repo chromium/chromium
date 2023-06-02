@@ -29,7 +29,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetException;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CompareDefaultWithCronet;
-import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunCronetHttpURLConnection;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -74,17 +73,16 @@ public class CronetHttpURLConnectionTest {
     private static final String TAG = CronetHttpURLConnectionTest.class.getSimpleName();
 
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
-    private CronetTestFramework mTestFramework;
     private HttpURLConnection mUrlConnection;
 
     @Before
     public void setUp() throws Exception {
-        mTestFramework = mTestRule.buildCronetTestFramework();
-        mTestRule.enableDiskCache(mTestFramework.mBuilder);
-        mTestFramework.startEngine();
-        mTestRule.setStreamHandlerFactory(mTestFramework.mCronetEngine);
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder) -> { mTestRule.enableDiskCache(builder); });
+
+        mTestRule.setStreamHandlerFactory(mTestRule.getTestFramework().startEngine());
         assertTrue(NativeTestServer.startNativeTestServer(getContext()));
     }
 
@@ -94,7 +92,6 @@ public class CronetHttpURLConnectionTest {
             mUrlConnection.disconnect();
         }
         NativeTestServer.shutdownNativeTestServer();
-        mTestFramework.shutdownEngine();
     }
 
     @Test
@@ -143,7 +140,7 @@ public class CronetHttpURLConnectionTest {
     public void testReadTimeout() throws Exception {
         // Add url interceptors.
         MockUrlRequestJobFactory mockUrlRequestJobFactory =
-                new MockUrlRequestJobFactory(mTestFramework.mCronetEngine);
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         URL url = new URL(MockUrlRequestJobFactory.getMockUrlForHangingRead());
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.setReadTimeout(1000);
@@ -701,7 +698,7 @@ public class CronetHttpURLConnectionTest {
         int dataLength = data.length();
         int repeatCount = 100000;
         MockUrlRequestJobFactory mockUrlRequestJobFactory =
-                new MockUrlRequestJobFactory(mTestFramework.mCronetEngine);
+                new MockUrlRequestJobFactory(mTestRule.getTestFramework().getEngine());
         URL url = new URL(MockUrlRequestJobFactory.getMockUrlForData(data, repeatCount));
         mUrlConnection = (HttpURLConnection) url.openConnection();
         InputStream in = mUrlConnection.getInputStream();

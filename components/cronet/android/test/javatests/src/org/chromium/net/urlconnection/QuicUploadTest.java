@@ -23,7 +23,6 @@ import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestUtil;
-import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.QuicTestServer;
 
 import java.io.OutputStream;
@@ -38,36 +37,33 @@ import java.util.Arrays;
 @RunWith(AndroidJUnit4.class)
 public class QuicUploadTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
-    private CronetTestRule.CronetTestFramework mTestFramework;
     private CronetEngine mCronetEngine;
 
     @Before
     public void setUp() throws Exception {
-        mTestFramework = mTestRule.buildCronetTestFramework();
-        ExperimentalCronetEngine.Builder builder = mTestFramework.mBuilder;
-
         QuicTestServer.startQuicTestServer(getContext());
 
-        builder.enableQuic(true);
-        JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
-        JSONObject experimentalOptions = new JSONObject()
-                                                 .put("HostResolverRules", hostResolverParams);
-        builder.setExperimentalOptions(experimentalOptions.toString());
+        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
+            builder.enableQuic(true);
+            JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
+            JSONObject experimentalOptions =
+                    new JSONObject().put("HostResolverRules", hostResolverParams);
+            builder.setExperimentalOptions(experimentalOptions.toString());
 
-        builder.addQuicHint(QuicTestServer.getServerHost(), QuicTestServer.getServerPort(),
-                QuicTestServer.getServerPort());
+            builder.addQuicHint(QuicTestServer.getServerHost(), QuicTestServer.getServerPort(),
+                    QuicTestServer.getServerPort());
 
-        CronetTestUtil.setMockCertVerifierForTesting(
-                builder, QuicTestServer.createMockCertVerifier());
+            CronetTestUtil.setMockCertVerifierForTesting(
+                    builder, QuicTestServer.createMockCertVerifier());
+        });
 
-        mCronetEngine = mTestFramework.startEngine();
+        mCronetEngine = mTestRule.getTestFramework().startEngine();
     }
 
     @After
     public void tearDown() throws Exception {
-        mTestFramework.shutdownEngine();
         QuicTestServer.shutdownQuicTestServer();
     }
 

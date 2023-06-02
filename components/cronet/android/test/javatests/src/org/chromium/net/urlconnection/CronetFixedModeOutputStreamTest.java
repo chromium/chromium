@@ -54,7 +54,7 @@ import java.net.URL;
 @RunWith(AndroidJUnit4.class)
 public class CronetFixedModeOutputStreamTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
@@ -63,10 +63,9 @@ public class CronetFixedModeOutputStreamTest {
 
     @Before
     public void setUp() throws Exception {
-        mTestFramework = mTestRule.buildCronetTestFramework();
-        mTestRule.enableDiskCache(mTestFramework.mBuilder);
-        mTestFramework.startEngine();
-        mTestRule.setStreamHandlerFactory(mTestFramework.mCronetEngine);
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder) -> mTestRule.enableDiskCache(builder));
+        mTestRule.setStreamHandlerFactory(mTestRule.getTestFramework().startEngine());
         assertTrue(NativeTestServer.startNativeTestServer(getContext()));
     }
 
@@ -76,7 +75,6 @@ public class CronetFixedModeOutputStreamTest {
             mConnection.disconnect();
         }
         NativeTestServer.shutdownNativeTestServer();
-        mTestFramework.shutdownEngine();
     }
 
     @Test

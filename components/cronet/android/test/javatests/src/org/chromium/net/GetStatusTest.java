@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.UrlRequest.Status;
@@ -44,39 +43,18 @@ import java.util.concurrent.Executors;
 @RunWith(AndroidJUnit4.class)
 public class GetStatusTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private CronetTestFramework mTestFramework;
-
-    private static class TestStatusListener extends StatusListener {
-        boolean mOnStatusCalled;
-        int mStatus = Integer.MAX_VALUE;
-        private final ConditionVariable mBlock = new ConditionVariable();
-
-        @Override
-        public void onStatus(int status) {
-            mOnStatusCalled = true;
-            mStatus = status;
-            mBlock.open();
-        }
-
-        public void waitUntilOnStatusCalled() {
-            mBlock.block();
-            mBlock.close();
-        }
-    }
     @Before
     public void setUp() throws Exception {
-        mTestFramework = mTestRule.startCronetTestFramework();
         assertTrue(NativeTestServer.startNativeTestServer(getContext()));
     }
 
     @After
     public void tearDown() throws Exception {
         NativeTestServer.shutdownNativeTestServer();
-        mTestFramework.mCronetEngine.shutdown();
     }
 
     @Test
@@ -85,7 +63,7 @@ public class GetStatusTest {
         String url = NativeTestServer.getEchoMethodURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 url, callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
         // Calling before request is started should give Status.INVALID,
@@ -156,7 +134,7 @@ public class GetStatusTest {
     @OnlyRunNativeCronet
     public void testGetStatusForUpload() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestFramework.mCronetEngine.newUrlRequestBuilder(
+        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
                 NativeTestServer.getEchoBodyURL(), callback, callback.getExecutor());
 
         final ConditionVariable block = new ConditionVariable();
@@ -202,5 +180,23 @@ public class GetStatusTest {
 
         assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("test");
+    }
+
+    private static class TestStatusListener extends StatusListener {
+        boolean mOnStatusCalled;
+        int mStatus = Integer.MAX_VALUE;
+        private final ConditionVariable mBlock = new ConditionVariable();
+
+        @Override
+        public void onStatus(int status) {
+            mOnStatusCalled = true;
+            mStatus = status;
+            mBlock.open();
+        }
+
+        public void waitUntilOnStatusCalled() {
+            mBlock.block();
+            mBlock.close();
+        }
     }
 }

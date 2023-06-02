@@ -40,15 +40,14 @@ import java.net.URL;
 @RunWith(AndroidJUnit4.class)
 public class CronetBufferedOutputStreamTest {
     @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
+    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
     private CronetTestFramework mTestFramework;
     private HttpURLConnection mConnection;
 
     @Before
     public void setUp() throws Exception {
-        mTestFramework = mTestRule.startCronetTestFramework();
-        mTestRule.setStreamHandlerFactory(mTestFramework.mCronetEngine);
+        mTestRule.setStreamHandlerFactory(mTestRule.getTestFramework().getEngine());
         assertTrue(NativeTestServer.startNativeTestServer(getContext()));
     }
 
@@ -57,7 +56,6 @@ public class CronetBufferedOutputStreamTest {
         if (mConnection != null) {
             mConnection.disconnect();
         }
-        mTestFramework.shutdownEngine();
         NativeTestServer.shutdownNativeTestServer();
     }
 

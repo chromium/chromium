@@ -19,13 +19,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.PackageManagerWrapper;
-import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 
@@ -35,9 +33,6 @@ import org.chromium.net.impl.CronetLogger.CronetSource;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 public class CronetManifestTest {
-    @Rule
-    public final CronetTestRule mTestRule = new CronetTestRule();
-
     private Context mMockContext;
     private Bundle mMetadata;
     private ApplicationInfo mAppInfo;
