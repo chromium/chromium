@@ -28,10 +28,6 @@ SDK_ROOT = os.path.join(DIR_SRC_ROOT, 'third_party', 'fuchsia-sdk', 'sdk')
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
 _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
 
-# This global variable is used to set the environment variable
-# |FFX_ISOLATE_DIR| when running ffx commands in E2E testing scripts.
-_FFX_ISOLATE_DIR = None
-
 
 class TargetState(enum.Enum):
     """State of a target."""
@@ -128,10 +124,10 @@ def get_target_state(target_id: Optional[str],
 
 
 def set_ffx_isolate_dir(isolate_dir: str) -> None:
-    """Overwrites |_FFX_ISOLATE_DIR|."""
+    """Overwrites the global environment so the following ffx calls will have
+    the isolate dir being carried."""
 
-    global _FFX_ISOLATE_DIR  # pylint: disable=global-statement
-    _FFX_ISOLATE_DIR = isolate_dir
+    os.environ['FFX_ISOLATE_DIR'] = isolate_dir
 
 
 def get_host_tool_path(tool):
@@ -352,11 +348,8 @@ def run_continuous_ffx_command(cmd: Iterable[str],
         for config in configs:
             ffx_cmd.extend(('--config', config))
     ffx_cmd.extend(cmd)
-    env = os.environ
-    if _FFX_ISOLATE_DIR:
-        env['FFX_ISOLATE_DIR'] = _FFX_ISOLATE_DIR
 
-    return subprocess.Popen(ffx_cmd, encoding=encoding, env=env, **kwargs)
+    return subprocess.Popen(ffx_cmd, encoding=encoding, **kwargs)
 
 
 def read_package_paths(out_dir: str, pkg_name: str) -> List[str]:
