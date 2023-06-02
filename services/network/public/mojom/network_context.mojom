@@ -83,7 +83,6 @@ const uint32 kWebSocketOptionBlockAllCookies = 1;
 // cookies.
 const uint32 kWebSocketOptionBlockThirdPartyCookies = 2;
 
-// Indicates that execution is blocking on the completion of the request.
 // The browser can provide a CustomProxyConfig to a CustomProxyConfigClient
 // running in the network service. The network service will use the given proxy
 // configuration if a request matches the proxy rules and all the other
