@@ -817,11 +817,13 @@ void GpuChannelManager::PerformImmediateCleanup() {
     auto* fence_helper =
         vulkan_context_provider_->GetDeviceQueue()->GetFenceHelper();
     fence_helper->PerformImmediateCleanup();
+
+    // TODO(lizeb): Also perform this on GL devices.
+    if (auto* context = shared_context_state_->gr_context()) {
+      context->flushAndSubmit(true);
+    }
   }
 #endif
-  if (auto* context = shared_context_state_->gr_context()) {
-    context->flushAndSubmit(true);
-  }
 }
 
 void GpuChannelManager::HandleMemoryPressure(
