@@ -186,11 +186,6 @@ message GetUpdatesMessage {
   // other datatypes, so repeated usage will likely result in throttling.
   optional bool need_encryption_key = 8 [default = false];
 
-  // Whether to create the mobile bookmarks folder if it's not
-  // already created.  Set to true by all modern clients.
-  optional bool create_mobile_bookmarks_folder = 1000
-      [default = false, deprecated = true];
-
   // This value is an updated version of the GetUpdatesCallerInfo's
   // GetUpdatesSource.  It describes the reason for the GetUpdate request.
   // Introduced in M29.
@@ -209,6 +204,8 @@ message GetUpdatesMessage {
   reserved "requested_types";
   reserved 5;
   reserved "batch_size";
+  reserved 1000;
+  reserved "create_mobile_bookmarks_folder";
 }
 
 // Message from a client asking the server to clear its data. This causes the
