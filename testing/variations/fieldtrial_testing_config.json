@@ -4180,6 +4180,27 @@
             ]
         }
     ],
+    "DesktopNtpDriveCache": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Cache_1m",
+                    "params": {
+                        "NtpDriveModuleCacheMaxAgeSParam": "60",
+                        "NtpDriveModuleExperimentGroupParam": "experiment_1234"
+                    },
+                    "enable_features": [
+                        "NtpDriveModule"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpMiddleSlotPromoDismissal": [
         {
             "platforms": [
