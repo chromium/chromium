@@ -314,6 +314,11 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Updates the last time that the key was reported to the k-anonymity server.
   void UpdateLastKAnonymityReported(const std::string& key);
 
+  void GetInterestGroupAdAuctionData(
+      url::Origin seller,
+      url::Origin top_level_origin,
+      base::OnceCallback<void(std::vector<uint8_t>)> callback);
+
   InterestGroupPermissionsChecker& permissions_checker_for_testing() {
     return permissions_checker_;
   }
@@ -340,6 +345,20 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     // the binary, so no need for anything to own them.
     const char* name;
     int request_url_size_bytes;
+  };
+
+  struct AdAuctionDataLoaderState {
+    AdAuctionDataLoaderState();
+    ~AdAuctionDataLoaderState();
+    AdAuctionDataLoaderState(AdAuctionDataLoaderState&& state);
+    base::Time start_time;
+    url::Origin seller;
+    url::Origin top_level_origin;
+    // List of Interest group owners (string) and their interest groups
+    // (vector).
+    std::vector<std::pair<std::string, std::vector<StorageInterestGroup>>>
+        accumulated_groups;
+    base::OnceCallback<void(std::vector<uint8_t>)> callback;
   };
 
   // Callbacks for CheckPermissionsAndJoinInterestGroup() and
@@ -417,6 +436,23 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // always exist). Called from JoinInterestGroup.
   void QueueKAnonymityUpdateForInterestGroupFromJoinInterestGroup(
       absl::optional<StorageInterestGroup> maybe_group);
+
+  // Loads the next owner's interest group data. If there are no more owners
+  // whose interest groups need to be loaded, calls OnAdAuctionDataLoadComplete.
+  void LoadNextInterestGroupAdAuctionData(AdAuctionDataLoaderState state,
+                                          std::vector<url::Origin> owners);
+
+  // Serializes the loaded auction data and then calls
+  // LoadNextInterestGroupAdAuctionData to continue loading.
+  void OnLoadedNextInterestGroupAdAuctionData(
+      AdAuctionDataLoaderState state,
+      std::vector<url::Origin> owners,
+      url::Origin owner,
+      std::vector<StorageInterestGroup> groups);
+
+  // Constructs the AuctionAdata when the load is complete and calls the
+  // provided callback.
+  void OnAdAuctionDataLoadComplete(AdAuctionDataLoaderState state);
 
   // Owns and manages access to the InterestGroupStorage living on a different
   // thread.

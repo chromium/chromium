@@ -12,6 +12,8 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/json/json_string_value_serializer.h"
+#include "base/json/values_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -21,6 +23,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "components/cbor/diagnostic_writer.h"
+#include "components/cbor/writer.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -28,6 +32,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -101,10 +106,99 @@ ConvertOwnerJoinerPairsToDataKeys(
   return data_keys;
 }
 
+cbor::Value SerializeAds(const std::vector<blink::InterestGroup::Ad>& ads) {
+  cbor::Value::ArrayValue result;
+  for (const auto& ad : ads) {
+    if (ad.ad_render_id) {
+      result.emplace_back(ad.ad_render_id.value());
+    }
+  }
+  return cbor::Value(std::move(result));
+}
+
+// This serialization is sent to the bidding and auction (B&A) server, so the
+// format is standardized. We can't add fields to this format without
+// coordinating with the B&A team.
+cbor::Value SerializeInterestGroup(base::Time start_time,
+                                   const StorageInterestGroup& group) {
+  cbor::Value::MapValue group_obj;
+  group_obj[cbor::Value("name")] = cbor::Value(group.interest_group.name);
+  if (group.interest_group.trusted_bidding_signals_keys) {
+    cbor::Value::ArrayValue bidding_signal_keys;
+    bidding_signal_keys.reserve(
+        group.interest_group.trusted_bidding_signals_keys->size());
+    for (const auto& key : *group.interest_group.trusted_bidding_signals_keys) {
+      bidding_signal_keys.emplace_back(key);
+    }
+    group_obj[cbor::Value("biddingSignalsKeys")] =
+        cbor::Value(std::move(bidding_signal_keys));
+  }
+  if (group.interest_group.user_bidding_signals) {
+    group_obj[cbor::Value("userBiddingSignals")] =
+        cbor::Value(*group.interest_group.user_bidding_signals);
+  }
+  if (group.interest_group.ads) {
+    group_obj[cbor::Value("ads")] = SerializeAds(*group.interest_group.ads);
+  }
+  if (group.interest_group.ad_components) {
+    group_obj[cbor::Value("adComponents")] =
+        SerializeAds(*group.interest_group.ad_components);
+  }
+  cbor::Value::MapValue browser_signals;
+  browser_signals[cbor::Value("bidCount")] =
+      cbor::Value(group.bidding_browser_signals->bid_count);
+  // joinCount and recency are noised and binned on the server.
+  browser_signals[cbor::Value("joinCount")] =
+      cbor::Value(group.bidding_browser_signals->join_count);
+  int64_t recency = (start_time - group.join_time).InSeconds();
+  browser_signals[cbor::Value("recency")] =
+      cbor::Value(std::max<int64_t>(0, recency));
+  cbor::Value::ArrayValue prev_wins;
+  for (const auto& prev_win : group.bidding_browser_signals->prev_wins) {
+    cbor::Value::ArrayValue tuple;
+    int64_t win_time = (start_time - prev_win->time).InSeconds();
+    tuple.emplace_back(std::max<int64_t>(0, win_time));
+    // We trust this ad_json because we wrote it ourselves.
+    // Currently it's probably not worth it to deserialize this at the same time
+    // we load the interest group from the database. We will want to revisit
+    // this in the future.
+    JSONStringValueDeserializer deserializer(prev_win->ad_json);
+    std::string error_msg;
+    std::unique_ptr<base::Value> ad = deserializer.Deserialize(
+        /*error_code=*/nullptr,
+        /*error_message=*/&error_msg);
+    if (!ad) {
+      // This should not happen unless the DB is corrupted.
+      // Just do our best regardless.
+      continue;
+    }
+    std::string* ad_render_id = ad->GetDict().FindString("adRenderId");
+    if (ad_render_id) {
+      tuple.emplace_back(*ad_render_id);
+    } else {
+      // If there's no adRenderId we still can send the time.
+      tuple.emplace_back("");
+    }
+    prev_wins.emplace_back(std::move(tuple));
+  }
+  browser_signals[cbor::Value("prevWins")] = cbor::Value(std::move(prev_wins));
+  group_obj[cbor::Value("browserSignals")] =
+      cbor::Value(std::move(browser_signals));
+  return cbor::Value(std::move(group_obj));
+}
+
 }  // namespace
 
 InterestGroupManagerImpl::ReportRequest::ReportRequest() = default;
 InterestGroupManagerImpl::ReportRequest::~ReportRequest() = default;
+
+InterestGroupManagerImpl::AdAuctionDataLoaderState::AdAuctionDataLoaderState() {
+  start_time = base::Time::Now();
+}
+InterestGroupManagerImpl::AdAuctionDataLoaderState::AdAuctionDataLoaderState(
+    AdAuctionDataLoaderState&& state) = default;
+InterestGroupManagerImpl::AdAuctionDataLoaderState::
+    ~AdAuctionDataLoaderState() = default;
 
 InterestGroupManagerImpl::InterestGroupManagerImpl(
     const base::FilePath& path,
@@ -396,6 +490,92 @@ void InterestGroupManagerImpl::UpdateLastKAnonymityReported(
     const std::string& key) {
   impl_.AsyncCall(&InterestGroupStorage::UpdateLastKAnonymityReported)
       .WithArgs(key);
+}
+
+void InterestGroupManagerImpl::GetInterestGroupAdAuctionData(
+    url::Origin seller,
+    url::Origin top_level_origin,
+    base::OnceCallback<void(std::vector<uint8_t>)> callback) {
+  AdAuctionDataLoaderState state;
+  state.seller = std::move(seller);
+  state.top_level_origin = std::move(top_level_origin);
+  state.callback = std::move(callback);
+  GetAllInterestGroupOwners(base::BindOnce(
+      &InterestGroupManagerImpl::LoadNextInterestGroupAdAuctionData,
+      weak_factory_.GetWeakPtr(), std::move(state)));
+}
+
+void InterestGroupManagerImpl::LoadNextInterestGroupAdAuctionData(
+    AdAuctionDataLoaderState state,
+    std::vector<url::Origin> owners) {
+  if (!owners.empty()) {
+    url::Origin next_owner = std::move(owners.back());
+    owners.pop_back();
+    GetInterestGroupsForOwner(
+        next_owner,
+        base::BindOnce(
+            &InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData,
+            weak_factory_.GetWeakPtr(), std::move(state), std::move(owners),
+            next_owner));
+    return;
+  }
+  // Loading is finished.
+  OnAdAuctionDataLoadComplete(std::move(state));
+}
+
+void InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData(
+    AdAuctionDataLoaderState state,
+    std::vector<url::Origin> owners,
+    url::Origin owner,
+    std::vector<StorageInterestGroup> groups) {
+  base::EraseIf(groups, [](const StorageInterestGroup& group) {
+    return (!group.interest_group.ads) || (group.interest_group.ads->empty());
+  });
+  if (!groups.empty()) {
+    state.accumulated_groups.emplace_back(owner.Serialize(), std::move(groups));
+  }
+  LoadNextInterestGroupAdAuctionData(std::move(state), std::move(owners));
+}
+
+void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
+    AdAuctionDataLoaderState state) {
+  if (state.accumulated_groups.empty()) {
+    std::move(state.callback).Run({});
+    return;
+  }
+  cbor::Value::MapValue groups_map;
+  groups_map.reserve(state.accumulated_groups.size());
+  for (const auto& bidder_groups : state.accumulated_groups) {
+    cbor::Value::ArrayValue groups;
+    for (const auto& group : bidder_groups.second) {
+      cbor::Value group_obj = SerializeInterestGroup(state.start_time, group);
+      groups.emplace_back(std::move(group_obj));
+    }
+    cbor::Value groups_obj(std::move(groups));
+    absl::optional<std::vector<uint8_t>> maybe_sub_message =
+        cbor::Writer::Write(groups_obj);
+    DCHECK(maybe_sub_message);
+    std::string compressed_groups;
+    bool success = compression::GzipCompress(maybe_sub_message.value(),
+                                             &compressed_groups);
+    DCHECK(success);
+    groups_map[cbor::Value(bidder_groups.first)] =
+        cbor::Value(compressed_groups, cbor::Value::Type::BYTE_STRING);
+  }
+  cbor::Value::MapValue message_obj;
+  message_obj[cbor::Value("version")] = cbor::Value(0);
+  // "gzip" is the default so we don't need to specify the compression.
+  // message_obj[cbor::Value("compression")] = cbor::Value("gzip");
+  message_obj[cbor::Value("publisher")] =
+      cbor::Value(state.top_level_origin.Serialize());
+
+  message_obj[cbor::Value("interestGroups")] =
+      cbor::Value(std::move(groups_map));
+  cbor::Value message(std::move(message_obj));
+
+  absl::optional<std::vector<uint8_t>> maybe_msg = cbor::Writer::Write(message);
+  DCHECK(maybe_msg);
+  std::move(state.callback).Run(std::move(maybe_msg).value());
 }
 
 void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
