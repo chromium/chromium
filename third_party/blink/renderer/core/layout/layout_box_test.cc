@@ -2016,6 +2016,56 @@ TEST_F(LayoutBoxTest, AnchorInInlineContainingBlockWithNameConflicts) {
             target3->FindTargetAnchor(anchor_name));
 }
 
+TEST_F(LayoutBoxTest, IsUserScrollable) {
+  SetBodyInnerHTML(R"HTML("
+    <style>
+      #target { width: 100px; height: 100px; overflow: auto; }
+    </style>
+    <div id="target">
+      <div id="content" style="height: 200px"></div>
+    </div>
+  )HTML");
+
+  auto* target_element = GetDocument().getElementById("target");
+  auto* target = target_element->GetLayoutBox();
+  EXPECT_TRUE(target->ScrollsOverflow());
+  EXPECT_TRUE(target->IsUserScrollable());
+
+  target_element->setAttribute(html_names::kStyleAttr, "overflow: hidden");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->ScrollsOverflow());
+  EXPECT_FALSE(target->IsUserScrollable());
+
+  target_element->setAttribute(html_names::kStyleAttr, "");
+  GetDocument().getElementById("content")->setAttribute(html_names::kStyleAttr,
+                                                        "height: 0");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(target->ScrollsOverflow());
+  EXPECT_FALSE(target->IsUserScrollable());
+}
+
+TEST_F(LayoutBoxTest, IsUserScrollableLayoutView) {
+  SetBodyInnerHTML(R"HTML("
+    <div id="content" style="height: 2000px"></div>
+  )HTML");
+
+  EXPECT_TRUE(GetLayoutView().ScrollsOverflow());
+  EXPECT_TRUE(GetLayoutView().IsUserScrollable());
+
+  GetDocument().body()->setAttribute(html_names::kStyleAttr,
+                                     "overflow: hidden");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetLayoutView().ScrollsOverflow());
+  EXPECT_FALSE(GetLayoutView().IsUserScrollable());
+
+  GetDocument().body()->setAttribute(html_names::kStyleAttr, "");
+  GetDocument().getElementById("content")->setAttribute(html_names::kStyleAttr,
+                                                        "height: 0");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetLayoutView().ScrollsOverflow());
+  EXPECT_FALSE(GetLayoutView().IsUserScrollable());
+}
+
 class LayoutBoxBackgroundPaintLocationTest : public RenderingTest,
                                              public PaintTestConfigurations {
  protected:

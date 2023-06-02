@@ -1232,8 +1232,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     }
   }
 
-  bool CanBeScrolledAndHasScrollableArea() const;
-  virtual bool CanBeProgrammaticallyScrolled() const;
+  bool IsUserScrollable() const;
   virtual void Autoscroll(const PhysicalOffset&);
   PhysicalOffset CalculateAutoscrollDirection(
       const gfx::PointF& point_in_root_frame) const;
@@ -1277,11 +1276,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return ScrollsOverflowY() &&
            PixelSnappedScrollHeight() != PixelSnappedClientHeight();
   }
-  virtual bool ScrollsOverflowX() const {
+  bool ScrollsOverflowX() const {
     NOT_DESTROYED();
     return HasNonVisibleOverflow() && StyleRef().ScrollsOverflowX();
   }
-  virtual bool ScrollsOverflowY() const {
+  bool ScrollsOverflowY() const {
     NOT_DESTROYED();
     return HasNonVisibleOverflow() && StyleRef().ScrollsOverflowY();
   }

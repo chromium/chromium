@@ -47,21 +47,9 @@ bool LayoutBox::MayIntersect(const HitTestResult& result,
   return hit_test_location.Intersects(overflow_box);
 }
 
-bool LayoutBox::CanBeProgrammaticallyScrolled() const {
+bool LayoutBox::IsUserScrollable() const {
   NOT_DESTROYED();
-  Node* node = GetNode();
-  if (node && node->IsDocumentNode())
-    return true;
-
-  if (!IsScrollContainer())
-    return false;
-
-  bool has_scrollable_overflow =
-      HasScrollableOverflowX() || HasScrollableOverflowY();
-  if (ScrollsOverflow() && has_scrollable_overflow)
-    return true;
-
-  return node && IsEditable(*node);
+  return HasScrollableOverflowX() || HasScrollableOverflowY();
 }
 
 const NGLayoutResult* LayoutBox::CachedLayoutResult(

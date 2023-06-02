@@ -1668,13 +1668,6 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
   return scrollbars;
 }
 
-bool LayoutBox::CanBeScrolledAndHasScrollableArea() const {
-  NOT_DESTROYED();
-  return CanBeProgrammaticallyScrolled() &&
-         (PixelSnappedScrollHeight() != PixelSnappedClientHeight() ||
-          PixelSnappedScrollWidth() != PixelSnappedClientWidth());
-}
-
 void LayoutBox::Autoscroll(const PhysicalOffset& position_in_root_frame) {
   NOT_DESTROYED();
   LocalFrame* frame = GetFrame();
@@ -1738,9 +1731,8 @@ PhysicalOffset LayoutBox::CalculateAutoscrollDirection(
 
 LayoutBox* LayoutBox::FindAutoscrollable(LayoutObject* layout_object,
                                          bool is_middle_click_autoscroll) {
-  while (layout_object &&
-         !(layout_object->IsBox() &&
-           To<LayoutBox>(layout_object)->CanBeScrolledAndHasScrollableArea())) {
+  while (layout_object && !(layout_object->IsBox() &&
+                            To<LayoutBox>(layout_object)->IsUserScrollable())) {
     // Do not start selection-based autoscroll when the node is inside a
     // fixed-position element.
     if (!is_middle_click_autoscroll && layout_object->IsBox() &&
