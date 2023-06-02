@@ -7,10 +7,16 @@
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 NSString* kFindPasteboardChangedNotification =
     @"kFindPasteboardChangedNotification_Chrome";
 
-@implementation FindPasteboard
+@implementation FindPasteboard {
+  NSString* _findText;
+}
 
 + (FindPasteboard*)sharedInstance {
   static FindPasteboard* instance = nil;
@@ -22,10 +28,10 @@ NSString* kFindPasteboardChangedNotification =
 
 - (instancetype)init {
   if ((self = [super init])) {
-    _findText.reset([[NSString alloc] init]);
+    _findText = @"";
 
-    // Check if the text in the findboard has changed on app activate.
-    [[NSNotificationCenter defaultCenter]
+    // Check if the text in the find pasteboard has changed on app activate.
+    [NSNotificationCenter.defaultCenter
         addObserver:self
            selector:@selector(loadTextFromPasteboard:)
                name:NSApplicationDidBecomeActiveNotification
@@ -37,8 +43,7 @@ NSString* kFindPasteboardChangedNotification =
 
 - (void)dealloc {
   // Since this is a singleton, this should only be executed in test code.
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [super dealloc];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (NSPasteboard*)findPasteboard {
@@ -66,15 +71,15 @@ NSString* kFindPasteboardChangedNotification =
 
   DCHECK(NSThread.isMainThread);
 
-  BOOL textChanged = ![_findText.get() isEqualToString:newText];
+  BOOL textChanged = ![_findText isEqualToString:newText];
   if (textChanged) {
-    _findText.reset([newText copy]);
+    _findText = [newText copy];
 
     NSPasteboard* findPasteboard = [self findPasteboard];
     [findPasteboard clearContents];
-    [findPasteboard writeObjects:@[ _findText.get() ]];
+    [findPasteboard writeObjects:@[ _findText ]];
 
-    [[NSNotificationCenter defaultCenter]
+    [NSNotificationCenter.defaultCenter
         postNotificationName:kFindPasteboardChangedNotification
                       object:self];
   }

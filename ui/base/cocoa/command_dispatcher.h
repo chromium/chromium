@@ -8,7 +8,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
-#import "base/mac/scoped_nsobject.h"
 
 @protocol CommandDispatcherDelegate;
 @protocol CommandDispatchingWindow;
@@ -24,7 +23,7 @@
 COMPONENT_EXPORT(UI_BASE)
 @interface CommandDispatcher : NSObject
 
-@property(assign, nonatomic) id<CommandDispatcherDelegate> delegate;
+@property(weak) id<CommandDispatcherDelegate> delegate;
 
 - (instancetype)initWithOwner:(NSWindow<CommandDispatchingWindow>*)owner;
 

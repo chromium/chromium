@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/mac/foundation_util.h"
+#include "base/memory/scoped_policy.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -1326,10 +1327,12 @@ void NativeWidgetMacNSWindowHost::OnFocusWindowToolbar() {
 void NativeWidgetMacNSWindowHost::SetRemoteAccessibilityTokens(
     const std::vector<uint8_t>& window_token,
     const std::vector<uint8_t>& view_token) {
-  remote_window_accessible_ =
-      ui::RemoteAccessibility::GetRemoteElementFromToken(window_token);
-  remote_view_accessible_ =
-      ui::RemoteAccessibility::GetRemoteElementFromToken(view_token);
+  remote_window_accessible_.reset(
+      ui::RemoteAccessibility::GetRemoteElementFromToken(window_token),
+      base::scoped_policy::RETAIN);
+  remote_view_accessible_.reset(
+      ui::RemoteAccessibility::GetRemoteElementFromToken(view_token),
+      base::scoped_policy::RETAIN);
   [remote_view_accessible_ setWindowUIElement:remote_window_accessible_.get()];
   [remote_view_accessible_
       setTopLevelUIElement:remote_window_accessible_.get()];

@@ -6,14 +6,22 @@
 
 #include "base/check_op.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "ui/base/cocoa/tracking_area.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 NSString* kViewDidBecomeFirstResponder =
     @"Chromium.kViewDidBecomeFirstResponder";
 NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 
-@implementation BaseView
+@implementation BaseView {
+  ui::ScopedCrTrackingArea _trackingArea;
+  BOOL _dragging;
+  NSEvent* __strong _pendingExitEvent;
+  NSInteger _pressureEventStage;
+}
 
 - (instancetype)initWithFrame:(NSRect)frame {
   if ((self = [super initWithFrame:frame])) {
@@ -31,23 +39,23 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 
 - (void)dealloc {
   [self disableTracking];
-  [super dealloc];
 }
 
 - (void)enableTracking {
-  if (_trackingArea.get())
+  if (_trackingArea.get()) {
     return;
+  }
 
   NSTrackingAreaOptions trackingOptions = NSTrackingMouseEnteredAndExited |
                                           NSTrackingMouseMoved |
                                           NSTrackingActiveAlways |
                                           NSTrackingInVisibleRect;
-  base::scoped_nsobject<CrTrackingArea> trackingArea([[CrTrackingArea alloc]
-      initWithRect:NSZeroRect
-           options:trackingOptions
-             owner:self
-          userInfo:nil]);
-  _trackingArea.reset(trackingArea.get());
+  CrTrackingArea* trackingArea =
+      [[CrTrackingArea alloc] initWithRect:NSZeroRect
+                                   options:trackingOptions
+                                     owner:self
+                                  userInfo:nil];
+  _trackingArea.reset(trackingArea);
   [self addTrackingArea:_trackingArea.get()];
 }
 
@@ -59,23 +67,24 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 }
 
 - (void)handleLeftMouseUp:(NSEvent*)theEvent {
-  DCHECK_EQ([theEvent type], NSEventTypeLeftMouseUp);
+  DCHECK_EQ(theEvent.type, NSEventTypeLeftMouseUp);
   _dragging = NO;
-  if (!_pendingExitEvent)
+  if (!_pendingExitEvent) {
     return;
+  }
 
   NSEvent* exitEvent =
       [NSEvent enterExitEventWithType:NSEventTypeMouseExited
-                             location:[theEvent locationInWindow]
-                        modifierFlags:[theEvent modifierFlags]
-                            timestamp:[theEvent timestamp]
-                         windowNumber:[theEvent windowNumber]
+                             location:theEvent.locationInWindow
+                        modifierFlags:theEvent.modifierFlags
+                            timestamp:theEvent.timestamp
+                         windowNumber:theEvent.windowNumber
                               context:nil
-                          eventNumber:[_pendingExitEvent eventNumber]
-                       trackingNumber:[_pendingExitEvent trackingNumber]
-                             userData:[_pendingExitEvent userData]];
+                          eventNumber:_pendingExitEvent.eventNumber
+                       trackingNumber:_pendingExitEvent.trackingNumber
+                             userData:_pendingExitEvent.userData];
   [self mouseEvent:exitEvent];
-  _pendingExitEvent.reset();
+  _pendingExitEvent = nil;
 }
 
 - (void)mouseEvent:(NSEvent*)theEvent {
@@ -141,7 +150,7 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 
 - (void)mouseEntered:(NSEvent*)theEvent {
   if (_pendingExitEvent) {
-    _pendingExitEvent.reset();
+    _pendingExitEvent = nil;
     return;
   }
 
@@ -152,8 +161,8 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
   // Suppress spurious mouseExited events that are in the bounds of this view.
   // For unknown reasons this happens shortly after mouseMoved on the toolbar if
   // the overlay window is above the NSToolbarFullScreenWindow.
-  NSRect frameInWindow = [self convertRect:[self bounds] toView:nil];
-  if (NSPointInRect([theEvent locationInWindow], frameInWindow)) {
+  NSRect frameInWindow = [self convertRect:self.bounds toView:nil];
+  if (NSPointInRect(theEvent.locationInWindow, frameInWindow)) {
     return;
   }
 
@@ -161,7 +170,7 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
   // how the event flow for drags should work. This stores the exit event, and
   // sends it when the drag completes instead.
   if (_dragging) {
-    _pendingExitEvent.reset([theEvent retain]);
+    _pendingExitEvent = theEvent;
     return;
   }
 
@@ -179,7 +188,7 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 }
 
 - (void)pressureChangeWithEvent:(NSEvent*)theEvent {
-  NSInteger newStage = [theEvent stage];
+  NSInteger newStage = theEvent.stage;
   if (_pressureEventStage == newStage)
     return;
 
@@ -198,13 +207,13 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
 
 - (gfx::Rect)flipNSRectToRect:(NSRect)rect {
   gfx::Rect new_rect(NSRectToCGRect(rect));
-  new_rect.set_y(NSHeight([self bounds]) - new_rect.bottom());
+  new_rect.set_y(NSHeight(self.bounds) - new_rect.bottom());
   return new_rect;
 }
 
 - (NSRect)flipRectToNSRect:(gfx::Rect)rect {
   NSRect new_rect(NSRectFromCGRect(rect.ToCGRect()));
-  new_rect.origin.y = NSHeight([self bounds]) - NSMaxY(new_rect);
+  new_rect.origin.y = NSHeight(self.bounds) - NSMaxY(new_rect);
   return new_rect;
 }
 

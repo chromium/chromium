@@ -9,6 +9,10 @@
 #include "base/mac/mac_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Double-click in window title bar actions.
@@ -30,7 +34,7 @@ enum class ForceTouchAction {
 namespace ui {
 
 bool ForceClickInvokesQuickLook() {
-  return [[NSUserDefaults standardUserDefaults]
+  return [NSUserDefaults.standardUserDefaults
              integerForKey:@"com.apple.trackpad.forceClick"] ==
          static_cast<NSInteger>(ForceTouchAction::QUICK_LOOK);
 }

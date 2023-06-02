@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_policy.h"
 #include "base/no_destructor.h"
 #include "components/remote_cocoa/app_shim/alert.h"
 #include "components/remote_cocoa/app_shim/color_panel_bridge.h"
@@ -57,8 +58,9 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
       host_remote_->GetRootViewAccessibilityToken(&browser_pid, &element_token);
       [NSAccessibilityRemoteUIElement
           registerRemoteUIProcessIdentifier:browser_pid];
-      remote_accessibility_element_ =
-          ui::RemoteAccessibility::GetRemoteElementFromToken(element_token);
+      remote_accessibility_element_.reset(
+          ui::RemoteAccessibility::GetRemoteElementFromToken(element_token),
+          base::scoped_policy::RETAIN);
     }
     return remote_accessibility_element_.get();
   }

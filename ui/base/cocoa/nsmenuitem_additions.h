@@ -18,8 +18,7 @@
 
 @end
 
-namespace ui {
-namespace cocoa {
+namespace ui::cocoa {
 
 // Used by tests to set internal state without having to change global input
 // source.
@@ -46,7 +45,6 @@ bool COMPONENT_EXPORT(UI_BASE)
 // shortcut.
 NSUInteger COMPONENT_EXPORT(UI_BASE) ModifierMaskForKeyEvent(NSEvent* event);
 
-}  // namespace cocoa
-}  // namespace ui
+}  // namespace ui::cocoa
 
 #endif  // UI_BASE_COCOA_NSMENUITEM_ADDITIONS_H_

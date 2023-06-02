@@ -7,10 +7,13 @@
 #include "base/apple/bundle_locations.h"
 #include "base/check.h"
 #include "base/lazy_instance.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -40,21 +43,20 @@ const std::string& GetLocaleOverride() {
 
 void OverrideLocaleWithCocoaLocale() {
   // NSBundle really should only be called on the main thread.
-  DCHECK([NSThread isMainThread]);
+  DCHECK(NSThread.isMainThread);
 
-  // Chrome really only has one concept of locale, but Mac OS X has locale and
+  // Chrome really only has one concept of locale, but macOS has locale and
   // language that can be set independently.  After talking with Chrome UX folks
-  // (Cole), the best path from an experience point of view is to map the Mac OS
-  // X language into the Chrome locale.  This way strings like "Yesterday" and
+  // (Cole), the best path from an experience point of view is to map the macOS
+  // language into the Chrome locale.  This way strings like "Yesterday" and
   // "Today" are in the same language as raw dates like "March 20, 1999" (Chrome
-  // strings resources vs ICU generated strings).  This also makes the Mac acts
+  // strings resources vs ICU generated strings).  This also makes the Mac act
   // like other Chrome platforms.
-  NSArray* languageList = [base::apple::OuterBundle() preferredLocalizations];
-  NSString* firstLocale = languageList[0];
-  // Mac OS X uses "_" instead of "-", so swap to get a real locale value.
-  std::string locale_value =
-      [[firstLocale stringByReplacingOccurrencesOfString:@"_"
-                                              withString:@"-"] UTF8String];
+  NSArray* language_list = base::apple::OuterBundle().preferredLocalizations;
+  NSString* first_locale = language_list[0];
+  // macOS uses "_" instead of "-", so swap to get a real locale value.
+  std::string locale_value = base::SysNSStringToUTF8(
+      [first_locale stringByReplacingOccurrencesOfString:@"_" withString:@"-"]);
 
   // On disk the "en-US" resources are just "en" (http://crbug.com/25578), so
   // the reverse mapping is done here to continue to feed Chrome the same values

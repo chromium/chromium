@@ -7,11 +7,14 @@
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 WindowOpenDisposition WindowOpenDispositionFromNSEvent(NSEvent* event) {
-  NSUInteger modifiers = [event modifierFlags];
-  return WindowOpenDispositionFromNSEventWithFlags(event, modifiers);
+  return WindowOpenDispositionFromNSEventWithFlags(event, event.modifierFlags);
 }
 
 WindowOpenDisposition WindowOpenDispositionFromNSEventWithFlags(

@@ -8,17 +8,12 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
-#include "base/mac/scoped_nsobject.h"
 
 // Base class for all constrained window animation classes.
 COMPONENT_EXPORT(UI_BASE)
-@interface ConstrainedWindowAnimationBase : NSAnimation {
- @protected
-  base::scoped_nsobject<NSWindow> _window;
-}
-
+@interface ConstrainedWindowAnimationBase : NSAnimation
 - (instancetype)initWithWindow:(NSWindow*)window;
-
+@property(readonly) NSWindow* window;
 @end
 
 // An animation to show a window.

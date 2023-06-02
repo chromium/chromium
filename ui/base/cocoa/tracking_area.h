@@ -10,15 +10,10 @@
 #include "base/component_export.h"
 #include "base/mac/scoped_nsobject.h"
 
-@class CrTrackingAreaOwnerProxy;
-
 // The CrTrackingArea can be used in place of an NSTrackingArea to shut off
 // messaging to the |owner| at a specific point in time.
 COMPONENT_EXPORT(UI_BASE)
-@interface CrTrackingArea : NSTrackingArea {
- @private
-  base::scoped_nsobject<CrTrackingAreaOwnerProxy> _ownerProxy;
-}
+@interface CrTrackingArea : NSTrackingArea
 
 // Designated initializer. Forwards all arguments to the superclass, but wraps
 // |owner| in a proxy object.

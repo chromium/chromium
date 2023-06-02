@@ -321,8 +321,6 @@ component("base") {
       "cocoa/defaults_utils.mm",
       "cocoa/find_pasteboard.h",
       "cocoa/find_pasteboard.mm",
-      "cocoa/flipped_view.h",
-      "cocoa/flipped_view.mm",
       "cocoa/menu_controller.h",
       "cocoa/menu_controller.mm",
       "cocoa/nsmenu_additions.h",
@@ -355,8 +353,6 @@ component("base") {
       "dragdrop/os_exchange_data_provider_mac.mm",
       "interaction/element_tracker_mac.h",
       "interaction/element_tracker_mac.mm",
-      "l10n/l10n_util_mac.h",
-      "l10n/l10n_util_mac.mm",
       "resource/resource_bundle_mac.mm",
     ]
   }
@@ -367,6 +363,8 @@ component("base") {
       "cocoa/quartz_util.mm",
       "cocoa/remote_layer_api.h",
       "cocoa/remote_layer_api.mm",
+      "l10n/l10n_util_mac.h",
+      "l10n/l10n_util_mac.mm",
     ]
   }
 
@@ -379,9 +377,7 @@ component("base") {
       "device_form_factor_ios.mm",
       "resource/resource_bundle_ios.mm",
     ]
-  }
-
-  if (!is_ios) {
+  } else {
     sources += [
       "user_activity/user_activity_detector.cc",
       "user_activity/user_activity_detector.h",
@@ -477,6 +473,10 @@ component("base") {
     "//build/config/compiler:wexit_time_destructors",
   ]
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   defines = [ "IS_UI_BASE_IMPL" ]
 
   if (enable_pseudolocales) {
@@ -538,8 +538,6 @@ component("base") {
 
   if (is_ios) {
     sources += [
-      "l10n/l10n_util_mac.h",
-      "l10n/l10n_util_mac.mm",
       "l10n/l10n_util_mac_bridge.h",
       "l10n/l10n_util_mac_bridge.mm",
     ]
@@ -990,6 +988,24 @@ source_set("run_all_unittests") {
   ]
 }
 
+if (is_apple) {
+  # TODO(https://crbug.com/1280317): Merge back into ui_base_unittests once all
+  # .mm files are ARCed.
+  source_set("ui_base_unittests_arc") {
+    testonly = true
+    if (is_mac) {
+      sources = [ "interaction/element_tracker_mac_unittest.mm" ]
+    }
+    configs += [ "//build/config/compiler:enable_arc" ]
+    deps = [
+      ":base",
+      "//base/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
 test("ui_base_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -1091,7 +1107,6 @@ test("ui_base_unittests") {
       "cocoa/nsmenuitem_additions_unittest.mm",
       "cocoa/touch_bar_util_unittest.mm",
       "cocoa/tracking_area_unittest.mm",
-      "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
       "test/view_tree_validator_unittest.mm",
     ]

@@ -157,11 +157,11 @@ display::Display GetDisplayForWindow(NSWindow* window) {
 }
 - (void)stopAnimation {
   [super stopAnimation];
-  [_window invalidateShadow];
+  [self.window invalidateShadow];
 }
 - (void)setCurrentProgress:(NSAnimationProgress)progress {
   [super setCurrentProgress:progress];
-  [_window invalidateShadow];
+  [self.window invalidateShadow];
 }
 @end
 

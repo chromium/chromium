@@ -5,23 +5,25 @@
 #import "ui/base/cocoa/nsmenu_additions.h"
 
 #include "base/check.h"
-#include "base/mac/scoped_nsobject.h"
 #import "ui/base/cocoa/nsmenuitem_additions.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
-typedef void (^PreSearchBlock)(void);
-
-PreSearchBlock g_pre_search_block;
+void (^g_pre_search_block)(void);
 
 NSMenuItem* MenuItemForKeyEquivalentEventInMenu(NSEvent* event, NSMenu* menu) {
   NSMenuItem* result = nil;
 
-  for (NSMenuItem* item in [menu itemArray]) {
-    NSMenu* submenu = [item submenu];
+  for (NSMenuItem* item in menu.itemArray) {
+    NSMenu* submenu = item.submenu;
     if (submenu) {
-      if (submenu != [NSApp servicesMenu])
+      if (submenu != NSApp.servicesMenu) {
         result = MenuItemForKeyEquivalentEventInMenu(event, submenu);
+      }
     } else if ([item cr_firesForKeyEquivalentEvent:event]) {
       result = item;
     }
@@ -36,12 +38,13 @@ NSMenuItem* MenuItemForKeyEquivalentEventInMenu(NSEvent* event, NSMenu* menu) {
 // Searches |menu| and its submenus for a NSMenuItem with |tag|.
 // Returns the menu item or nil if no menu item matches.
 NSMenuItem* MenuItemWithTagInMenu(int tag, NSMenu* menu) {
-  for (NSMenuItem* item in [menu itemArray]) {
-    if ([item tag] == tag)
+  for (NSMenuItem* item in menu.itemArray) {
+    if (item.tag == tag) {
       return item;
+    }
 
-    if ([item hasSubmenu]) {
-      NSMenuItem* the_item = MenuItemWithTagInMenu(tag, [item submenu]);
+    if (item.hasSubmenu) {
+      NSMenuItem* the_item = MenuItemWithTagInMenu(tag, item.submenu);
       if (the_item != nil)
         return the_item;
     }
@@ -51,7 +54,7 @@ NSMenuItem* MenuItemWithTagInMenu(int tag, NSMenu* menu) {
 }
 
 NSMenuItem* MenuItemWithTag(int tag) {
-  NSMenu* mainMenu = [[NSApplication sharedApplication] mainMenu];
+  NSMenu* mainMenu = NSApp.mainMenu;
 
   // Validate menu items before searching.
   [mainMenu update];
@@ -91,20 +94,20 @@ NSMenuItem* MenuItemWithTag(int tag) {
 
   // Swap out the menu item's existing target/action for a fake pair,
   // so that we can flash the menu item without executing anything.
-  id origTarget = [menuItem target];
-  SEL origAction = [menuItem action];
-  [menuItem setTarget:self];
-  [menuItem setAction:@selector(cr_executeDummyCommand:)];
+  id origTarget = menuItem.target;
+  SEL origAction = menuItem.action;
+  menuItem.target = self;
+  menuItem.action = @selector(cr_executeDummyCommand:);
 
   // -performActionForItemAtIndex: is documented as triggering highlighting in
   // the menu bar as well as sending out appropriate accessibility notifications
   // indicating the item was selected.
-  NSMenu* owningMenu = [menuItem menu];
+  NSMenu* owningMenu = menuItem.menu;
   [owningMenu performActionForItemAtIndex:[owningMenu indexOfItem:menuItem]];
 
   // Restore.
-  [menuItem setTarget:origTarget];
-  [menuItem setAction:origAction];
+  menuItem.target = origTarget;
+  menuItem.action = origAction;
 
   return YES;
 }

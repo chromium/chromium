@@ -2120,8 +2120,9 @@ void RenderWidgetHostViewMac::SetRemoteAccessibilityWindowToken(
   if (window_token.empty()) {
     remote_window_accessible_.reset();
   } else {
-    remote_window_accessible_ =
-        ui::RemoteAccessibility::GetRemoteElementFromToken(window_token);
+    remote_window_accessible_.reset(
+        ui::RemoteAccessibility::GetRemoteElementFromToken(window_token),
+        base::scoped_policy::RETAIN);
   }
 }
 

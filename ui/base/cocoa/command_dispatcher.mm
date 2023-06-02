@@ -10,6 +10,10 @@
 #include "base/trace_event/trace_event.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Expose -[NSWindow hasKeyAppearance], which determines whether the traffic
 // lights on the window are "lit". CommandDispatcher uses this property on a
 // parent window to decide whether keys and commands should bubble up.
@@ -54,11 +58,10 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
 }  // namespace
 
 @implementation CommandDispatcher {
- @private
   BOOL _eventHandled;
   BOOL _isRedispatchingKeyEvent;
 
-  NSWindow<CommandDispatchingWindow>* _owner;  // Weak, owns us.
+  NSWindow<CommandDispatchingWindow>* __weak _owner;  // Weak, owns us.
 }
 
 @synthesize delegate = _delegate;
@@ -83,14 +86,14 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
   return NO;
 }
 
-// |delegate_| may be nil in this method. Rather than adding nil checks to every
+// |_delegate| may be nil in this method. Rather than adding nil checks to every
 // call, we rely on the fact that method calls to nil return nil, and that nil
 // == ui::PerformKeyEquivalentResult::kUnhandled;
 - (BOOL)performKeyEquivalent:(NSEvent*)event {
   // TODO(bokan): Tracing added temporarily to diagnose crbug.com/1039833.
   TRACE_EVENT2("ui", "CommandDispatcher::performKeyEquivalent", "window num",
-               [_owner windowNumber], "is keyWin", [NSApp keyWindow] == _owner);
-  DCHECK_EQ(NSEventTypeKeyDown, [event type]);
+               _owner.windowNumber, "is keyWin", NSApp.keyWindow == _owner);
+  DCHECK_EQ(NSEventTypeKeyDown, event.type);
 
   // If the event is being redispatched, then this is the second time
   // performKeyEquivalent: is being called on the event. The first time, a
@@ -155,8 +158,8 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
   // Since this class implements these selectors, |super| will always say they
   // are enabled. Only use [super] to validate other selectors. If there is no
   // command handler, defer to AppController.
-  if ([item action] == @selector(commandDispatch:) ||
-      [item action] == @selector(commandDispatchUsingKeyModifiers:)) {
+  if (item.action == @selector(commandDispatch:) ||
+      item.action == @selector(commandDispatchUsingKeyModifiers:)) {
     if (handler) {
       // -dispatch:.. can't later decide to bubble events because
       // -commandDispatch:.. is assumed to always succeed. So, if there is a
@@ -189,13 +192,13 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
 - (BOOL)redispatchKeyEvent:(NSEvent*)event {
   // TODO(bokan): Tracing added temporarily to diagnose crbug.com/1039833.
   TRACE_EVENT2("ui", "CommandDispatcher::redispatchKeyEvent", "window num",
-               [_owner windowNumber], "event window num",
-               [[event window] windowNumber]);
+               _owner.windowNumber, "event window num",
+               event.window.windowNumber);
   DCHECK(!_isRedispatchingKeyEvent);
   base::AutoReset<BOOL> resetter(&_isRedispatchingKeyEvent, YES);
 
   DCHECK(event);
-  NSEventType eventType = [event type];
+  NSEventType eventType = event.type;
   if (eventType != NSEventTypeKeyDown && eventType != NSEventTypeKeyUp &&
       eventType != NSEventTypeFlagsChanged) {
     NOTREACHED();
@@ -207,8 +210,9 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
   // up the native event to reference the correct window. Failure to do this can
   // cause infinite redispatch loops; see https://crbug.com/1085578 for more
   // details.
-  if ([event window] != _owner)
+  if (event.window != _owner) {
     event = KeyEventForWindow(_owner, event);
+  }
 
   // Redispatch the event.
   _eventHandled = YES;
@@ -223,14 +227,14 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
 - (BOOL)preSendEvent:(NSEvent*)event {
   // TODO(bokan): Tracing added temporarily to diagnose crbug.com/1039833.
   TRACE_EVENT2("ui", "CommandDispatcher::preSendEvent", "window num",
-               [_owner windowNumber], "event window num",
-               [[event window] windowNumber]);
+               _owner.windowNumber, "event window num",
+               event.window.windowNumber);
 
   // AppKit does not call performKeyEquivalent: if the event only has the
   // NSEventModifierFlagOption modifier. However, Chrome wants to treat these
   // events just like keyEquivalents, since they can be consumed by extensions.
-  if ([event type] == NSEventTypeKeyDown &&
-      ([event modifierFlags] & NSEventModifierFlagOption)) {
+  if (event.type == NSEventTypeKeyDown &&
+      (event.modifierFlags & NSEventModifierFlagOption)) {
     BOOL handled = [self performKeyEquivalent:event];
     if (handled)
       return YES;
@@ -263,7 +267,7 @@ NSEvent* KeyEventForWindow(NSWindow* window, NSEvent* event) {
 }
 
 - (NSWindow<CommandDispatchingWindow>*)bubbleParent {
-  NSWindow* parent = [_owner parentWindow];
+  NSWindow* parent = _owner.parentWindow;
   if (parent && [parent hasKeyAppearance] &&
       [parent conformsToProtocol:@protocol(CommandDispatchingWindow)])
     return static_cast<NSWindow<CommandDispatchingWindow>*>(parent);

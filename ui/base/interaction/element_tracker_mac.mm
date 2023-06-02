@@ -12,6 +12,10 @@
 #include "base/no_destructor.h"
 #include "ui/base/interaction/element_identifier.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementMac)
@@ -188,8 +192,8 @@ ElementTrackerMac::ElementTrackerMac() = default;
 ElementTrackerMac::~ElementTrackerMac() = default;
 
 NSMenu* ElementTrackerMac::GetRootMenu(NSMenu* menu) const {
-  while ([menu supermenu]) {
-    menu = [menu supermenu];
+  while (menu.supermenu) {
+    menu = menu.supermenu;
   }
   return menu;
 }
