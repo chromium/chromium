@@ -215,6 +215,8 @@ class CORE_EXPORT DisplayLockUtilities {
   // See: http://bit.ly/2RXULVi, "beforeactivate Event" part.
   static bool ActivateFindInPageMatchRangeIfNeeded(
       const EphemeralRangeInFlatTree& range);
+  static bool NeedsActivationForFindInPage(
+      const EphemeralRangeInFlatTree& range);
 
   // Returns activatable-locked inclusive ancestors of |node|.
   // Note that this function will return an empty list if |node| is inside a

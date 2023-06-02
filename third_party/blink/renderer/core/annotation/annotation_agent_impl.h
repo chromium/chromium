@@ -70,12 +70,14 @@ class CORE_EXPORT AnnotationAgentImpl final
       mojo::PendingReceiver<mojom::blink::AnnotationAgent> agent_receiver);
 
   // Attempts to find a Range of DOM matching the search criteria of the
-  // AnnotationSelector passed in the constructor. The search is performed
-  // synchronously.
-  // TODO(bokan): This is synchronous for the TextFragmentAnchor use case but
-  // we'll likely want an async version for typical usage and/or eventually
-  // convert TextFragmentAnchor to use an async search.
+  // AnnotationSelector passed in the constructor. The DOM search is performed
+  // synchronously but if that match is in a hidden subtree
+  // (content-visibility: auto, <details>, hidden=until-found) that can be
+  // shown, attachment will complete asynchronously once the subtree is made
+  // visible.  Otherwise, `did_finish_callback` will be invoked synchronously.
+  // TODO(bokan): Remove the parameterless signature.
   void Attach();
+  void Attach(base::OnceClosure did_finish_callback);
 
   // Returns whether Attach() has been called at least once.
   bool DidTryAttach() const { return did_try_attach_; }
@@ -85,6 +87,12 @@ class CORE_EXPORT AnnotationAgentImpl final
   // response to changes in DOM. Hence, an AnnotationAgent that IsAttached may
   // become detached due to changes in the Document.
   bool IsAttached() const;
+
+  // Returns true if the agent has found the requested range but is waiting
+  // on DOM mutations before attaching. For example, if the range is in a hidden
+  // <details> element, the agent will be in a pending state until the <details>
+  // is opened in the next animation frame.
+  bool IsAttachmentPending() const;
 
   // Returns true if this agent is bound to a host.
   bool IsBoundForTesting() const;
@@ -111,8 +119,18 @@ class CORE_EXPORT AnnotationAgentImpl final
  private:
   friend AnnotationAgentImplTest;
 
-  // Callback for when AnnotationSelector::FindRange finishes.
-  void DidFinishAttach(const RangeInFlatTree* range);
+  // Callback for when AnnotationSelector::FindRange finishes. If needed, this
+  // may post a task to perform DOM mutation for hidden=until-found and similar
+  // "activate on find" DOM features before calling ProcessAttachmentFinished.
+  // Otherwise, ProcessAttachmentFinished is called synchronously.
+  void DidFinishFindRange(const RangeInFlatTree* range);
+
+  bool NeedsDOMMutationToAttach() const;
+  void PerformPreAttachDOMMutation();
+
+  // This will add the highlight marker and respond to the host or callback as
+  // needed.
+  void ProcessAttachmentFinished();
 
   bool IsRemoved() const;
 
@@ -129,13 +147,22 @@ class CORE_EXPORT AnnotationAgentImpl final
 
   // The attached_range_ is null until the agent performs a successful
   // Attach().
+  Member<RangeInFlatTree> attached_range_;
+
+  // In some cases attachment may be asynchronous, e.g. while waiting on a new
+  // compositor frame to expand a hidden section. If text was found but is
+  // waiting for such a "PreAttachDOMMutation", the range will be stored here
+  // before being "attached" by transfer to `attached_range_`. At most one of
+  // `attached_range_` or `pending_range_` will be non-null
   // TODO(bokan): This doesn't need to be const but is due to the
   // TextFragmentFinder::Client interface.
-  Member<const RangeInFlatTree> attached_range_;
+  Member<const RangeInFlatTree> pending_range_;
 
   // TODO(bokan): Once we have more of this implemented we'll use the type to
   // determine styling and context menu behavior.
   mojom::blink::AnnotationType type_;
+
+  base::OnceClosure did_finish_attachment_callback_;
 
   bool did_try_attach_ = false;
 };

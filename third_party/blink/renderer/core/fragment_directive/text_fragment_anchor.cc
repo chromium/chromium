@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/annotation/text_annotation_selector.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
-#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -29,7 +28,6 @@
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -232,7 +230,7 @@ bool TextFragmentAnchor::InvokeSelector() {
       (!did_perform_post_load_attachment_ &&
        frame_->GetDocument()->IsLoadCompleted())) {
     // If this successfully attaches the first directive it will move the anchor
-    // into kBeforeMatchEventQueued state.
+    // into kWaitingForDOMMutations or kApplyEffects state.
     TryAttachingUnattachedDirectives();
 
     did_perform_initial_attachment_ = true;
@@ -246,14 +244,13 @@ bool TextFragmentAnchor::InvokeSelector() {
       if (frame_->GetDocument()->IsLoadCompleted())
         DidFinishSearch();
       break;
-    case kBeforeMatchEventQueued:
-      // If a match was found, we need to wait to fire and process the
-      // BeforeMatch event before doing anything else so don't try to finish
-      // the search yet.
+    case kWaitingForDOMMutations:
+      // A match was found but requires some kind of DOM mutation to make it
+      // visible and ready so don't try to finish the search yet.
       break;
-    case kBeforeMatchEventFired:
-      // Now that the event has been processed, apply the necessary effects to
-      // the matching DOM nodes.
+    case kApplyEffects:
+      // Now that the event - if needed - has been processed, apply the
+      // necessary effects to the matching DOM nodes.
       ApplyEffectsToFirstMatch();
 
       // A second text-search pass will occur after the load event has been
@@ -342,46 +339,28 @@ void TextFragmentAnchor::TryAttachingUnattachedDirectives() {
     if (annotation->IsAttached())
       continue;
 
-    annotation->Attach();
-    if (annotation->IsAttached()) {
-      if (!first_match_)
-        DidFindFirstMatch(*annotation);
+    annotation->Attach(WTF::BindOnce(&TextFragmentAnchor::DidFinishAttachment,
+                                     WrapWeakPersistent(this),
+                                     WrapWeakPersistent(annotation)));
+    CHECK(!annotation->IsAttachmentPending() || !annotation->IsAttached());
 
-      metrics_->DidFindMatch();
-      if (!static_cast<const TextAnnotationSelector*>(annotation->GetSelector())
-               ->WasMatchUnique()) {
-        metrics_->DidFindAmbiguousMatch();
-      }
+    // Text fragments apply effects (scroll, focus) only to the first
+    // *matching* directive into view so that's the directive that reflects the
+    // `state_`. The Attach() call matches synchronously (but may
+    // ansynchronously perform DOMMutations) so the first such matching agent
+    // will be set to first_match_.
+    if (!first_match_ &&
+        (annotation->IsAttachmentPending() || annotation->IsAttached())) {
+      state_ = annotation->IsAttachmentPending() ? kWaitingForDOMMutations
+                                                 : kApplyEffects;
+      first_match_ = annotation;
     }
   }
 }
 
-void TextFragmentAnchor::DidFindFirstMatch(
-    const AnnotationAgentImpl& annotation) {
-  DCHECK(annotation.IsAttached());
-  DCHECK_EQ(state_, kSearching);
-  DCHECK(!first_match_);
-
-  first_match_ = &annotation;
-
-  const RangeInFlatTree& range = annotation.GetAttachedRange();
-
-  // TODO(bokan): This fires an event and reveals only at the first match - it
-  // seems like something we may want to do for all highlights on a page?
-  // https://crbug.com/1327379.
-  Element* enclosing_block =
-      EnclosingBlock(range.StartPosition(), kCannotCrossEditingBoundary);
-  DCHECK(enclosing_block);
-  frame_->GetDocument()->EnqueueAnimationFrameTask(
-      WTF::BindOnce(&TextFragmentAnchor::FireBeforeMatchEvent,
-                    WrapPersistent(this), WrapPersistent(&range)));
-
-  state_ = kBeforeMatchEventQueued;
-}
-
 void TextFragmentAnchor::ApplyEffectsToFirstMatch() {
   DCHECK(first_match_);
-  DCHECK_EQ(state_, kBeforeMatchEventFired);
+  DCHECK_EQ(state_, kApplyEffects);
 
   // TODO(jarhar): Consider what to do based on DOM/style modifications made by
   // the beforematch event here and write tests for it once we decide on a
@@ -418,7 +397,7 @@ void TextFragmentAnchor::ApplyEffectsToFirstMatch() {
 
 bool TextFragmentAnchor::EnsureFirstMatchInViewIfNeeded() {
   DCHECK(first_match_);
-  DCHECK_GE(state_, kBeforeMatchEventFired);
+  DCHECK_GE(state_, kApplyEffects);
 
   if (!should_scroll_ || user_scrolled_)
     return false;
@@ -479,34 +458,23 @@ void TextFragmentAnchor::ApplyTargetToCommonAncestor(
   }
 }
 
-void TextFragmentAnchor::FireBeforeMatchEvent(const RangeInFlatTree* range) {
-  if (!range->IsCollapsed() && range->IsConnected()) {
-    // TODO(crbug.com/1252872): Only |first_node| is considered for the below
-    // ancestor expanding code, but we should be considering the entire range
-    // of selected text for ancestor unlocking as well.
-    Node& first_node = *range->ToEphemeralRange().Nodes().begin();
+void TextFragmentAnchor::DidFinishAttachment(AnnotationAgentImpl* agent) {
+  CHECK(agent);
+  CHECK(!agent->IsAttachmentPending());
 
-    // Activate content-visibility:auto subtrees if needed.
-    DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
-        range->ToEphemeralRange());
-
-    // If the active match is hidden inside a <details> element, then we should
-    // expand it so we can scroll to it.
-    if (HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
-      UseCounter::Count(
-          first_node.GetDocument(),
-          WebFeature::kAutoExpandedDetailsForScrollToTextFragment);
-    }
-
-    // If the active match is hidden inside a hidden=until-found element, then
-    // we should reveal it so we can scroll to it.
-    if (RuntimeEnabledFeatures::BeforeMatchEventEnabled(
-            first_node.GetExecutionContext())) {
-      DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
-    }
+  if (!agent->IsAttached()) {
+    return;
   }
 
-  state_ = kBeforeMatchEventFired;
+  metrics_->DidFindMatch();
+  if (!static_cast<const TextAnnotationSelector*>(agent->GetSelector())
+           ->WasMatchUnique()) {
+    metrics_->DidFindAmbiguousMatch();
+  }
+
+  if (state_ == kWaitingForDOMMutations && agent == first_match_) {
+    state_ = kApplyEffects;
+  }
 }
 
 void TextFragmentAnchor::SetTickClockForTesting(

@@ -423,8 +423,6 @@ TEST_F(CssSelectorFragmentAnchorTest,
 
   test::RunPendingTasks();
 
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
   Compositor().BeginFrame();
 
   Element& element = *GetDocument().getElementById("element");

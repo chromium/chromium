@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/annotation/annotation_selector.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_finder.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -19,8 +20,8 @@ class Document;
 // AnnotationSelector based on TextFragmentFinder. This selector allows
 // attaching to DOM based on exact or a range of text with provided prefix or
 // suffix.
-class TextAnnotationSelector : public AnnotationSelector,
-                               public TextFragmentFinder::Client {
+class CORE_EXPORT TextAnnotationSelector : public AnnotationSelector,
+                                           public TextFragmentFinder::Client {
  public:
   explicit TextAnnotationSelector(const TextFragmentSelector& params);
   ~TextAnnotationSelector() override = default;

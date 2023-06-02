@@ -43,17 +43,6 @@ class TextFragmentHandlerTest : public SimTest {
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   }
 
-  void BeginEmptyFrame() {
-    // If a test case doesn't find a match and therefore doesn't schedule the
-    // beforematch event, we should still render a second frame as if we did
-    // schedule the event to retain test coverage.
-    // When the beforematch event is not scheduled, a DCHECK will fail on
-    // BeginFrame() because no event was scheduled, so we schedule an empty task
-    // here.
-    GetDocument().EnqueueAnimationFrameTask(WTF::BindOnce([]() {}));
-    Compositor().BeginFrame();
-  }
-
   void RunAsyncMatchingTasks() {
     ThreadScheduler::Current()
         ->ToMainThreadScheduler()
@@ -196,7 +185,6 @@ TEST_F(TextFragmentHandlerTest, RemoveTextFragments) {
   RunAsyncMatchingTasks();
 
   // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
   Compositor().BeginFrame();
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
@@ -361,6 +349,7 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
   LoadURL(
       "https://example.com/"
       "test.html#:~:text=This,page");
+  LoadAhem();
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="width=device-width">
@@ -369,7 +358,6 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRect) {
     <p id="second">with some more text</p>
   )HTML");
   RunAsyncMatchingTasks();
-  LoadAhem();
 
   Compositor().BeginFrame();
 
@@ -402,6 +390,7 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
   SimRequest request("https://example.com/test.html#:~:text=test,page",
                      "text/html");
   LoadURL("https://example.com/test.html#:~:text=test,page");
+  LoadAhem();
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="initial-scale=4">
@@ -418,7 +407,6 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectScroll) {
     <p id="first">This is a test page</p>
   )HTML");
   RunAsyncMatchingTasks();
-  LoadAhem();
 
   Compositor().BeginFrame();
 
@@ -448,6 +436,7 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
   LoadURL(
       "https://example.com/"
       "test.html#:~:text=test%20page&text=more%20text");
+  LoadAhem();
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="width=device-width">
@@ -467,7 +456,6 @@ TEST_F(TextFragmentHandlerTest, ExtractFirstTextFragmentRectMultipleHighlight) {
     <p id="second">With some more text</p>
   )HTML");
   RunAsyncMatchingTasks();
-  LoadAhem();
 
   Compositor().BeginFrame();
 
@@ -498,6 +486,7 @@ TEST_F(TextFragmentHandlerTest,
   LoadURL(
       "https://example.com/"
       "test.html#:~:text=fake&text=test%20page");
+  LoadAhem();
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="width=device-width">
@@ -516,7 +505,6 @@ TEST_F(TextFragmentHandlerTest,
     <p id="first">This is a test page</p>
   )HTML");
   RunAsyncMatchingTasks();
-  LoadAhem();
 
   Compositor().BeginFrame();
 
@@ -546,6 +534,7 @@ TEST_F(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
   LoadURL(
       "https://example.com/"
       "test.html#:~:text=not%20on%20the%20page");
+  LoadAhem();
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <meta name="viewport" content="width=device-width">
@@ -565,7 +554,6 @@ TEST_F(TextFragmentHandlerTest, RejectExtractFirstTextFragmentRect) {
     <p id="second">With some more text</p>
   )HTML");
   RunAsyncMatchingTasks();
-  LoadAhem();
 
   Compositor().BeginFrame();
 
@@ -750,9 +738,7 @@ TEST_F(TextFragmentHandlerTest,
   )HTML");
   RunAsyncMatchingTasks();
 
-  // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
-  BeginEmptyFrame();
 
   Element* iframe = GetDocument().getElementById("iframe");
   auto* child_frame =
@@ -791,7 +777,6 @@ TEST_F(TextFragmentHandlerTest, NonMatchingTextDirectiveCreatesHandler) {
   SetLocationHash(GetDocument(), ":~:text=non%20existent%20text");
 
   Compositor().BeginFrame();
-  BeginEmptyFrame();
   RunAsyncMatchingTasks();
 
   ASSERT_EQ(0u, GetDocument().Markers().Markers().size());
@@ -960,7 +945,6 @@ TEST_F(TextFragmentHandlerTest,
 
   // Render two frames to handle the async step added by the beforematch event.
   Compositor().BeginFrame();
-  BeginEmptyFrame();
 
   Element* iframe = GetDocument().getElementById("iframe");
   auto* child_frame =
@@ -1088,8 +1072,6 @@ TEST_F(TextFragmentHandlerTest, InvalidateOverflowOnRemoval) {
   )HTML");
   RunAsyncMatchingTasks();
 
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
   Compositor().BeginFrame();
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());

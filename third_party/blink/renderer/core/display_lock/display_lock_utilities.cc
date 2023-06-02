@@ -171,13 +171,11 @@ bool DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
     const EphemeralRangeInFlatTree& range) {
   DCHECK(!range.IsNull());
   DCHECK(!range.IsCollapsed());
-  if (range.GetDocument()
-          .GetDisplayLockDocumentState()
-          .LockedDisplayLockCount() ==
-      range.GetDocument()
-          .GetDisplayLockDocumentState()
-          .DisplayLockBlockingAllActivationCount())
+  if (!range.GetDocument()
+           .GetDisplayLockDocumentState()
+           .HasActivatableLocks()) {
     return false;
+  }
   // Find-in-page matches can't span multiple block-level elements (because the
   // text will be broken by newlines between blocks), so first we find the
   // block-level element which contains the match.
@@ -194,6 +192,35 @@ bool DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
   DCHECK(enclosing_block);
   return enclosing_block->ActivateDisplayLockIfNeeded(
       DisplayLockActivationReason::kFindInPage);
+}
+
+bool DisplayLockUtilities::NeedsActivationForFindInPage(
+    const EphemeralRangeInFlatTree& range) {
+  DisplayLockDocumentState& state =
+      range.GetDocument().GetDisplayLockDocumentState();
+  if (!state.HasActivatableLocks()) {
+    return false;
+  }
+
+  Element* enclosing_block =
+      EnclosingBlock(range.StartPosition(), kCanCrossEditingBoundary);
+
+  HeapVector<Member<Element>> activatable_targets;
+  for (Node& ancestor :
+       FlatTreeTraversal::InclusiveAncestorsOf(*enclosing_block)) {
+    auto* ancestor_element = DynamicTo<Element>(ancestor);
+    if (!ancestor_element) {
+      continue;
+    }
+    if (auto* context = ancestor_element->GetDisplayLockContext()) {
+      if (context->ShouldCommitForActivation(
+              DisplayLockActivationReason::kFindInPage)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 const HeapVector<Member<Element>>

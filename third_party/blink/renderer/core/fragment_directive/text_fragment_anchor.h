@@ -52,11 +52,11 @@ class TextDirective;
 //               └─────────────┬─────────────┘            │
 //                             │                          │
 //         ┌─────┬─────────────▼─────────────┐            │
-//         └────►│ kBeforeMatchEventQueued   │            │
+//         └────►│ kWaitingForDOMMutations   │            │
 //               └─────────────┬─────────────┘            │
 //                             │                          │
-//               ┌─────────────▼─────────────┐            │
-//               │  kBeforeMatchEventFired   ├────────────┤
+//               ┌─────────────▼─────────────┐◄───────────┘
+//               │        kApplyEffects      ├────────────┐
 //               └─────────────┬─────────────┘            │
 //                             │                          │
 //         ┌─────┬─────────────▼─────────────┐            │
@@ -120,12 +120,8 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
   // that hasn't yet found a match.
   void TryAttachingUnattachedDirectives();
 
-  // Called on the first directive to be successfully matched. This will queue
-  // a BeforeMatch event to be fired.
-  void DidFindFirstMatch(const AnnotationAgentImpl& annotation);
-
-  // Called once the BeforeMatch event from above has been processed. CSS
-  // style and scroll into view can now be performed.
+  // Called once matched text is ready (any necessary DOM mutations have been
+  // been processed). CSS style and scroll into view can now be performed.
   void ApplyEffectsToFirstMatch();
 
   // Performs ScrollIntoView so that the first match is visible in the viewport.
@@ -140,7 +136,7 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
 
   void ApplyTargetToCommonAncestor(const EphemeralRangeInFlatTree& range);
 
-  void FireBeforeMatchEvent(const RangeInFlatTree* range);
+  void DidFinishAttachment(AnnotationAgentImpl* agent);
 
   bool HasSearchEngineSource();
 
@@ -172,13 +168,13 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
     // initial attachment, a second try will occur only after the load event
     // has fired; InvokeSelector calls before then will be a no-op.
     kSearching,
-    // At least one match has been found. The BeforeMatch event was queued and
-    // InvokeSelector will now be a no-op until BeforeMatch fires and is
-    // processed.
-    kBeforeMatchEventQueued,
-    // The BeforeMatch event has been processed, InvokeSelector will now apply
-    // effects like CSS :target, scrollIntoView, etc.
-    kBeforeMatchEventFired,
+    // At least one match has been found but requires some kind of DOM mutation
+    // (e.g. expanding a <details> element). Wait in this state until those
+    // complete. InvokeSelector will be a no-op in this state.
+    kWaitingForDOMMutations,
+    // The matched text is found and fully ready so InvokeSelector will now
+    // apply effects like CSS :target, scrollIntoView, etc.
+    kApplyEffects,
     // The first match has been processed and scrolled into view. The anchor is
     // kept alive in this state until the load event fires. All that's done
     // during this state is to keep the match centered in the viewport.
