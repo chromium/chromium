@@ -1,0 +1,21 @@
+Tests that data: URLs in SVGUseElement deprecation issues are reported
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 63
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : DataUrlInSvgUse
+            }
+        }
+    }
+}
+

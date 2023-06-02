@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/xml_document.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
@@ -46,7 +47,6 @@
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -209,8 +209,10 @@ void SVGUseElement::UpdateTargetReference() {
 
   pending_event_.Cancel();
 
-  if (element_url_.ProtocolIsData())
-    UseCounter::Count(GetDocument(), WebFeature::kDataUrlInSvgUse);
+  if (element_url_.ProtocolIsData()) {
+    Deprecation::CountDeprecation(GetDocument().domWindow(),
+                                  WebFeature::kDataUrlInSvgUse);
+  }
 
   auto* context_document = &GetDocument();
   ExecutionContext* execution_context = context_document->GetExecutionContext();
