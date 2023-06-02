@@ -2947,19 +2947,28 @@ void InjectNTP(Browser* browser) {
   };
 
   if (self.settingsNavigationController) {
+    __weak SettingsNavigationController* settingsNavigationController =
+        self.settingsNavigationController;
+    self.settingsNavigationController = nil;
     // Store a reference to the presentingViewController in case the user
     // is dismissing the Signin screen and then dismisses Settings before
     // the Signin screen is done animating, which will delay the execution of
     // the `dismissSettings` block stopping the code from accessing
     // the `presentingViewController` property.
     __weak UIViewController* weakPresentingViewController =
-        [self.settingsNavigationController presentingViewController];
+        [settingsNavigationController presentingViewController];
     ProceduralBlock dismissSettings = ^() {
-      [weakSelf.settingsNavigationController cleanUpSettings];
-      DCHECK(weakPresentingViewController);
-      [weakPresentingViewController dismissViewControllerAnimated:animated
-                                                       completion:completion];
-      weakSelf.settingsNavigationController = nil;
+      [settingsNavigationController cleanUpSettings];
+      UIViewController* strongPresentingViewController =
+          weakPresentingViewController;
+      if (strongPresentingViewController) {
+        [strongPresentingViewController
+            dismissViewControllerAnimated:animated
+                               completion:completion];
+      } else {
+        // The view is already dismissed. Completion should still be called.
+        completion();
+      }
     };
     // `self.signinCoordinator` can be presented on top of the settings, to
     // present the Trusted Vault reauthentication `self.signinCoordinator` has
@@ -2969,7 +2978,7 @@ void InjectNTP(Browser* browser) {
       // happen when it is done animating.
       [self interruptSigninCoordinatorAnimated:animated
                                     completion:dismissSettings];
-    } else if (dismissSettings) {
+    } else {
       dismissSettings();
     }
   } else if (self.signinCoordinator) {
