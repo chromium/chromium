@@ -13,6 +13,7 @@
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
@@ -120,6 +121,10 @@ void RegisterChannelAssociatedPoliciesForSameOriginPrerendering(
   // they active documents (see RenderFrameHostImpl::EnterFullscreen), so it is
   // safe to allow a prerendered document to use it.
   map.SetAssociatedPolicy<blink::mojom::DisplayCutoutHost>(
+      MojoBinderAssociatedPolicy::kGrant);
+
+  // Prerendering pages are allowed to create urls for blobs.
+  map.SetAssociatedPolicy<blink::mojom::BlobURLStore>(
       MojoBinderAssociatedPolicy::kGrant);
 }
 
