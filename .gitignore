@@ -245,6 +245,7 @@ vs-chromium-project.txt
 /googleurl
 /gpu/gles2_conform_test
 /infra/.recipe_deps
+/internal
 /ios/third_party/earl_grey/src
 /ios/third_party/earl_grey2/src
 /ios/third_party/edo/src
