@@ -467,19 +467,7 @@ void IDBRequest::OnDelete(bool success) {
 
 void IDBRequest::OnGet(mojom::blink::IDBDatabaseGetResultPtr result) {
   if (result->is_error_result()) {
-    mojom::blink::IDBException code = result->get_error_result()->error_code;
-    // In some cases, the backend clears the pending transaction task queue
-    // which destroys all pending tasks.  If our callback was queued with a task
-    // that gets cleared, we'll get a signal with an IgnorableAbortError as the
-    // task is torn down.  This means the error response can be safely ignored.
-    if (code == mojom::blink::IDBException::kIgnorableAbortError) {
-      return;
-    }
-    probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
-                                "error");
-    HandleResponse(MakeGarbageCollected<DOMException>(
-        static_cast<DOMExceptionCode>(code),
-        std::move(result->get_error_result()->error_message)));
+    HandleError(std::move(result->get_error_result()));
     return;
   }
 
@@ -497,6 +485,38 @@ void IDBRequest::OnGet(mojom::blink::IDBDatabaseGetResultPtr result) {
   }
 }
 
+void IDBRequest::OnOpenCursor(
+    mojom::blink::IDBDatabaseOpenCursorResultPtr result) {
+  if (result->is_error_result()) {
+    HandleError(std::move(result->get_error_result()));
+    return;
+  }
+
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
+                              "openCursor");
+  if (result->is_empty()) {
+    std::unique_ptr<IDBValue> value = IDBValue::ConvertReturnValue(nullptr);
+    value->SetIsolate(GetIsolate());
+    HandleResponse(std::move(value));
+    return;
+  }
+
+  std::unique_ptr<WebIDBCursor> cursor = std::make_unique<WebIDBCursor>(
+      std::move(result->get_value()->cursor), transaction_->Id(),
+      GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess));
+  std::unique_ptr<IDBValue> value;
+  if (result->get_value()->value) {
+    value = std::move(*result->get_value()->value);
+  } else {
+    value = std::make_unique<IDBValue>(scoped_refptr<SharedBuffer>(),
+                                       Vector<WebBlobInfo>());
+  }
+
+  value->SetIsolate(GetIsolate());
+  HandleResponse(std::move(cursor), std::move(result->get_value()->key),
+                 std::move(result->get_value()->primary_key), std::move(value));
+}
+
 void IDBRequest::EnqueueResponse(DOMException* error) {
   TRACE_EVENT0("IndexedDB", "IDBRequest::EnqueueResponse(DOMException)");
   if (!ShouldEnqueueEvent()) {
@@ -508,6 +528,30 @@ void IDBRequest::EnqueueResponse(DOMException* error) {
   SetResult(MakeGarbageCollected<IDBAny>(IDBAny::kUndefinedType));
   pending_cursor_.Clear();
   EnqueueEvent(Event::CreateCancelableBubble(event_type_names::kError));
+}
+
+void IDBRequest::HandleError(mojom::blink::IDBErrorPtr error) {
+  mojom::blink::IDBException code = error->error_code;
+  // In some cases, the backend clears the pending transaction task queue
+  // which destroys all pending tasks.  If our callback was queued with a task
+  // that gets cleared, we'll get a signal with an IgnorableAbortError as the
+  // task is torn down.  This means the error response can be safely ignored.
+  if (code == mojom::blink::IDBException::kIgnorableAbortError) {
+    return;
+  }
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
+                              "error");
+  auto* exception = MakeGarbageCollected<DOMException>(
+      static_cast<DOMExceptionCode>(code), std::move(error->error_message));
+
+  transit_blob_handles_.clear();
+  if (!transaction_ || !transaction_->HasQueuedResults()) {
+    return EnqueueResponse(exception);
+  }
+  transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
+      this, exception,
+      WTF::BindOnce(&IDBTransaction::OnResultReady,
+                    WrapPersistent(transaction_.Get()))));
 }
 
 void IDBRequest::EnqueueResponse(std::unique_ptr<WebIDBCursor> backend,

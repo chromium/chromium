@@ -285,6 +285,7 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
   void OnClear(bool success);
   void OnDelete(bool success);
   void OnGet(mojom::blink::IDBDatabaseGetResultPtr result);
+  void OnOpenCursor(mojom::blink::IDBDatabaseOpenCursorResultPtr result);
 
   // Only IDBOpenDBRequest instances should receive these:
   virtual void EnqueueBlocked(int64_t old_version) { NOTREACHED(); }
@@ -385,6 +386,8 @@ class MODULES_EXPORT IDBRequest : public EventTargetWithInlineData,
                        std::unique_ptr<IDBKey>,
                        std::unique_ptr<IDBKey> primary_key,
                        std::unique_ptr<IDBValue>);
+
+  void HandleError(mojom::blink::IDBErrorPtr error);
 
   void EnqueueResponse(DOMException*);
   void EnqueueResponse(std::unique_ptr<IDBKey>);

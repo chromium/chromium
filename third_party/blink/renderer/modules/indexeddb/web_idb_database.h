@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
+class IDBRequest;
 class WebIDBCallbacks;
 
 class MODULES_EXPORT WebIDBDatabase final {
@@ -78,16 +79,13 @@ class MODULES_EXPORT WebIDBDatabase final {
   void SetIndexesReady(int64_t transaction_id,
                        int64_t object_store_id,
                        const Vector<int64_t>& index_ids);
-  void OpenCursor(int64_t transaction_id,
-                  int64_t object_store_id,
+  void OpenCursor(int64_t object_store_id,
                   int64_t index_id,
                   const IDBKeyRange*,
                   mojom::blink::IDBCursorDirection direction,
                   bool key_only,
                   mojom::blink::IDBTaskType,
-                  WebIDBCallbacks*);
-  void OpenCursorCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
-                          mojom::blink::IDBDatabaseOpenCursorResultPtr result);
+                  IDBRequest*);
   void Count(int64_t transaction_id,
              int64_t object_store_id,
              int64_t index_id,

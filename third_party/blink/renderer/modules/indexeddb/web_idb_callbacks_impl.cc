@@ -108,34 +108,6 @@ void WebIDBCallbacksImpl::Error(mojom::blink::IDBException code,
       static_cast<DOMExceptionCode>(code), message));
 }
 
-void WebIDBCallbacksImpl::SuccessCursor(
-    mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
-    std::unique_ptr<IDBKey> key,
-    std::unique_ptr<IDBKey> primary_key,
-    absl::optional<std::unique_ptr<IDBValue>> optional_value) {
-  if (!request_)
-    return;
-
-  std::unique_ptr<WebIDBCursor> cursor = std::make_unique<WebIDBCursor>(
-      std::move(cursor_info), transaction_id_, task_runner_);
-  std::unique_ptr<IDBValue> value;
-  if (optional_value.has_value()) {
-    value = std::move(optional_value.value());
-  } else {
-    value = std::make_unique<IDBValue>(scoped_refptr<SharedBuffer>(),
-                                       Vector<WebBlobInfo>());
-  }
-  DCHECK(value);
-
-  probe::AsyncTask async_task(request_->GetExecutionContext(),
-                              &async_task_context_, "success");
-  value->SetIsolate(request_->GetIsolate());
-  IDBRequest* request = request_.Get();
-  Detach();
-  request->HandleResponse(std::move(cursor), std::move(key),
-                          std::move(primary_key), std::move(value));
-}
-
 void WebIDBCallbacksImpl::SuccessCursorPrefetch(
     Vector<std::unique_ptr<IDBKey>> keys,
     Vector<std::unique_ptr<IDBKey>> primary_keys,

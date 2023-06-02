@@ -23,14 +23,6 @@ void MockWebIDBCallbacks::SuccessCursorContinue(
   DoSuccessCursorContinue(key, primary_key, value);
 }
 
-void MockWebIDBCallbacks::SuccessCursor(
-    mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
-    std::unique_ptr<IDBKey> key,
-    std::unique_ptr<IDBKey> primary_key,
-    absl::optional<std::unique_ptr<IDBValue>> optional_value) {
-  DoSuccessCursor(cursor_info, key, primary_key, optional_value);
-}
-
 void MockWebIDBCallbacks::SuccessKey(std::unique_ptr<IDBKey> key) {
   DoSuccessKey(key);
 }

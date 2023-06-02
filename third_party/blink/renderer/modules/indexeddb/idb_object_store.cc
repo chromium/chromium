@@ -1084,9 +1084,8 @@ IDBRequest* IDBObjectStore::openCursor(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   request->SetCursorDetails(indexed_db::kCursorKeyAndValue, direction);
 
-  BackendDB()->OpenCursor(transaction_->Id(), Id(),
-                          IDBIndexMetadata::kInvalidId, range, direction, false,
-                          task_type, request->CreateWebCallbacks().release());
+  BackendDB()->OpenCursor(Id(), IDBIndexMetadata::kInvalidId, range, direction,
+                          false, task_type, request);
   return request;
 }
 
@@ -1127,10 +1126,8 @@ IDBRequest* IDBObjectStore::openKeyCursor(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   request->SetCursorDetails(indexed_db::kCursorKeyOnly, direction);
 
-  BackendDB()->OpenCursor(transaction_->Id(), Id(),
-                          IDBIndexMetadata::kInvalidId, key_range, direction,
-                          true, mojom::IDBTaskType::Normal,
-                          request->CreateWebCallbacks().release());
+  BackendDB()->OpenCursor(Id(), IDBIndexMetadata::kInvalidId, key_range,
+                          direction, true, mojom::IDBTaskType::Normal, request);
   return request;
 }
 
