@@ -6091,9 +6091,6 @@ Permissions you've already given to websites and apps may apply to this account.
   <message name="IDS_BOREALIS_DISALLOWED_ADMIN" desc="Message shown to the user when Steam on Chromebook is blocked by their admin">
     Please contact your administrator
   </message>
-  <message name="IDS_BOREALIS_DISALLOWED_CHANNEL" desc="Message shown to the user when they try to install Steam on Chromebook on stable channel before it's available">
-    Steam is coming to Chromebook soon. Check for updates to see if Steam is available.
-  </message>
   <message name="IDS_BOREALIS_DISALLOWED_FLAG" desc="Message shown to the user when Steam on Chromebook doesn't have the correct chrome://flags setting enabled">
     #borealis-enabled must be enabled in chrome://flags
   </message>
