@@ -116,7 +116,7 @@ base::ScopedCFTypeRef<AXUIElementRef> FindAXUIElement(
   for (id child in children) {
     base::ScopedCFTypeRef<AXUIElementRef> found =
         FindAXUIElement((__bridge AXUIElementRef)child, criteria);
-    if (found != nil) {
+    if (found) {
       return found;
     }
   }

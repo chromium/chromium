@@ -159,30 +159,32 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
 
 std::string AXEventRecorderMac::SerializeTextSelectionChangedProperties(
     CFDictionaryRef user_info) {
-  if (user_info == nil)
+  if (user_info == nil) {
     return {};
+  }
 
-  __block std::vector<std::string> serialized_info;
-  [base::apple::CFToNSPtrCast(user_info) enumerateKeysAndObjectsUsingBlock:^(
-                                             id key, id value, BOOL* stop) {
+  NSDictionary* ns_user_info = base::apple::CFToNSPtrCast(user_info);
+  std::vector<std::string> serialized_info;
+  for (NSString* key in ns_user_info) {
+    NSNumber* value = base::mac::ObjCCast<NSNumber>(ns_user_info[key]);
     std::string value_string;
     if ([key isEqual:NSAccessibilityTextStateChangeTypeKey]) {
       value_string =
-          ToString(static_cast<AXTextStateChangeType>([value intValue]));
+          ToString(static_cast<AXTextStateChangeType>(value.intValue));
     } else if ([key isEqual:NSAccessibilityTextSelectionDirection]) {
       value_string =
-          ToString(static_cast<AXTextSelectionDirection>([value intValue]));
+          ToString(static_cast<AXTextSelectionDirection>(value.intValue));
     } else if ([key isEqual:NSAccessibilityTextSelectionGranularity]) {
       value_string =
-          ToString(static_cast<AXTextSelectionGranularity>([value intValue]));
+          ToString(static_cast<AXTextSelectionGranularity>(value.intValue));
     } else if ([key isEqual:NSAccessibilityTextEditType]) {
-      value_string = ToString(static_cast<AXTextEditType>([value intValue]));
+      value_string = ToString(static_cast<AXTextEditType>(value.intValue));
     } else {
-      return;
+      continue;
     }
     serialized_info.push_back(base::SysNSStringToUTF8(key) + "=" +
                               value_string);
-  }];
+  }
 
   // Always sort the info so that we don't depend on CFDictionary for
   // consistent output ordering.
