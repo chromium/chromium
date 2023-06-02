@@ -2114,6 +2114,9 @@ void PictureLayerImpl::SetPaintWorkletInputs(
     // Attempt to re-use an existing PaintRecord if possible.
     new_records[input] = std::make_pair(
         paint_image_id, std::move(paint_worklet_records_[input].second));
+    // The move constructor of absl::optional does not clear the source to
+    // nullopt.
+    paint_worklet_records_[input].second = absl::nullopt;
   }
   paint_worklet_records_.swap(new_records);
 

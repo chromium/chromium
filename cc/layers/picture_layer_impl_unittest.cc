@@ -6260,6 +6260,37 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputs) {
   EXPECT_TRUE(pending_layer()->GetPaintWorkletRecordMap().contains(input3));
 }
 
+TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputsIdenticalEntries) {
+  gfx::Size layer_bounds(1000, 1000);
+
+  auto recording_source = FakeRecordingSource::CreateRecordingSource(
+      gfx::Rect(layer_bounds), layer_bounds);
+  scoped_refptr<TestPaintWorkletInput> input =
+      base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(100, 100));
+  PaintImage image = CreatePaintWorkletPaintImage(input);
+  recording_source->add_draw_image(image, gfx::Point(100, 100));
+  recording_source->add_draw_image(image, gfx::Point(100, 100));
+  recording_source->Rerecord();
+
+  // All inputs should be registered on the pending layer.
+  SetupPendingTree(recording_source->CreateRasterSource(), gfx::Size(),
+                   Region(gfx::Rect(layer_bounds)));
+  EXPECT_EQ(pending_layer()->GetPaintWorkletRecordMap().size(), 1u);
+  EXPECT_TRUE(pending_layer()->GetPaintWorkletRecordMap().contains(input));
+
+  PaintRecord record;
+  pending_layer()->SetPaintWorkletRecord(input, record);
+  pending_layer()->picture_layer_tiling_set()->RemoveAllTiles();
+  recording_source->Rerecord();
+  pending_layer()->SetRasterSource(recording_source->CreateRasterSource(),
+                                   Region());
+  EXPECT_EQ(pending_layer()->GetPaintWorkletRecordMap().size(), 1u);
+  auto it = pending_layer()->GetPaintWorkletRecordMap().find(input);
+  ASSERT_NE(it, pending_layer()->GetPaintWorkletRecordMap().end());
+  // For now the paint record is cleared for multiple identical inputs.
+  EXPECT_FALSE(it->second.second.has_value());
+}
+
 TEST_F(LegacySWPictureLayerImplTest, NoTilingsUsesScaleOne) {
   auto render_pass = viz::CompositorRenderPass::Create();
 
