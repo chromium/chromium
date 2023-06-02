@@ -8,8 +8,8 @@ UNSCHEDULED_blink_perf.performance_apis,yoavweiss@chromium.org,Blink>Performance
 UNSCHEDULED_blink_perf.service_worker,"yyanagisawa@chromium.org, chrome-worker@google.com",Blink>ServiceWorker,https://bit.ly/blink-perf-benchmarks,
 UNSCHEDULED_blink_perf.view_transitions,"bokan@chromium.org, khushalsagar@chromium.org, vmpstr@chromium.org",Blink>ViewTransitions,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr,maxqli@googl.com,Test>Telemetry,,
-UNSCHEDULED_jetstream20,"hablich@chromium.org, tcwang@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream/in-depth.html,all
-UNSCHEDULED_jetstream21,"hablich@chromium.org, tcwang@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream/in-depth.html,all
+UNSCHEDULED_jetstream20,"hablich@chromium.org, tcwang@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
+UNSCHEDULED_jetstream21,"hablich@chromium.org, tcwang@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.1/in-depth.html,all
 UNSCHEDULED_loading.mbi,blink-isolation-dev@chromium.org,Blink>Internals>Modularization,https://bit.ly/loading-benchmarks,many_agents
 UNSCHEDULED_speedometer1.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer,all
 UNSCHEDULED_speedometer2.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.0,all
@@ -44,8 +44,8 @@ dawn_perf_tests,"enga@chromium.org, chrome-gpu-perf-owners@chromium.org",Interna
 desktop_ui,"yuhengh@chromium.org, tluk@chromium.org, romanarora@chromium.org",UI>Browser,https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/desktop_ui.md,smoke_test
 dummy_benchmark.noisy_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
 dummy_benchmark.stable_benchmark_1,"johnchen@chromium.org, wenbinzhang@google.com",Test>Telemetry,,
-jetstream2,"hablich@chromium.org, tcwang@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream/in-depth.html,all
-jetstream2-minormc,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/JetStream/in-depth.html,all
+jetstream2,"hablich@chromium.org, tcwang@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
+jetstream2-minormc,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/JetStream2.0/in-depth.html,all
 load_library_perf_tests,"xhwang@chromium.org, jrummell@chromium.org",Internals>Media>Encrypted,,
 loading.desktop,"kouhei@chromium.org, ksakamoto@chromium.org",Blink>Loader,https://bit.ly/loading-benchmarks,"abridged,cache_temperature_cold,cache_temperature_warm,international,intl_ar_fa_he,intl_es_fr_pt_BR,intl_hi_ru,intl_ja_zh,intl_ko_th_vi,typical"
 loading.mobile,"kouhei@chromium.org, ksakamoto@chromium.org",Blink>Loader,https://bit.ly/loading-benchmarks,"abridged,cache_temperature_cold,cache_temperature_hot,cache_temperature_warm,easy_ttfmp,easy_tti,global,pwa,tough_ttfmp,tough_tti"
