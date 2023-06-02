@@ -3660,7 +3660,7 @@
       },
       'linux-network-sandbox-rel': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'network_sandbox_browser_tests',
