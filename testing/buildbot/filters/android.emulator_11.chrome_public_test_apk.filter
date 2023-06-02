@@ -55,9 +55,6 @@
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveVideo
 -org.chromium.components.browser_ui.share.ShareImageFileUtilsTest.testSaveBitmapAndMediaStore
 
-# crbug.com/1225746
--org.chromium.chrome.browser.incognito.IncognitoDownloadLeakageTest.*
-
 # crbug.com/1225754
 -org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
 
