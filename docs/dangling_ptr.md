@@ -1,5 +1,8 @@
 # Dangling Pointer Detector
 
+A pointer is dangling when it references freed memory. Typical examples can be
+found [here](https://docs.google.com/document/d/11YYsyPF9rQv_QFf982Khie3YuNPXV0NdhzJPojpZfco/edit?resourcekey=0-h1dr1uDzZGU7YWHth5TRAQ#heading=h.wxt96wl0k0sq).
+
 Dangling pointers are not a problem unless they are subsequently dereferenced
 and/or used for other purposes. Proving that pointers are unused has turned out
 to be difficult in general, especially in face of future modifications to
