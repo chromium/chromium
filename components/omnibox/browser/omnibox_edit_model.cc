@@ -2312,7 +2312,6 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   // starter pack's tab search (@tabs) feature, which should open all
   // suggestions in the existing open tab.
   bool is_open_tab_match =
-      OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
       match.from_keyword &&
       match.provider->type() == AutocompleteProvider::TYPE_OPEN_TAB;
   if (is_open_tab_match) {

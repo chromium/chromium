@@ -88,12 +88,6 @@ void OpenUrlFromEditBox(TestOmniboxEditModel* model,
 class OmniboxEditModelTest : public testing::Test {
  public:
   OmniboxEditModelTest() {
-    // The #omnibox-site-search-starter-pack feature flag has to be enabled
-    // before set up in order for the OpenTabProvider to be initialized (needed
-    // for OpenTabMatch test).
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
-
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
     EXPECT_CALL(*omnibox_client, GetLocationBarModel())
@@ -1355,9 +1349,6 @@ TEST_F(OmniboxEditModelTest, IPv4AddressPartsCount) {
 #if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 // The keyword mode feature is only available on Desktop. Do not test on mobile.
 TEST_F(OmniboxEditModelTest, OpenTabMatch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
-
   // When the match comes from the Open Tab Provider while in keyword mode,
   // the disposition should be set to SWITCH_TO_TAB.
   AutocompleteMatch match(

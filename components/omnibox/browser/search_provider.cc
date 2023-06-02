@@ -1353,8 +1353,7 @@ bool SearchProvider::ShouldCurbDefaultSuggestions() const {
   if (providers_.has_keyword_provider()) {
     const TemplateURL* turl = providers_.GetKeywordProviderURL();
     DCHECK(turl);
-    return (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-            (turl->starter_pack_id() > 0));
+    return turl->starter_pack_id() > 0;
   } else {
     return false;
   }

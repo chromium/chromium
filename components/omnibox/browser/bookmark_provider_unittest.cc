@@ -542,9 +542,6 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
 // In this mode, suggestions should be provided for only the user input after
 // the keyword, i.e. "@bookmarks domain" should only match "domain".
 TEST_F(BookmarkProviderTest, KeywordModeExtractUserInput) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kSiteSearchStarterPack);
-
   // Populate template URL with starter pack entries
   std::vector<std::unique_ptr<TemplateURLData>> turls =
       TemplateURLStarterPackData::GetStarterPackEngines();

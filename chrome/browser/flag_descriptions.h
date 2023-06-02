@@ -1327,9 +1327,6 @@ extern const char kOmniboxSimplifiedUiUniformRowHeightDescription[];
 extern const char kOmniboxSimplifiedUiSquareSuggestIconName[];
 extern const char kOmniboxSimplifiedUiSquareSuggestIconDescription[];
 
-extern const char kOmniboxSiteSearchStarterPackName[];
-extern const char kOmniboxSiteSearchStarterPackDescription[];
-
 extern const char kOmniboxZeroSuggestPrefetchingName[];
 extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 

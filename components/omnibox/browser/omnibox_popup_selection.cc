@@ -83,14 +83,7 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
       return match.associated_keyword != nullptr;
     case FOCUSED_BUTTON_ACTION: {
       // Actions buttons should not be shown in keyword mode.
-      if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-          match.from_keyword) {
-        return false;
-      }
-      if (action_index >= match.actions.size()) {
-        return false;
-      }
-      return true;
+      return !match.from_keyword && action_index < match.actions.size();
     }
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
       return match.SupportsDeletion();

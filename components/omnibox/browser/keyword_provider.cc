@@ -190,8 +190,7 @@ KeywordProvider::AdjustInputForStarterPackEngines(
 
   // If the feature is disabled, or not in keyword mode, then `input` is
   // definitely not in a starter pack scope, so early exit.
-  if (!OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() ||
-      !input.prefer_keyword()) {
+  if (!input.prefer_keyword()) {
     return {input, nullptr};
   }
 
@@ -251,13 +250,6 @@ std::u16string KeywordProvider::GetKeywordForText(
   // provide a keyword in that case.
   if (client_->IsOffTheRecord() &&
       template_url->starter_pack_id() == TemplateURLStarterPackData::kHistory) {
-    return std::u16string();
-  }
-
-  // Don't provide a keyword if it's a starter pack engine and the starter pack
-  // feature flag is not enabled.
-  if (!OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-      template_url->starter_pack_id() != 0) {
     return std::u16string();
   }
 

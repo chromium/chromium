@@ -349,10 +349,6 @@ bool ShouldEncodeLeadingSpaceForOnDeviceTailSuggest();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
 
-// If true, enables a "starter pack" of @history, @bookmarks, and @settings
-// scopes for Site Search.
-bool IsSiteSearchStarterPackEnabled();
-
 // Omnibox UI Simplification - Square icon backgrounds.
 // Blue rounded rect background icons for answers e.g. '1+1' and 'define x'.
 // Does not apply to weather answers. Also updates the shade of blue and the

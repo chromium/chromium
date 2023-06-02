@@ -742,8 +742,7 @@ void AutocompleteResult::ConvertOpenTabMatches(
       if (!is_android && !is_ios && match.has_tab_match.value()) {
         // The default action for suggestions from the open tab provider in
         // keyword mode is to switch to the open tab so no button is necessary.
-        if (!OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() ||
-            !match.from_keyword ||
+        if (!match.from_keyword ||
             match.provider->type() != AutocompleteProvider::TYPE_OPEN_TAB) {
           match.actions.push_back(
               base::MakeRefCounted<TabSwitchAction>(match.destination_url));

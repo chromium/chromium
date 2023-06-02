@@ -28,6 +28,7 @@
 #include "url/url_constants.h"
 
 const int BuiltinProvider::kRelevance = 860;
+const int BuiltinProvider::kStarterPackRelevance = 1350;
 
 BuiltinProvider::BuiltinProvider(AutocompleteProviderClient* client)
     : AutocompleteProvider(AutocompleteProvider::TYPE_BUILTIN),
@@ -57,10 +58,8 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
 BuiltinProvider::~BuiltinProvider() = default;
 
 void BuiltinProvider::DoStarterPackAutocompletion(const std::u16string& text) {
-  if (!OmniboxFieldTrial::IsSiteSearchStarterPackEnabled()) {
-    return;
-  }
-
+  // Custom search engines is not enabled on mobile.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // When the user's input begins with '@', we want to prioritize providing
   // suggestions for all active starter pack search engines.
   bool starts_with_starter_pack_symbol =
@@ -76,6 +75,7 @@ void BuiltinProvider::DoStarterPackAutocompletion(const std::u16string& text) {
       }
     }
   }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
@@ -214,9 +214,8 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
   // TODO(yoangela): This should be updated so the keyword chip only attaches to
   //  STARTER_PACK type suggestions rather than rely on out-scoring all other
   //  suggestions.
-  AutocompleteMatch match(
-      this, OmniboxFieldTrial::kSiteSearchStarterPackRelevanceScore.Get(),
-      false, AutocompleteMatchType::STARTER_PACK);
+  AutocompleteMatch match(this, kStarterPackRelevance, false,
+                          AutocompleteMatchType::STARTER_PACK);
 
   const std::u16string destination_url =
       TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(

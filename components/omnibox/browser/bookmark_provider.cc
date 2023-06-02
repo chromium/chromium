@@ -153,8 +153,7 @@ query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
   //  specifically, since we might still get bookmarks suggestions in
   //  non-bookmarks keyword mode. This is enough of an edge case it makes sense
   //  to just stick with simplicity for now.
-  if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-      InKeywordMode(input)) {
+  if (InKeywordMode(input)) {
     return query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
   }
 

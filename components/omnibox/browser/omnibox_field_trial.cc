@@ -661,10 +661,6 @@ std::string OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(
   return constraint;
 }
 
-bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kSiteSearchStarterPack);
-}
-
 // Omnibox UI simplification - Uniform Suggestion Row Heights
 const base::FeatureParam<bool> OmniboxFieldTrial::kSquareSuggestIconAnswers(
     &omnibox::kSquareSuggestIcons,
@@ -962,11 +958,6 @@ const base::FeatureParam<bool>
         &omnibox::kRichAutocompletion,
         "RichAutocompletionAutocompletePreferUrlsOverPrefixes",
         false);
-
-const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore(
-    &omnibox::kSiteSearchStarterPack,
-    "SiteSearchStarterPackRelevanceScore",
-    1350);
 
 const base::FeatureParam<bool> kDomainSuggestionsCounterfactual(
     &omnibox::kDomainSuggestions,

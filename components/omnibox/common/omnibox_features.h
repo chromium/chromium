@@ -135,10 +135,6 @@ BASE_DECLARE_FEATURE(kUseExistingAutocompleteClient);
 BASE_DECLARE_FEATURE(kClosePopupWithEscape);
 BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);
 
-// Settings Page - these affect the appearance of the Search Engines settings
-// page
-BASE_DECLARE_FEATURE(kSiteSearchStarterPack);
-
 // Experiment to introduce new security indicators for HTTPS.
 BASE_DECLARE_FEATURE(kUpdatedConnectionSecurityIndicators);
 
