@@ -11204,8 +11204,16 @@ bool RenderFrameHostImpl::CancelPrerendering(
   // frame tree before accessing `GetPrerenderHostRegistry()`. Non-prerendered
   // frames may outlive the PrerenderHostRegistry during WebContents
   // destruction.
-  if (outermost_frame->GetFrameType() != FrameType::kPrerenderMainFrame)
+  if (outermost_frame->GetFrameType() != FrameType::kPrerenderMainFrame) {
     return false;
+  }
+
+  // If this runs during the WebContents destruction, PrerenderHostRegistry was
+  // already destroyed and bound prerenderings are already cancelled.
+  // We can check the FrameTree status as the tree's shutdown runs first.
+  if (outermost_frame->frame_tree().IsBeingDestroyed()) {
+    return false;
+  }
 
   return delegate_->GetPrerenderHostRegistry()->CancelHost(
       outermost_frame->frame_tree_node_id(), reason);
