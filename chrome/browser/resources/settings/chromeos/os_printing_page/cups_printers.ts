@@ -492,6 +492,11 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     return connectedToNetwork && userPrintersAllowed;
   }
 
+  private showSavedPrintersSection_(): boolean {
+    return this.isPrinterSettingsRevampEnabled_ ||
+        this.doesAccountHaveSavedPrinters_();
+  }
+
   private doesAccountHaveSavedPrinters_(): boolean {
     return !!this.savedPrinters_.length;
   }

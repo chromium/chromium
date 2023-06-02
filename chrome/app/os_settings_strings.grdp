@@ -3050,6 +3050,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_SAVED_PRINTERS_COUNT_NONE" desc="In CUPS printing settings subpage, this message will be read aloud to the user to inform them they have no printers previously saved.">
     You have no saved printers.
   </message>
+  <message name="IDS_SETTINGS_PRINTING_CUPS_NO_SAVED_PRINTERS" desc="In CUPS printing settings subpage, the text shown when a user has no printers saved to their profile.">
+    No saved printers
+  </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_HELP_SECTION_TITLE" desc="In CUPS printing settings subpage, this title helps users when their local printer is not shown on the page." translateable="false">
     Don't see your printers below?
   </message>

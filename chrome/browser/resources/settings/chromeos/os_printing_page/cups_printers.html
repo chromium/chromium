@@ -119,6 +119,12 @@
     font-weight: 500;
     margin-bottom: 5px;
   }
+
+  #noSavedPrinters {
+    align-items: center;
+    display: flex;
+    height: 75px;
+  }
 </style>
 
 <template is="dom-if" if="[[!canAddPrinter]]">
@@ -132,8 +138,8 @@
   </div>
 </template>
 
-<template is="dom-if"
-    if="[[doesAccountHaveSavedPrinters_(savedPrinters_)]]" restamp>
+<template is="dom-if" if="[[showSavedPrintersSection_(savedPrinters_)]]"
+    restamp>
   <div id="savedPrintersContainer">
     <div class="settings-box first">
       <div class="start">
@@ -144,6 +150,10 @@
           $i18n{savedPrintersSubtext}
         </div>
       </div>
+    </div>
+    <div id="noSavedPrinters" class="list-frame secondary"
+        hidden="[[doesAccountHaveSavedPrinters_(savedPrinters_)]]">
+      $i18n{noSavedPrinters}
     </div>
 
     <settings-cups-saved-printers id="savedPrinters"

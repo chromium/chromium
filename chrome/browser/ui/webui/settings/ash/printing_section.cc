@@ -152,6 +152,7 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_SAVED_PRINTERS_COUNT_ONE},
       {"savedPrintersCountNone",
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_SAVED_PRINTERS_COUNT_NONE},
+      {"noSavedPrinters", IDS_SETTINGS_PRINTING_CUPS_NO_SAVED_PRINTERS},
       {"helpSectionTitle", IDS_SETTINGS_PRINTING_CUPS_HELP_SECTION_TITLE},
       {"helpSectionDescription",
        IDS_SETTINGS_PRINTING_CUPS_HELP_SECTION_DESCRIPTION},

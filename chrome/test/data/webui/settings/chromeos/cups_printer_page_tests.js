@@ -67,6 +67,7 @@ suite('CupsPrinterUITests', () => {
 
   function resetPage() {
     PolymerTest.clearBody();
+    Router.getInstance().navigateTo(routes.CUPS_PRINTERS);
     page = document.createElement('settings-cups-printers');
     document.body.appendChild(page);
     assertTrue(!!page);
@@ -128,6 +129,24 @@ suite('CupsPrinterUITests', () => {
       assertTrue(
           isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
       assertTrue(isVisible(page.shadowRoot.querySelector('#helpSection')));
+    });
+  });
+
+  // Verify the Saved printers empty state only shows when there are no saved
+  // printers.
+  test('SavedPrintersEmptyState', () => {
+    // Settings should start in empty state without saved printers.
+    const emptyState = page.shadowRoot.querySelector('#noSavedPrinters');
+    assertTrue(isVisible(emptyState));
+
+    return flushTasks().then(() => {
+      // Add a saved printer and expect the empty state to be hidden.
+      webUIListenerCallback('on-saved-printers-changed', {
+        printerList: [
+          createCupsPrinterInfo('nameA', 'address', 'idA'),
+        ],
+      });
+      assertFalse(isVisible(emptyState));
     });
   });
 
