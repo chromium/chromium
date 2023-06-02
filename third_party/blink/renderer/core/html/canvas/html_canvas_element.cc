@@ -138,9 +138,6 @@ constexpr base::FeatureParam<int> kCanvasDisableAccelerationPercentParam{
 
 namespace {
 
-// This feature will only take effect if `kTwoCopyCanvasCapture` is also
-// enabled.
-// TODO(https://crbug.com/1298812): Investigate why this fails on Windows.
 BASE_FEATURE(kOneCopyCanvasCapture,
              "OneCopyCanvasCapture",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)

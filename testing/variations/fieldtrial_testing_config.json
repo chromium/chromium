@@ -9324,21 +9324,6 @@
             ]
         }
     ],
-    "OneCopyCanvasCaptureWin": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OneCopyCanvasCapture"
-                    ]
-                }
-            ]
-        }
-    ],
     "OneGroupPerRenderer": [
         {
             "platforms": [
