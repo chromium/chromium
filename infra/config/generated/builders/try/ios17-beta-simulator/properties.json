@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "ios15-beta-simulator",
+              "builder": "ios17-beta-simulator",
               "project": "chromium"
             },
             "builder_spec": {
@@ -33,7 +33,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "ios15-beta-simulator",
+          "builder": "ios17-beta-simulator",
           "project": "chromium"
         }
       ]

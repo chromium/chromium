@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "ios15-sdk-simulator",
+              "builder": "ios17-beta-simulator",
               "project": "chromium"
             },
             "builder_spec": {
@@ -33,13 +33,13 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "ios15-sdk-simulator",
+          "builder": "ios17-beta-simulator",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "ios15-sdk-simulator",
+          "builder": "ios17-beta-simulator",
           "group": "tryserver.chromium.mac"
         }
       ]

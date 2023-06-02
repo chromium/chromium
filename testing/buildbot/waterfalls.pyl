@@ -3425,38 +3425,6 @@
           'isolated_scripts': 'wpt_tests_ios',
         },
       },
-      'ios15-beta-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_13_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_14_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios15_beta_simulator_tests'
-        },
-      },
-      'ios15-sdk-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_13_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_14_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios15_sdk_simulator_tests'
-        },
-      },
       # ios16-beta-sim compiles with xcode version n-1, but
       # runs testers with xcode n during an xcode roll.
       'ios16-beta-simulator': {
@@ -3498,6 +3466,38 @@
         ],
         'test_suites': {
           'isolated_scripts': 'ios16_sdk_simulator_tests'
+        },
+      },
+      'ios17-beta-simulator': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_13_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_14_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios17_beta_simulator_tests'
+        },
+      },
+      'ios17-sdk-simulator': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_13_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_14_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios17_sdk_simulator_tests'
         },
       },
       'lacros-amd64-generic-rel (reclient)': {

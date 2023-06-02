@@ -548,19 +548,6 @@ ios_builder(
 )
 
 ios_builder(
-    name = "ios15-beta-simulator",
-    mirrors = ["ci/ios15-beta-simulator"],
-    os = os.MAC_13,
-)
-
-ios_builder(
-    name = "ios15-sdk-simulator",
-    mirrors = ["ci/ios15-sdk-simulator"],
-    os = os.MAC_13,
-    cpu = cpu.ARM64,
-)
-
-ios_builder(
     name = "ios16-beta-simulator",
     mirrors = [
         "ci/ios16-beta-simulator",
@@ -577,6 +564,19 @@ ios_builder(
     os = os.MAC_13,
     cpu = cpu.ARM64,
     xcode = xcode.x14betabots,
+)
+
+ios_builder(
+    name = "ios17-beta-simulator",
+    mirrors = ["ci/ios17-beta-simulator"],
+    os = os.MAC_13,
+)
+
+ios_builder(
+    name = "ios17-sdk-simulator",
+    mirrors = ["ci/ios17-sdk-simulator"],
+    os = os.MAC_13,
+    cpu = cpu.ARM64,
 )
 
 ios_builder(

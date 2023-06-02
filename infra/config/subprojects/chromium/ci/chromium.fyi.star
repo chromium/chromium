@@ -2242,7 +2242,7 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios15-beta-simulator",
+    name = "ios17-beta-simulator",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "ios"),
         chromium_config = builder_config.chromium_config(
@@ -2260,14 +2260,14 @@ fyi_ios_builder(
     os = os.MAC_13,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "iOS|iOS15",
-            short_name = "ios15",
+            category = "iOS|iOS17",
+            short_name = "ios17",
         ),
     ],
 )
 
 fyi_ios_builder(
-    name = "ios15-sdk-simulator",
+    name = "ios17-sdk-simulator",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "ios"),
         chromium_config = builder_config.chromium_config(
@@ -2286,8 +2286,8 @@ fyi_ios_builder(
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "iOS|iOS15",
-            short_name = "sdk15",
+            category = "iOS|iOS17",
+            short_name = "sdk17",
         ),
     ],
 )
