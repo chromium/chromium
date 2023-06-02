@@ -29,6 +29,8 @@ from pylib import constants
 
 _GIT_IGNORE_STR = '(git ignored file) '
 
+NO_VALID_GN_STR = 'No valid GN files found after filtering.'
+
 
 @dataclasses.dataclass
 class OperationResult:
@@ -402,7 +404,9 @@ def main():
         p for p in build_filepaths if not utils.is_bad_gn_file(p, root)
     ]
     num_total = len(filtered_build_filepaths)
-    assert num_total > 0, 'No valid GN files found.'
+    if num_total == 0:
+        logging.error(NO_VALID_GN_STR)
+        sys.exit(1)
     logging.info('Running on %d valid build files.', num_total)
 
     operation_results: List[OperationResult] = args.command(
