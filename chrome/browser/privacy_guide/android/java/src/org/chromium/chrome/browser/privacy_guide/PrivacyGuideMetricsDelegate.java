@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -16,6 +19,11 @@ import org.chromium.components.content_settings.CookieControlsMode;
  * Privacy Guide {@link PrivacyGuideFragment}.
  */
 class PrivacyGuideMetricsDelegate {
+    private static final String INITIAL_MSBB_STATE = "INITIAL_MSBB_STATE";
+    private static final String INITIAL_HISTORY_SYNC_STATE = "INITIAL_HISTORY_SYNC_STATE";
+    private static final String INITIAL_SAFE_BROWSING_STATE = "INITIAL_SAFE_BROWSING_STATE";
+    private static final String INITIAL_COOKIES_CONTROL_MODE = "INITIAL_COOKIES_CONTROL_MODE";
+
     /**
      * Initial state of the MSBB when {@link MSBBFragment} is created.
      */
@@ -32,6 +40,42 @@ class PrivacyGuideMetricsDelegate {
      * Initial mode of the Cookies Control when {@link CookiesFragment} is created.
      */
     private @Nullable @CookieControlsMode Integer mInitialCookiesControlMode;
+
+    /**
+     * A method to persist the initial state of all Fragments on Activity destruction.
+     */
+    void saveState(@NonNull Bundle bundle) {
+        if (mInitialMsbbState != null) {
+            bundle.putBoolean(INITIAL_MSBB_STATE, mInitialMsbbState);
+        }
+        if (mInitialHistorySyncState != null) {
+            bundle.putBoolean(INITIAL_HISTORY_SYNC_STATE, mInitialHistorySyncState);
+        }
+        if (mInitialSafeBrowsingState != null) {
+            bundle.putInt(INITIAL_SAFE_BROWSING_STATE, mInitialSafeBrowsingState);
+        }
+        if (mInitialCookiesControlMode != null) {
+            bundle.putInt(INITIAL_COOKIES_CONTROL_MODE, mInitialCookiesControlMode);
+        }
+    }
+
+    /**
+     * A method to restore the initial state of all Fragments on Activity recreation.
+     */
+    void restoreState(@NonNull Bundle bundle) {
+        if (bundle.containsKey(INITIAL_MSBB_STATE)) {
+            mInitialMsbbState = bundle.getBoolean(INITIAL_MSBB_STATE);
+        }
+        if (bundle.containsKey(INITIAL_HISTORY_SYNC_STATE)) {
+            mInitialHistorySyncState = bundle.getBoolean(INITIAL_HISTORY_SYNC_STATE);
+        }
+        if (bundle.containsKey(INITIAL_SAFE_BROWSING_STATE)) {
+            mInitialSafeBrowsingState = bundle.getInt(INITIAL_SAFE_BROWSING_STATE);
+        }
+        if (bundle.containsKey(INITIAL_COOKIES_CONTROL_MODE)) {
+            mInitialCookiesControlMode = bundle.getInt(INITIAL_COOKIES_CONTROL_MODE);
+        }
+    }
 
     /**
      * A method to record metrics on the next click of {@link MSBBFragment}
