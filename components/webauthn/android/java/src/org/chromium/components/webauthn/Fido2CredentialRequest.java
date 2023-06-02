@@ -1123,9 +1123,6 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 }
                 assert mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
                 boolean hasPublicKeyCredentials;
-                boolean hasPasswordCredentials;
-                boolean hasRemoteResults;
-                Object pendingGetCredentialHandle;
                 try {
                     Method hasCredentialResultsMethod =
                             prepareGetCredentialResponse.getClass().getMethod(
@@ -1133,23 +1130,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     hasPublicKeyCredentials = (Boolean) hasCredentialResultsMethod.invoke(
                             prepareGetCredentialResponse,
                             "androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
-                    hasPasswordCredentials = (Boolean) hasCredentialResultsMethod.invoke(
-                            prepareGetCredentialResponse,
-                            "android.credentials.TYPE_PASSWORD_CREDENTIAL");
-                    hasRemoteResults = (Boolean) prepareGetCredentialResponse.getClass()
-                                               .getMethod("hasRemoteResults")
-                                               .invoke(prepareGetCredentialResponse);
-                    pendingGetCredentialHandle = prepareGetCredentialResponse.getClass()
-                                                         .getMethod("getPendingGetCredentialHandle")
-                                                         .invoke(prepareGetCredentialResponse);
                 } catch (ReflectiveOperationException e) {
                     Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
-                    mConditionalUiState = ConditionalUiState.NONE;
-                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                    return;
-                }
-                if (pendingGetCredentialHandle == null) {
-                    Log.e(TAG, "prepareGetCredentialResponse is null.");
                     mConditionalUiState = ConditionalUiState.NONE;
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
                     return;
@@ -1160,8 +1142,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 };
                 mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
                 mBrowserBridge.onCredManConditionalRequestPending(mFrameHost,
-                        hasPasswordCredentials || hasPublicKeyCredentials || hasRemoteResults,
-                        () -> getCredentialViaCredMan(options, origin));
+                        hasPublicKeyCredentials, () -> getCredentialViaCredMan(options, origin));
             }
         };
 
