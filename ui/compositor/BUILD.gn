@@ -165,6 +165,10 @@ static_library("test_support") {
     sources += [ "test/test_compositor_host_android.cc" ]
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [ "test/test_compositor_host_mac.mm" ]
   }
