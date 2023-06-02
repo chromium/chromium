@@ -1407,6 +1407,11 @@
       base_feature: "none",
     },
     {
+      name: "DocumentOpenOriginAliasRemoval",
+      status: "experimental",
+      copied_from_base_feature_if: "overridden",
+    },
+    {
       name: "DocumentOpenSandboxInheritanceRemoval",
       status: "experimental",
       copied_from_base_feature_if: "overridden",

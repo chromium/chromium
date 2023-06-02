@@ -3359,11 +3359,24 @@ void Document::open(LocalDOMWindow* entered_window,
         // not considered to produce new documents. No IPCs are sent, it is as
         // if it was a no-op.
         //
-        // TODO(https://crbug.com/1360795) Remove this
+        // TODO(https://crbug.com/1360795) Remove this. Only Chrome implements
+        // it. Safari/Firefox do not.
         dom_window_->GetSecurityContext().SetSandboxFlags(
             dom_window_->GetSecurityContext().GetSandboxFlags() |
             entered_window->GetSandboxFlags());
+      }
 
+      // We would like to remove this block. See:
+      // https://docs.google.com/document/d/1_89X4cNUab-PZE0iBDTKIftaQZsFbk7SbFmHbqY54os
+      //
+      // This is not specified. Only Webkit/Blink implement it. Gecko doesn't.
+      //
+      // 2023-06-02: Removal would impact 0.02% page load.
+      // https://chromestatus.com/metrics/feature/timeline/popularity/4535
+      // We hope the document.domain deprecation is going to drive this number
+      // down quickly:
+      // https://developer.chrome.com/blog/document-domain-setter-deprecation/
+      if (!RuntimeEnabledFeatures::DocumentOpenOriginAliasRemovalEnabled()) {
         dom_window_->GetSecurityContext().SetSecurityOrigin(
             entered_window->GetMutableSecurityOrigin());
 
