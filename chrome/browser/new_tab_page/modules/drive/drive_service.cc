@@ -99,7 +99,7 @@ constexpr char kFakeData[] = R"({
       "itemId": "foo",
       "url": "https://docs.google.com",
       "driveItem": {
-        "title": "foo doc",
+        "title": "Drive Module Design Doc",
         "mimeType": "application/vnd.google-apps.document"
       },
       "justification": {
@@ -112,7 +112,7 @@ constexpr char kFakeData[] = R"({
       "itemId": "bar",
       "url": "https://sheets.google.com",
       "driveItem": {
-        "title": "bar sheet",
+        "title": "Monthly Presentation Schedule",
         "mimeType": "application/vnd.google-apps.spreadsheet"
       },
       "justification": {
@@ -125,7 +125,7 @@ constexpr char kFakeData[] = R"({
       "itemId": "baz",
       "url": "https://slides.google.com",
       "driveItem": {
-        "title": "baz slides",
+        "title": "Cutest Kittens on the Web",
         "mimeType": "application/vnd.google-apps.presentation"
       },
       "justification": {
