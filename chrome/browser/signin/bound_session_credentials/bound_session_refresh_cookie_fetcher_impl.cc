@@ -8,6 +8,7 @@
 
 #include "components/signin/public/base/signin_client.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -102,7 +103,36 @@ void BoundSessionRefreshCookieFetcherImpl::OnURLLoaderComplete(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
 
-  std::move(callback_).Run(
-      Result(net_error, headers ? absl::optional<int>(headers->response_code())
-                                : absl::nullopt));
+  Result result = GetResultFromNetErrorAndHttpStatusCode(
+      net_error,
+      headers ? absl::optional<int>(headers->response_code()) : absl::nullopt);
+  std::move(callback_).Run(result);
+}
+
+BoundSessionRefreshCookieFetcher::Result
+BoundSessionRefreshCookieFetcherImpl::GetResultFromNetErrorAndHttpStatusCode(
+    net::Error net_error,
+    absl::optional<int> response_code) {
+  if ((net_error != net::OK &&
+       net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) ||
+      !response_code) {
+    return BoundSessionRefreshCookieFetcher::Result::kConnectionError;
+  }
+
+  if (response_code == net::HTTP_OK) {
+    return BoundSessionRefreshCookieFetcher::Result::kSuccess;
+  }
+
+  if (response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {
+    // Server error 5xx.
+    return BoundSessionRefreshCookieFetcher::Result::kServerTransientError;
+  }
+
+  if (response_code >= net::HTTP_BAD_REQUEST) {
+    // Server error 4xx.
+    return BoundSessionRefreshCookieFetcher::Result::kServerPersistentError;
+  }
+
+  // Unexpected response code.
+  return BoundSessionRefreshCookieFetcher::Result::kServerPersistentError;
 }

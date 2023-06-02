@@ -93,7 +93,7 @@ void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
 void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
     BoundSessionRefreshCookieFetcher::Result result) {
   refresh_cookie_fetcher_.reset();
-  if (result.net_error == net::OK && result.response_code == net::HTTP_OK) {
+  if (result == BoundSessionRefreshCookieFetcher::Result::kSuccess) {
     // Requests are resumed once the cookie is set in the cookie jar. The
     // cookie is expected to be fresh and `this` is notified with its
     // expiration date before `OnCookieRefreshFetched` is called.

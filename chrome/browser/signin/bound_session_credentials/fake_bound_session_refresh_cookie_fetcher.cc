@@ -51,7 +51,8 @@ void FakeBoundSessionRefreshCookieFetcher::SimulateCompleteRefreshRequest(
     // Synchronous since tests use `BoundSessionTestCookieManager`.
     OnRefreshCookieCompleted(CreateFakeCookie(cookie_expiration.value()));
   } else {
-    std::move(callback_).Run(Result(net::Error::OK, net::HTTP_FORBIDDEN));
+    std::move(callback_).Run(
+        BoundSessionRefreshCookieFetcher::Result::kServerPersistentError);
   }
 }
 
@@ -83,9 +84,11 @@ void FakeBoundSessionRefreshCookieFetcher::OnCookieSet(
     net::CookieAccessResult access_result) {
   bool success = access_result.status.IsInclude();
   if (!success) {
-    std::move(callback_).Run(Result(net::Error::OK, net::HTTP_FORBIDDEN));
+    std::move(callback_).Run(
+        BoundSessionRefreshCookieFetcher::Result::kServerPersistentError);
   } else {
-    std::move(callback_).Run(Result(net::Error::OK, net::HTTP_OK));
+    std::move(callback_).Run(
+        BoundSessionRefreshCookieFetcher::Result::kSuccess);
   }
   // |This| may be destroyed
 }

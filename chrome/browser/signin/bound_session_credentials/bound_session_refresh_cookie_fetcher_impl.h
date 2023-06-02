@@ -31,8 +31,14 @@ class BoundSessionRefreshCookieFetcherImpl
   void Start(RefreshCookieCompleteCallback callback) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BoundSessionRefreshCookieFetcherImplTest,
+                           GetResultFromNetErrorAndHttpStatusCode);
+
   void StartRefreshRequest();
   void OnURLLoaderComplete(scoped_refptr<net::HttpResponseHeaders> headers);
+  Result GetResultFromNetErrorAndHttpStatusCode(
+      net::Error net_error,
+      absl::optional<int> response_code);
 
   const raw_ptr<SigninClient> client_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

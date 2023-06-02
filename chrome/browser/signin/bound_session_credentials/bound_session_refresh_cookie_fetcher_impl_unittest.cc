@@ -19,8 +19,6 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
-
 class BoundSessionRefreshCookieFetcherImplTest : public ::testing::Test {
  public:
   BoundSessionRefreshCookieFetcherImplTest() {
@@ -55,8 +53,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, Success) {
       pending_request->request.url.spec(), "");
   EXPECT_TRUE(future.Wait());
   BoundSessionRefreshCookieFetcher::Result result = future.Get();
-  EXPECT_EQ(result.net_error, net::OK);
-  EXPECT_EQ(result.response_code, net::HTTP_OK);
+  EXPECT_EQ(result, BoundSessionRefreshCookieFetcher::Result::kSuccess);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, FailureNetError) {
@@ -75,8 +72,7 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, FailureNetError) {
 
   EXPECT_TRUE(future.Wait());
   BoundSessionRefreshCookieFetcher::Result result = future.Get();
-  EXPECT_EQ(result.net_error, status.error_code);
-  EXPECT_FALSE(result.response_code.has_value());
+  EXPECT_EQ(result, BoundSessionRefreshCookieFetcher::Result::kConnectionError);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, FailureHttpError) {
@@ -93,8 +89,38 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, FailureHttpError) {
 
   EXPECT_TRUE(future.Wait());
   BoundSessionRefreshCookieFetcher::Result result = future.Get();
-  EXPECT_EQ(result.net_error, net::ERR_HTTP_RESPONSE_CODE_FAILURE);
-  EXPECT_EQ(result.response_code, net::HTTP_UNAUTHORIZED);
+  EXPECT_EQ(result,
+            BoundSessionRefreshCookieFetcher::Result::kServerPersistentError);
+}
+
+TEST_F(BoundSessionRefreshCookieFetcherImplTest,
+       GetResultFromNetErrorAndHttpStatusCode) {
+  // Connection error.
+  EXPECT_EQ(fetcher_->GetResultFromNetErrorAndHttpStatusCode(
+                net::ERR_CONNECTION_TIMED_OUT, absl::nullopt),
+            BoundSessionRefreshCookieFetcher::Result::kConnectionError);
+  // net::OK.
+  EXPECT_EQ(
+      fetcher_->GetResultFromNetErrorAndHttpStatusCode(net::OK, net::HTTP_OK),
+      BoundSessionRefreshCookieFetcher::Result::kSuccess);
+  // net::ERR_HTTP_RESPONSE_CODE_FAILURE
+  EXPECT_EQ(fetcher_->GetResultFromNetErrorAndHttpStatusCode(
+                net::ERR_HTTP_RESPONSE_CODE_FAILURE, net::HTTP_BAD_REQUEST),
+            BoundSessionRefreshCookieFetcher::Result::kServerPersistentError);
+  // Persistent error.
+  EXPECT_EQ(fetcher_->GetResultFromNetErrorAndHttpStatusCode(
+                net::OK, net::HTTP_BAD_REQUEST),
+            BoundSessionRefreshCookieFetcher::Result::kServerPersistentError);
+  EXPECT_EQ(fetcher_->GetResultFromNetErrorAndHttpStatusCode(
+                net::OK, net::HTTP_NOT_FOUND),
+            BoundSessionRefreshCookieFetcher::Result::kServerPersistentError);
+  // Transient error.
+  EXPECT_EQ(fetcher_->GetResultFromNetErrorAndHttpStatusCode(
+                net::OK, net::HTTP_INTERNAL_SERVER_ERROR),
+            BoundSessionRefreshCookieFetcher::Result::kServerTransientError);
+  EXPECT_EQ(fetcher_->GetResultFromNetErrorAndHttpStatusCode(
+                net::OK, net::HTTP_GATEWAY_TIMEOUT),
+            BoundSessionRefreshCookieFetcher::Result::kServerTransientError);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest, NetworkDelayed) {
@@ -114,5 +140,3 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, NetworkDelayed) {
 
   EXPECT_TRUE(future.Wait());
 }
-
-}  // namespace

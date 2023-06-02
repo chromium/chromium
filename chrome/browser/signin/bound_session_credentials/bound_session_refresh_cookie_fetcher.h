@@ -14,10 +14,13 @@
 // created per request.
 class BoundSessionRefreshCookieFetcher {
  public:
-  struct Result {
-    net::Error net_error;
-    absl::optional<int> response_code;
+  enum class Result {
+    kSuccess = 0,
+    kConnectionError = 1,
+    kServerTransientError = 2,
+    kServerPersistentError = 3,
   };
+
   // Reports the result of the fetch request.
   using RefreshCookieCompleteCallback = base::OnceCallback<void(Result)>;
 
