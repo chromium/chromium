@@ -80,7 +80,7 @@ TEST_F(PowerButtonPixelTest, LoginSession) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/0, GetMenuView()));
+      /*revision_number=*/1, GetMenuView()));
 }
 
 TEST_F(PowerButtonPixelTest, LockScreenSession) {
@@ -94,7 +94,7 @@ TEST_F(PowerButtonPixelTest, LockScreenSession) {
   SimulatePowerButtonPress();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_menu",
-      /*revision_number=*/0, GetMenuView()));
+      /*revision_number=*/1, GetMenuView()));
 }
 
 TEST_F(PowerButtonPixelTest, GuestMode) {
