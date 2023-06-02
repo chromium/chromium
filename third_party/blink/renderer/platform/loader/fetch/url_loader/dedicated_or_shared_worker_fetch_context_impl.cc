@@ -50,7 +50,6 @@ void CreateServiceWorkerSubresourceLoaderFactory(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   Platform::Current()->CreateServiceWorkerSubresourceLoaderFactory(
       std::move(service_worker_container_host), client_id,
-      mojom::blink::ServiceWorkerFetchHandlerBypassOption::kDefault,
       std::move(fallback_factory), std::move(receiver), std::move(task_runner));
 }
 
