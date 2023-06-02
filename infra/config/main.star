@@ -114,6 +114,11 @@ luci.project(
             roles = "role/analysis.editor",
             groups = ["project-chromium-committers", "googlers"],
         ),
+        # Role for builder health indicators
+        luci.binding(
+            roles = "role/buildbucket.healthUpdater",
+            users = ["guterman@google.com", "generate-builder@cr-builder-health-indicators.iam.gserviceaccount.com"],
+        ),
     ],
 )
 
