@@ -254,6 +254,23 @@ TEST_F(FloatingAccessibilityControllerTest, KioskImeTrayBottomButtons) {
   EXPECT_FALSE(GetImeTray()->ShouldShowBottomButtons());
 }
 
+TEST_F(FloatingAccessibilityControllerTest,
+       ImeTrayNotOverlapWithFloatingBubble) {
+  features_.InitAndEnableFeature(features::kKioskEnableImeButton);
+
+  SetUpVisibleMenu();
+
+  // Tray bubble is visible when  a user taps on the IME icon.
+  GetImeTray()->PerformAction(CreateTapEvent());
+
+  auto* ime_tray = GetImeTray()->GetBubbleView();
+  ASSERT_TRUE(ime_tray);
+
+  // The IME tray should not overlap with the floating accessibility bubble.
+  EXPECT_FALSE(controller()->bubble_view()->GetBoundsInScreen().Intersects(
+      ime_tray->GetBoundsInScreen()));
+}
+
 TEST_F(FloatingAccessibilityControllerTest, MenuIsNotShownWhenNotEnabled) {
   accessibility_controller()->ShowFloatingMenuIfEnabled();
   EXPECT_EQ(controller(), nullptr);

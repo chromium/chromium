@@ -54,10 +54,6 @@ gfx::Insets GetTrayBubbleInsets(aura::Window* window);
 // hotseat for the display containing `window` is shown.
 int GetBubbleInsetHotseatCompensation(aura::Window* window);
 
-// Returns the separation above the shelf for positioning secondary tray
-// bubbles. (Palette Tray, IME Tray).
-gfx::Insets GetSecondaryBubbleInsets();
-
 // Gets the InkDrop insets based on `ink_drop_style`.
 gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style);
 

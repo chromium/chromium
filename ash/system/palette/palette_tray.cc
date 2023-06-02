@@ -615,19 +615,8 @@ void PaletteTray::ShowBubble() {
   // accelerator.
   DeactivateActiveTool();
 
-  TrayBubbleView::InitParams init_params;
-  init_params.delegate = GetWeakPtr();
-  init_params.parent_window = GetBubbleWindowContainer();
-  init_params.anchor_view = nullptr;
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = GetBubbleAnchor()->GetAnchorBoundsInScreen();
-  init_params.anchor_rect.Inset(GetBubbleAnchorInsets());
-  init_params.shelf_alignment = shelf()->alignment();
+  TrayBubbleView::InitParams init_params = CreateInitParamsForTrayBubble(this);
   init_params.preferred_width = kPaletteWidth;
-  init_params.close_on_deactivate = true;
-  init_params.translucent = true;
-  init_params.corner_radius = kTrayItemCornerRadius;
-  init_params.reroute_event_handler = true;
 
   // TODO(tdanderson): Refactor into common row layout code.
   // TODO(tdanderson|jdufault): Add material design ripple effects to the menu
@@ -635,7 +624,6 @@ void PaletteTray::ShowBubble() {
 
   // Create and customize bubble view.
   auto bubble_view = std::make_unique<TrayBubbleView>(init_params);
-  bubble_view->set_margins(GetSecondaryBubbleInsets());
   bubble_view->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, 0, kPaddingBetweenBottomAndLastTrayItem, 0)));
 
