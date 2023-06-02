@@ -1716,6 +1716,9 @@ Permissions you've already given to websites and apps may apply to this account.
             Memory Saver made Chromium faster
           </message>
         </if>
+        <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY_V2" desc="Body text for a dialog describing that Memory Saver mode will use less memory.">
+          While this tab was inactive, memory was freed up to keep Chromium fast. You can choose to always exclude this site from being inactive.
+        </message>
       </if>
 
       <!-- High Efficiency IPH strings -->
