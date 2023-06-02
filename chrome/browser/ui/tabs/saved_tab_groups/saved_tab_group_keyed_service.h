@@ -13,8 +13,10 @@
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/gfx/range/range.h"
 
 class Profile;
+class TabGroup;
 
 // Serves to instantiate and own the SavedTabGroup infrastructure for the
 // browser.
@@ -50,9 +52,8 @@ class SavedTabGroupKeyedService : public KeyedService,
       const base::Uuid& saved_group_guid,
       const tab_groups::TabGroupId& group_id) override;
   void DisconnectLocalTabGroup(const tab_groups::TabGroupId& group_id) override;
-  void ConnectLocalTabGroupIfPossible(
-      const tab_groups::TabGroupId& group_id,
-      const base::Uuid& saved_group_guid) override;
+  void ConnectLocalTabGroup(const tab_groups::TabGroupId& group_id,
+                            const base::Uuid& saved_group_guid) override;
 
   // SavedTabGroupModelObserver
   void SavedTabGroupModelLoaded() override;
@@ -62,6 +63,35 @@ class SavedTabGroupKeyedService : public KeyedService,
       const absl::optional<base::Uuid>& tab_guid) override;
 
  private:
+  // Adds tabs to `tab_group` if `saved_group` was modified and has more tabs
+  // than `tab_group` when a restore happens.
+  void AddMissingTabsToOutOfSyncLocalTabGroup(
+      Browser* browser,
+      const TabGroup* const tab_group,
+      const SavedTabGroup* const saved_group);
+
+  // Remove tabs from `tab_group` if `saved_group` was modified and has less
+  // tabs than `tab_group` when a restore happens.
+  void RemoveExtraTabsFromOutOfSyncLocalTabGroup(
+      TabStripModel* tab_strip_model,
+      TabGroup* const tab_group,
+      const SavedTabGroup* const saved_group);
+
+  // Updates the tabs in the range `tab_range` to match the URLs of the
+  // SavedTabGroupTabs in `saved_group`.
+  void UpdateWebContentsToMatchSavedTabGroupTabs(
+      const TabStripModel* const tab_strip_model,
+      const SavedTabGroup* const saved_group,
+      const gfx::Range& tab_range);
+
+  // Connects all SavedTabGroupTabs from a SavedTabGroup to their respective
+  // WebContents in the local TabGroup.
+  std::vector<std::pair<content::WebContents*, base::Uuid>>
+  GetWebContentsToTabGuidMappingForSavedGroup(
+      const TabStripModel* const tab_strip_model,
+      const SavedTabGroup* const saved_group,
+      const gfx::Range& tab_range);
+
   // Activates the first tab in saved group that is already opened when its
   // button is pressed.
   void FocusFirstTabInOpenGroup(tab_groups::TabGroupId local_group_id);
