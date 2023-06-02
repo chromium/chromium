@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_LIB_BROWSER_HEADLESS_SELECT_FILE_DIALOG_FACTORY_H_
-#define HEADLESS_LIB_BROWSER_HEADLESS_SELECT_FILE_DIALOG_FACTORY_H_
+#ifndef COMPONENTS_HEADLESS_SELECT_FILE_DIALOG_HEADLESS_SELECT_FILE_DIALOG_H_
+#define COMPONENTS_HEADLESS_SELECT_FILE_DIALOG_HEADLESS_SELECT_FILE_DIALOG_H_
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "headless/public/headless_export.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -19,7 +19,7 @@ namespace headless {
 using SelectFileDialogCallback =
     base::OnceCallback<void(ui::SelectFileDialog::Type type)>;
 
-class HEADLESS_EXPORT HeadlessSelectFileDialogFactory
+class COMPONENT_EXPORT(HEADLESS) HeadlessSelectFileDialogFactory
     : public ui::SelectFileDialogFactory {
  public:
   HeadlessSelectFileDialogFactory(const HeadlessSelectFileDialogFactory&) =
@@ -46,9 +46,10 @@ class HEADLESS_EXPORT HeadlessSelectFileDialogFactory
   HeadlessSelectFileDialogFactory();
   ~HeadlessSelectFileDialogFactory() override;
 
+  static HeadlessSelectFileDialogFactory* instance_;
   SelectFileDialogCallback callback_;
 };
 
 }  // namespace headless
 
-#endif  // HEADLESS_LIB_BROWSER_HEADLESS_SELECT_FILE_DIALOG_FACTORY_H_
+#endif  // COMPONENTS_HEADLESS_SELECT_FILE_DIALOG_HEADLESS_SELECT_FILE_DIALOG_H_

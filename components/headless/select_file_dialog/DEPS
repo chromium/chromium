@@ -1,0 +1,4 @@
+include_rules = [
+  "+ui/gfx/native_widget_types.h",
+  "+ui/shell_dialogs",
+]
