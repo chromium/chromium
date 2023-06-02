@@ -42,14 +42,6 @@ struct CONTENT_EXPORT AXTextEdit {
 // Returns true if the given object is an NSRange instance.
 bool IsNSRange(id value);
 
-// Returns an AXTextMarker representing the given position in the tree.
-id AXTextMarkerFrom(const BrowserAccessibilityCocoa* anchor,
-                    int offset,
-                    ax::mojom::TextAffinity affinity);
-
-// Returns an AXTextMarkerRange that spans the given AXTextMarkers.
-id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
-
 }  // namespace content
 
 // BrowserAccessibilityCocoa is a cocoa wrapper around the BrowserAccessibility

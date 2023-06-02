@@ -7,6 +7,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/ax_platform_node_cocoa.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 using RoleMap = std::map<ax::mojom::Role, NSString*>;
@@ -59,15 +63,19 @@ AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
   return nullptr;
 }
 
-AXPlatformNodeMac::AXPlatformNodeMac() = default;
+struct AXPlatformNodeMac::ObjCStorage {
+  AXPlatformNodeCocoa* __strong native_node;
+};
 
+AXPlatformNodeMac::AXPlatformNodeMac()
+    : objc_storage_(std::make_unique<ObjCStorage>()) {}
 AXPlatformNodeMac::~AXPlatformNodeMac() = default;
 
 void AXPlatformNodeMac::Destroy() {
-  if (native_node_) {
-    [native_node_ detach];
-    // Also, nullify smart pointer to make accidental use-after-free impossible.
-    native_node_.reset();
+  if (objc_storage_->native_node) {
+    [objc_storage_->native_node detach];
+    // Also, clear the pointer to make accidental use-after-free impossible.
+    objc_storage_->native_node = nil;
   }
   AXPlatformNodeBase::Destroy();
 }
@@ -83,10 +91,26 @@ bool AXPlatformNodeMac::IsPlatformCheckable() const {
   return AXPlatformNodeBase::IsPlatformCheckable();
 }
 
+AXPlatformNodeCocoa* AXPlatformNodeMac::GetNativeWrapper() const {
+  return objc_storage_->native_node;
+}
+
+AXPlatformNodeCocoa* AXPlatformNodeMac::ReleaseNativeWrapper() {
+  AXPlatformNodeCocoa* native_node = objc_storage_->native_node;
+  objc_storage_->native_node = nil;
+  return native_node;
+}
+
+void AXPlatformNodeMac::SetNativeWrapper(AXPlatformNodeCocoa* native_node) {
+  objc_storage_->native_node = native_node;
+}
+
 gfx::NativeViewAccessible AXPlatformNodeMac::GetNativeViewAccessible() {
-  if (!native_node_)
-    native_node_.reset([[AXPlatformNodeCocoa alloc] initWithNode:this]);
-  return native_node_.get();
+  if (!objc_storage_->native_node) {
+    objc_storage_->native_node =
+        [[AXPlatformNodeCocoa alloc] initWithNode:this];
+  }
+  return objc_storage_->native_node;
 }
 
 void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
@@ -98,8 +122,9 @@ void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   // regular NSAccessibility notification system.
   if (event_type == ax::mojom::Event::kAlert ||
       event_type == ax::mojom::Event::kLiveRegionChanged) {
-    if (auto announcement = [native_node_ announcementForEvent:event_type]) {
-      [native_node_ scheduleLiveRegionAnnouncement:std::move(announcement)];
+    if (AXAnnouncementSpec* announcement =
+            [objc_storage_->native_node announcementForEvent:event_type]) {
+      [objc_storage_->native_node scheduleLiveRegionAnnouncement:announcement];
     }
     return;
   }
@@ -107,14 +132,14 @@ void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
     ax::mojom::Role role = GetRole();
     if (ui::IsMenuItem(role)) {
       // On Mac, map menu item selection to a focus event.
-      NotifyMacEvent(native_node_, ax::mojom::Event::kFocus);
+      NotifyMacEvent(objc_storage_->native_node, ax::mojom::Event::kFocus);
       return;
     } else if (ui::IsListItem(role)) {
       if (const AXPlatformNodeBase* container = GetSelectionContainer()) {
         if (container->GetRole() == ax::mojom::Role::kListBox &&
             !container->HasState(ax::mojom::State::kMultiselectable) &&
             GetDelegate()->GetFocus() == GetNativeViewAccessible()) {
-          NotifyMacEvent(native_node_, ax::mojom::Event::kFocus);
+          NotifyMacEvent(objc_storage_->native_node, ax::mojom::Event::kFocus);
           return;
         }
       }
@@ -123,12 +148,12 @@ void AXPlatformNodeMac::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
 
   // Otherwise, use mappings between ax::mojom::Event and NSAccessibility
   // notifications from the EventMap above.
-  NotifyMacEvent(native_node_, event_type);
+  NotifyMacEvent(objc_storage_->native_node, event_type);
 }
 
 void AXPlatformNodeMac::AnnounceText(const std::u16string& text) {
   PostAnnouncementNotification(base::SysUTF16ToNSString(text),
-                               [native_node_ AXWindow], false);
+                               [objc_storage_->native_node AXWindow], false);
 }
 
 bool IsNameExposedInAXValueForRole(ax::mojom::Role role) {

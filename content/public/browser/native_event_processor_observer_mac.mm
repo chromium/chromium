@@ -6,6 +6,10 @@
 
 #include "base/observer_list.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 ScopedNotifyNativeEventProcessorObserver::
@@ -15,13 +19,13 @@ ScopedNotifyNativeEventProcessorObserver::
         NSEvent* event)
     : observer_list_(observer_list), event_(event) {
   for (auto& observer : *observer_list_)
-    observer.WillRunNativeEvent(event_);
+    observer.WillRunNativeEvent((__bridge const void*)event_);
 }
 
 ScopedNotifyNativeEventProcessorObserver::
     ~ScopedNotifyNativeEventProcessorObserver() {
   for (auto& obs : *observer_list_) {
-    obs.DidRunNativeEvent(event_);
+    obs.DidRunNativeEvent((__bridge const void*)event_);
   }
 }
 

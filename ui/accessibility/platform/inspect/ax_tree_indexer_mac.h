@@ -10,14 +10,13 @@
 
 namespace ui {
 
-//
 // NSAccessibilityElement or AXUIElement accessible node comparator.
 struct AXNodeComparator {
   constexpr bool operator()(const gfx::NativeViewAccessible& lhs,
                             const gfx::NativeViewAccessible& rhs) const {
     if (AXElementWrapper::IsAXUIElement(lhs)) {
       DCHECK(AXElementWrapper::IsAXUIElement(rhs));
-      return CFHash(lhs) < CFHash(rhs);
+      return CFHash((__bridge CFTypeRef)lhs) < CFHash((__bridge CFTypeRef)rhs);
     }
     DCHECK(AXElementWrapper::IsNSAccessibilityElement(lhs));
     DCHECK(AXElementWrapper::IsNSAccessibilityElement(rhs));

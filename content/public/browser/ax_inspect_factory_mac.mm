@@ -9,6 +9,10 @@
 #include "ui/accessibility/platform/inspect/ax_event_recorder_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 // static
@@ -22,8 +26,8 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
     BrowserAccessibilityManager*,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(ui::AXApiType::kMac, nullptr, pid,
-                                          selector);
+  return AXInspectFactory::CreateRecorder(ui::AXApiType::kMac,
+                                          /*manager=*/nullptr, pid, selector);
 }
 
 // static

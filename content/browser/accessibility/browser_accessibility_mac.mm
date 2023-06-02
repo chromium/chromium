@@ -7,6 +7,7 @@
 #import "content/browser/accessibility/browser_accessibility_mac.h"
 
 #include "base/debug/stack_trace.h"
+#include "base/memory/scoped_policy.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -69,7 +70,7 @@ void BrowserAccessibilityMac::ReplaceNativeObject() {
   // because we need to retrieve some information from the old wrapper in order
   // to add it to the new one, e.g. its list of children.
   base::scoped_nsobject<AXPlatformNodeCocoa> old_native_obj(
-      platform_node_->ReleaseNativeWrapper());
+      platform_node_->ReleaseNativeWrapper(), base::scoped_policy::RETAIN);
 
   // We should have never called this method if a native wrapper has not been
   // created, but keep a null check just in case.

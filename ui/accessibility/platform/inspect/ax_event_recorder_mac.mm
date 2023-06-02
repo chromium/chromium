@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/apple/bridging.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -18,6 +19,10 @@
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace ui {
 
@@ -34,9 +39,9 @@ static void EventReceivedThunk(AXObserverRef observer_ref,
 AXEventRecorderMac::AXEventRecorderMac(base::ProcessId pid,
                                        const AXTreeSelector& selector)
     : observer_run_loop_source_(nullptr) {
-  AXUIElementRef node = nil;
+  base::ScopedCFTypeRef<AXUIElementRef> node;
   if (pid) {
-    node = AXUIElementCreateApplication(pid);
+    node.reset(AXUIElementCreateApplication(pid));
     if (!node) {
       LOG(FATAL) << "Failed to get AXUIElement for pid " << pid;
     }
@@ -54,12 +59,12 @@ AXEventRecorderMac::AXEventRecorderMac(base::ProcessId pid,
   }
 
   // Get an AXUIElement for the Chrome application.
-  application_.reset(node);
+  application_ = std::move(node);
   if (!application_.get())
     LOG(FATAL) << "Failed to create AXUIElement for application.";
 
   // Add the notifications we care about to the observer.
-  static NSArray* notifications = [@[
+  static NSArray* notifications = @[
     @"AXAutocorrectionOccurred",
     @"AXElementBusyChanged",
     @"AXExpandedChanged",
@@ -103,7 +108,7 @@ AXEventRecorderMac::AXEventRecorderMac(base::ProcessId pid,
     NSAccessibilityWindowMiniaturizedNotification,
     NSAccessibilityWindowMovedNotification,
     NSAccessibilityWindowResizedNotification,
-  ] retain];
+  ];
 
   for (NSString* notification : notifications) {
     AddNotification(notification);
@@ -122,7 +127,7 @@ AXEventRecorderMac::~AXEventRecorderMac() {
 
 void AXEventRecorderMac::AddNotification(NSString* notification) {
   AXObserverAddNotification(observer_ref_, application_,
-                            base::mac::NSToCFCast(notification), this);
+                            base::apple::NSToCFPtrCast(notification), this);
 }
 
 void AXEventRecorderMac::EventReceived(AXUIElementRef element,
@@ -135,7 +140,7 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
                                AXTreeFormatter::kFiltersDefaultSet);
 
   std::string element_str =
-      formatter.FormatTree(formatter.BuildNode(static_cast<id>(element)));
+      formatter.FormatTree(formatter.BuildNode((__bridge id)element));
 
   // Element dumps contain a new line character at the end, remove it.
   if (!element_str.empty() && element_str.back() == '\n') {
@@ -157,33 +162,27 @@ std::string AXEventRecorderMac::SerializeTextSelectionChangedProperties(
   if (user_info == nil)
     return {};
 
-  std::vector<std::string> serialized_info;
-  CFDictionaryApplyFunction(
-      user_info,
-      [](const void* raw_key, const void* raw_value, void* context) {
-        auto* key = static_cast<NSString*>(raw_key);
-        auto* value = static_cast<NSObject*>(raw_value);
-        auto* serialized_info = static_cast<std::vector<std::string>*>(context);
-        std::string value_string;
-        if ([key isEqual:NSAccessibilityTextStateChangeTypeKey]) {
-          value_string = ToString(static_cast<AXTextStateChangeType>(
-              [static_cast<NSNumber*>(value) intValue]));
-        } else if ([key isEqual:NSAccessibilityTextSelectionDirection]) {
-          value_string = ToString(static_cast<AXTextSelectionDirection>(
-              [static_cast<NSNumber*>(value) intValue]));
-        } else if ([key isEqual:NSAccessibilityTextSelectionGranularity]) {
-          value_string = ToString(static_cast<AXTextSelectionGranularity>(
-              [static_cast<NSNumber*>(value) intValue]));
-        } else if ([key isEqual:NSAccessibilityTextEditType]) {
-          value_string = ToString(static_cast<AXTextEditType>(
-              [static_cast<NSNumber*>(value) intValue]));
-        } else {
-          return;
-        }
-        serialized_info->push_back(base::SysNSStringToUTF8(key) + "=" +
-                                   value_string);
-      },
-      &serialized_info);
+  __block std::vector<std::string> serialized_info;
+  [base::apple::CFToNSPtrCast(user_info) enumerateKeysAndObjectsUsingBlock:^(
+                                             id key, id value, BOOL* stop) {
+    std::string value_string;
+    if ([key isEqual:NSAccessibilityTextStateChangeTypeKey]) {
+      value_string =
+          ToString(static_cast<AXTextStateChangeType>([value intValue]));
+    } else if ([key isEqual:NSAccessibilityTextSelectionDirection]) {
+      value_string =
+          ToString(static_cast<AXTextSelectionDirection>([value intValue]));
+    } else if ([key isEqual:NSAccessibilityTextSelectionGranularity]) {
+      value_string =
+          ToString(static_cast<AXTextSelectionGranularity>([value intValue]));
+    } else if ([key isEqual:NSAccessibilityTextEditType]) {
+      value_string = ToString(static_cast<AXTextEditType>([value intValue]));
+    } else {
+      return;
+    }
+    serialized_info.push_back(base::SysNSStringToUTF8(key) + "=" +
+                              value_string);
+  }];
 
   // Always sort the info so that we don't depend on CFDictionary for
   // consistent output ordering.

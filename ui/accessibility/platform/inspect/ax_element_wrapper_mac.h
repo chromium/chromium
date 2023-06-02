@@ -13,12 +13,16 @@
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/accessibility/platform/inspect/ax_optional.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 // Optional tri-state id object.
 using AXOptionalNSObject = AXOptional<id>;
 
-// A wrapper around AXUIElement or NSAccessibilityElement object.
+// A wrapper around either AXUIElement or NSAccessibilityElement object.
 class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
  public:
   // Returns true if the object is either NSAccessibilityElement or
@@ -39,7 +43,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
   // BrowserAccessibilityCocoa).
   static std::string DOMIdOf(const id node);
 
-  AXElementWrapper(const id node) : node_(node) {}
+  explicit AXElementWrapper(const id node) : node_(node) {}
 
   // Returns true if the object is either an NSAccessibilityElement or
   // AXUIElement.
@@ -150,7 +154,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
   // Converts the given value and the error object into AXOptional object.
   AXOptionalNSObject ToOptional(id, AXError, const std::string& message) const;
 
-  const id node_;
+  id __strong node_;
 };
 
 }  // namespace ui
