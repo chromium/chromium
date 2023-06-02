@@ -1504,7 +1504,7 @@
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
-        "cros_img": "eve-public/R115-15470.0.0",
+        "cros_img": "eve-public/R115-15474.9.0",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests EVE_PUBLIC_DEV",
         "public_builder": "cros_test_platform_public",
