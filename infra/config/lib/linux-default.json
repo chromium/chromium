@@ -171,6 +171,7 @@
     "linux_vr": "Ubuntu-22.04",
     "mac-rel": "Ubuntu-22.04",
     "network_service_linux": "Ubuntu-22.04",
+    "tricium-metrics-analysis": "Ubuntu-22.04",
     "win-rel": "Ubuntu-22.04"
   }
 }
