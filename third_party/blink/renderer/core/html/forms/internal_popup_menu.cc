@@ -23,10 +23,12 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/chooser_resource_loader.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -710,6 +712,18 @@ void InternalPopupMenu::SetMenuListOptionsBoundsInAXTree(
   gfx::Rect widget_view_rect = widget->ViewRect();
   popup_origin.Offset(-widget_view_rect.x(), -widget_view_rect.y());
   popup_origin = widget->DIPsToRoundedBlinkSpace(popup_origin);
+
+  // We need to make sure we take into account any iframes. Since OOPIF and
+  // srcdoc iframes aren't allowed to access the root viewport, we need to
+  // iterate through the frame owner's parent nodes and accumulate the offsets.
+  Frame* frame = owner_element_->GetDocument().GetFrame();
+  while (frame->Owner()) {
+    if (auto* frame_view = frame->View()) {
+        gfx::Point frame_point = frame_view->Location();
+        popup_origin.Offset(-frame_point.x(), -frame_point.y());
+    }
+    frame = frame->Parent();
+  }
 
   for (auto& option_bounds : options_bounds) {
     option_bounds.Offset(popup_origin.x(), popup_origin.y());
