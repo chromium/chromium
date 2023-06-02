@@ -4502,9 +4502,10 @@ void AXObjectCacheImpl::HandleLoadComplete(Document* document) {
 void AXObjectCacheImpl::HandleLayoutComplete(Document* document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
   DCHECK(document);
-  // Do not fire kLayoutComplete for popup document.
-  if (IsPopup(*document))
+  // Do not fire kLayoutComplete for popup document or initial empty document.
+  if (IsPopup(*document) || IsInitialEmptyDocument(*document)) {
     return;
+  }
 
   need_to_send_location_changes_ = true;
   MarkElementDirty(document);

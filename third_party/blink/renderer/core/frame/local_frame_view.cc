@@ -1717,9 +1717,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   DCHECK(document);
   if (AXObjectCache* cache = document->ExistingAXObjectCache()) {
     const KURL& url = document->Url();
-    if (url.IsValid() && !url.IsAboutBlankURL()) {
-      // TODO(kschmi) move HandleLayoutComplete to the accessibility lifecycle
-      // stage. crbug.com/1062122
+    if (url.IsValid()) {
       cache->HandleLayoutComplete(document);
     }
   }
