@@ -1104,11 +1104,13 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcFencedFrameBrowserTest,
       root_rfh->GetPage().fenced_frame_urls_map();
   auto fenced_frame_urn =
       test::AddAndVerifyFencedFrameURL(&url_mapping, fenced_frame_url);
-  RenderFrameHost* fenced_frame_host = fenced_frame_helper_->CreateFencedFrame(
-      root_rfh, GURL(url::kAboutBlankURL), net::OK,
-      blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
 
-  TestFrameNavigationObserver observer(fenced_frame_host);
+  RenderFrameHostWrapper fenced_frame_host(
+      fenced_frame_helper_->CreateFencedFrame(
+          root_rfh, GURL(url::kAboutBlankURL), net::OK,
+          blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds));
+
+  TestFrameNavigationObserver observer(fenced_frame_host.get());
 
   EXPECT_TRUE(ExecJs(root_rfh, JsReplace("document.querySelector('fencedframe')"
                                          ".config = new FencedFrameConfig($1);",
@@ -1116,8 +1118,17 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcFencedFrameBrowserTest,
 
   observer.Wait();
 
-  ASSERT_NE(fenced_frame_host, nullptr);
-  EXPECT_TRUE(fenced_frame_host->IsFencedFrameRoot());
+  if (content::WillSameSiteNavigationsChangeRenderFrameHosts()) {
+    EXPECT_TRUE(fenced_frame_host.WaitUntilRenderFrameDeleted());
+  } else {
+    ASSERT_NE(fenced_frame_host.get(), nullptr);
+  }
+
+  RenderFrameHostWrapper fenced_frame_host2(
+      content::test::FencedFrameTestHelper::GetMostRecentlyAddedFencedFrame(
+          root_rfh));
+
+  EXPECT_TRUE(fenced_frame_host2->IsFencedFrameRoot());
 
   std::unique_ptr<MockDataHost> data_host;
   base::RunLoop loop;
@@ -1131,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcFencedFrameBrowserTest,
           });
 
   EXPECT_TRUE(ExecJs(
-      fenced_frame_host,
+      fenced_frame_host2.get(),
       JsReplace(
           "createAttributionSrcImg($1);",
           https_server()->GetURL("c.test", "/register_source_headers.html"))));
