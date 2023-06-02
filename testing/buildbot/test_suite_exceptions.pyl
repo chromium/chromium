@@ -1287,6 +1287,11 @@
           '--coverage-continuous-mode=1',
         ],
       },
+      'mac-cr23-rel': {
+        'swarming': {
+          'shards': 20,
+        },
+      },
       'mac-osxbeta-rel': {
         'swarming': {
           'shards': 30,
