@@ -211,7 +211,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       std::make_unique<ClearBrowsingDataHandler>(web_ui, profile));
   AddSettingsPageUIHandler(std::make_unique<SafetyCheckHandler>());
   AddSettingsPageUIHandler(std::make_unique<SafetyHubHandler>(profile));
-  AddSettingsPageUIHandler(std::make_unique<SafetyCheckExtensionsHandler>());
+  AddSettingsPageUIHandler(
+      std::make_unique<SafetyCheckExtensionsHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<DownloadsHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ExtensionControlHandler>());
   AddSettingsPageUIHandler(std::make_unique<FontHandler>(profile));
