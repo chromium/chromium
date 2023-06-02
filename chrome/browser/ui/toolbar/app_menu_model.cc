@@ -211,17 +211,6 @@ bool IsPasswordManagerPage(const GURL& url) {
          url.DomainIs(password_manager::kChromeUIPasswordManagerHost);
 }
 
-void SetCommandIcon(ui::SimpleMenuModel* model,
-                    int command_id,
-                    const gfx::VectorIcon& vector_icon) {
-  auto index = model->GetIndexOfCommandId(command_id);
-  if (index) {
-    model->SetIcon(index.value(), ui::ImageModel::FromVectorIcon(
-                                      vector_icon, ui::kColorMenuIcon,
-                                      ui::SimpleMenuModel::kDefaultIconSize));
-  }
-}
-
 ProfileAttributesEntry* GetProfileAttributesFromProfile(
     const Profile* profile) {
   return g_browser_process->profile_manager()
@@ -422,6 +411,19 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
 }
 
 }  // namespace
+
+////////////////////////////////////////////////////////////////////////////////
+// SetCommandIcon
+void SetCommandIcon(ui::SimpleMenuModel* model,
+                    int command_id,
+                    const gfx::VectorIcon& vector_icon) {
+  auto index = model->GetIndexOfCommandId(command_id);
+  if (index) {
+    model->SetIcon(index.value(), ui::ImageModel::FromVectorIcon(
+                                      vector_icon, ui::kColorMenuIcon,
+                                      ui::SimpleMenuModel::kDefaultIconSize));
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // LogWrenchMenuAction

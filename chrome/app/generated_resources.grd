@@ -11324,6 +11324,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="In Title Case: The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
           No Tabs From Other Devices
         </message>
+        <message name="IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS" desc="In Title Case: The label in the Recent Tabs menu in the wrench menu to suggest logging in to see tabs from other devices.">
+          Sign In To See Tabs From Other Devices
+        </message>
       </if>
       <if expr="not use_titlecase">
         <message name="IDS_RECENT_TABS_MENU" desc="The title of the Recent Tabs menu in the wrench menu.">
@@ -11340,6 +11343,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
         <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
           No tabs from other devices
+        </message>
+        <message name="IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu to suggest logging in to see tabs from other devices.">
+          Sign in to see tabs from other devices
         </message>
       </if>
 

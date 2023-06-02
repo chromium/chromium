@@ -194,6 +194,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "sync_paused.icon",
     "sync_paused_circle.icon",
     "sync_problem.icon",
+    "sync_refresh.icon",
     "sync_switch_account.icon",
     "tab.icon",
     "tab_audio.icon",

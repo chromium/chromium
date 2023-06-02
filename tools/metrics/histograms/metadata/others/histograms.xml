@@ -14876,6 +14876,7 @@ regressions. -->
     <variant name="HelpPage"/>
     <variant name="ImportSettings"/>
     <variant name="InstallPwa"/>
+    <variant name="LoginForDeviceTabs"/>
     <variant name="ManageExtensions"/>
     <variant name="NewIncognitoWindow"/>
     <variant name="NewTab"/>

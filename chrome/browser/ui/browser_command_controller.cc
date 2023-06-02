@@ -810,6 +810,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_CARET_BROWSING_TOGGLE:
       ToggleCaretBrowsing(browser_);
       break;
+    case IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS:
+      ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
+                          chrome::kPeopleSubPage);
+      break;
     case IDC_SHOW_BOOKMARK_MANAGER:
       ShowBookmarkManager(browser_->GetBrowserForOpeningWebUi());
       break;
@@ -1230,6 +1234,10 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(
       IDC_RECENT_TABS_MENU, (!guest_session && !profile()->IsSystemProfile() &&
                              !profile()->IsIncognitoProfile()));
+  command_updater_.UpdateCommandEnabled(
+      IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
+      (!guest_session && !profile()->IsSystemProfile() &&
+       !profile()->IsIncognitoProfile()));
 
   if (profile()->IsIncognitoProfile()) {
     command_updater_.UpdateCommandEnabled(IDC_CLEAR_BROWSING_DATA, true);

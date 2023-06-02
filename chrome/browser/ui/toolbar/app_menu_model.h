@@ -93,6 +93,12 @@ enum class AlertMenuItem { kNone, kReopenTabs, kPerformance };
 // Function to record WrenchMenu.MenuAction histogram
 void LogWrenchMenuAction(AppMenuAction action_id);
 
+// Given the menu model and command_id, set the icon to the given vector-icon.
+// This is a no-op if the command is unavailable.
+void SetCommandIcon(ui::SimpleMenuModel* model,
+                    int command_id,
+                    const gfx::VectorIcon& vector_icon);
+
 class ToolsMenuModel : public ui::SimpleMenuModel {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPerformanceMenuItem);

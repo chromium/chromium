@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
+#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -344,7 +345,8 @@ TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
   // Skip the items that are either not supposed to have an icon, or are not
   // ready to be tested. Remove items once they're ready for testing.
   static const std::vector<int> skip_commands = {
-      IDC_RECENT_TABS_MENU, IDC_ABOUT,
+      IDC_RECENT_TABS_NO_DEVICE_TABS, IDC_ABOUT,
+      RecentTabsSubMenuModel::kDisabledRecentlyClosedHeaderCommandId,
       IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, IDC_TAKE_SCREENSHOT};
   AppMenuModel model(this, browser());
   model.Init();
