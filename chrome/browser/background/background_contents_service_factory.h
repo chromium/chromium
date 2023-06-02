@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BACKGROUND_BACKGROUND_CONTENTS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_BACKGROUND_BACKGROUND_CONTENTS_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class BackgroundContentsService;
@@ -26,7 +26,7 @@ class BackgroundContentsServiceFactory : public ProfileKeyedServiceFactory {
       const BackgroundContentsServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<BackgroundContentsServiceFactory>;
+  friend base::NoDestructor<BackgroundContentsServiceFactory>;
 
   BackgroundContentsServiceFactory();
   ~BackgroundContentsServiceFactory() override;

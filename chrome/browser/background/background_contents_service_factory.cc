@@ -25,7 +25,8 @@ BackgroundContentsService* BackgroundContentsServiceFactory::GetForProfile(
 // static
 BackgroundContentsServiceFactory*
 BackgroundContentsServiceFactory::GetInstance() {
-  return base::Singleton<BackgroundContentsServiceFactory>::get();
+  static base::NoDestructor<BackgroundContentsServiceFactory> instance;
+  return instance.get();
 }
 
 BackgroundContentsServiceFactory::BackgroundContentsServiceFactory()
@@ -43,7 +44,7 @@ BackgroundContentsServiceFactory::BackgroundContentsServiceFactory()
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
-BackgroundContentsServiceFactory::~BackgroundContentsServiceFactory() {}
+BackgroundContentsServiceFactory::~BackgroundContentsServiceFactory() = default;
 
 KeyedService* BackgroundContentsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
