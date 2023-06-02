@@ -18,7 +18,8 @@ NotificationMetricsLoggerFactory::GetForBrowserContext(
 // static
 NotificationMetricsLoggerFactory*
 NotificationMetricsLoggerFactory::GetInstance() {
-  return base::Singleton<NotificationMetricsLoggerFactory>::get();
+  static base::NoDestructor<NotificationMetricsLoggerFactory> instance;
+  return instance.get();
 }
 
 NotificationMetricsLoggerFactory::NotificationMetricsLoggerFactory()

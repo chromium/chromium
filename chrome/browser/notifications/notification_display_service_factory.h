@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class NotificationDisplayService;
@@ -21,7 +21,7 @@ class NotificationDisplayServiceFactory : public ProfileKeyedServiceFactory {
   static NotificationDisplayServiceFactory* GetInstance();
 
  private:
-  friend struct base::DefaultSingletonTraits<NotificationDisplayServiceFactory>;
+  friend base::NoDestructor<NotificationDisplayServiceFactory>;
 
   NotificationDisplayServiceFactory();
 

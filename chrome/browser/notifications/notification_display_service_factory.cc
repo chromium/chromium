@@ -5,7 +5,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 
 #include "base/command_line.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -26,7 +26,8 @@ NotificationDisplayService* NotificationDisplayServiceFactory::GetForProfile(
 // static
 NotificationDisplayServiceFactory*
 NotificationDisplayServiceFactory::GetInstance() {
-  return base::Singleton<NotificationDisplayServiceFactory>::get();
+  static base::NoDestructor<NotificationDisplayServiceFactory> instance;
+  return instance.get();
 }
 
 NotificationDisplayServiceFactory::NotificationDisplayServiceFactory()

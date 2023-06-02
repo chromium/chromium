@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service_factory.h"
@@ -56,7 +56,8 @@ RegisterClients(ProfileKey* key) {
 // static
 NotificationScheduleServiceFactory*
 NotificationScheduleServiceFactory::GetInstance() {
-  return base::Singleton<NotificationScheduleServiceFactory>::get();
+  static base::NoDestructor<NotificationScheduleServiceFactory> instance;
+  return instance.get();
 }
 
 // static

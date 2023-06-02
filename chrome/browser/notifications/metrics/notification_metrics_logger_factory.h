@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_METRICS_NOTIFICATION_METRICS_LOGGER_FACTORY_H_
 #define CHROME_BROWSER_NOTIFICATIONS_METRICS_NOTIFICATION_METRICS_LOGGER_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -24,7 +24,7 @@ class NotificationMetricsLoggerFactory : public ProfileKeyedServiceFactory {
       const NotificationMetricsLoggerFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<NotificationMetricsLoggerFactory>;
+  friend base::NoDestructor<NotificationMetricsLoggerFactory>;
 
   NotificationMetricsLoggerFactory();
 
