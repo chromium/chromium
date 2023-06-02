@@ -4712,9 +4712,6 @@
   'webview_64_cts_tests': {
     'modifications': {
       'android-pie-arm64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.webview_cts_tests_coverage.filter',
-        ],
         # TODO(crbug.com/1111436): Move this back to walleye if/when additional
         # capacity has been deployed.
         'swarming': {
@@ -4733,7 +4730,6 @@
       'android-nougat-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests.filter',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.webview_cts_tests_coverage.filter',
         ],
       },
       'android-pie-arm64-rel': {
@@ -4751,7 +4747,6 @@
       'android-x86-code-coverage': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests.filter',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.webview_cts_tests_coverage.filter',
         ],
       },
     },
@@ -4850,26 +4845,6 @@
         },
       },
     },
-  },
-  'webview_trichrome_64_cts_tests full_mode': {
-    'modifications': {
-      'android-12-x64-rel': {
-        'args': [
-          # crbug.com/1401476: Test doesn't work with code coverage.
-          '--gtest_filter=-com.android.cts.webkit.WebViewDeviceSideStartupTest.testStrictModeNotViolatedOnStartup',
-        ],
-      }
-    }
-  },
-  'webview_trichrome_64_cts_tests instant_mode': {
-    'modifications': {
-      'android-12-x64-rel': {
-        'args': [
-          # crbug.com/1401476: Test doesn't work with code coverage.
-          '--gtest_filter=-com.android.cts.webkit.WebViewDeviceSideStartupTest.testStrictModeNotViolatedOnStartup',
-        ],
-      }
-    }
   },
   'webview_ui_test_app_test_apk': {
     'remove_from': [
