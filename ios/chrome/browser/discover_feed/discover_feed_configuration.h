@@ -12,6 +12,7 @@
 class AuthenticationService;
 @class FeedMetricsRecorder;
 class PrefService;
+class TemplateURLService;
 
 namespace signin {
 class IdentityManager;
@@ -35,6 +36,9 @@ class IdentityManager;
 
 // Feed metrics recorder used by DiscoverFeedService.
 @property(nonatomic, strong) FeedMetricsRecorder* metricsRecorder;
+
+// The service to get the default search engine.
+@property(nonatomic, assign) TemplateURLService* templateURLService;
 
 @end
 

@@ -22,8 +22,10 @@ source_set("discover_feed") {
   deps = [
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/keyed_service/core",
+    "//components/search_engines",
     "//components/variations:variations",
     "//ios/chrome/browser/metrics:accessor",
+    "//ios/chrome/browser/search_engines:template_url_service_factory",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
   public_deps = [
@@ -49,6 +51,7 @@ source_set("discover_feed_factory") {
     "//base",
     "//components/keyed_service/ios",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/search_engines:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
