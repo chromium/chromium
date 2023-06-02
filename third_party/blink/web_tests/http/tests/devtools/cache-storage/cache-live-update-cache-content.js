@@ -16,7 +16,6 @@ import {ApplicationTestRunner} from 'application_test_runner';
   var cacheStorageModel = TestRunner.mainTarget.model(SDK.ServiceWorkerCacheModel);
   cacheStorageModel.enable();
 
-  await new Promise(resolve => ApplicationTestRunner.waitForCacheRefresh(resolve));
   await ApplicationTestRunner.clearAllCaches();
   await ApplicationTestRunner.dumpCacheTree();
   await ApplicationTestRunner.createCache('testCache1');

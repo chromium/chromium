@@ -51,5 +51,5 @@ import {ApplicationTestRunner} from 'application_test_runner';
         .catch(errorAndExit);
   }
 
-  ApplicationTestRunner.waitForCacheRefresh(main);
+  main();
 })();

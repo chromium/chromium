@@ -6861,9 +6861,3 @@ crbug.com/1448011 http/tests/devtools/application-panel/resources-panel-iframe-i
 # Sheriff 2023-05-30
 crbug.com/1450020 [ Mac ] compositing/geometry/preserve-3d-switching.html [ Failure Pass ]
 
-crbug.com/1406017 http/tests/devtools/cache-storage/cache-data.js [ Failure Pass Timeout ]
-crbug.com/1406017 http/tests/devtools/cache-storage/cache-deletion.js [ Failure Pass Timeout ]
-crbug.com/1406017 http/tests/devtools/cache-storage/cache-entry-deletion.js [ Failure Pass Timeout ]
-crbug.com/1406017 http/tests/devtools/cache-storage/cache-live-update-cache-content.js [ Failure Pass Timeout ]
-crbug.com/1406017 http/tests/devtools/cache-storage/cache-names.js [ Failure Pass Timeout ]
-
