@@ -225,7 +225,7 @@ def FetchBetaPackage(name, rust_git_hash, triple=None):
 
     Unpacks the package and returns the path to root of the package.
     '''
-    triple = triple if triple else RustTargetTriple(False)
+    triple = triple if triple else RustTargetTriple()
     filename = f'{name}-beta-{triple}'
 
     # Pull the stage0 JSON to find the package intended to be used to
@@ -438,7 +438,9 @@ class XPy:
                 f' -Clink-arg={gcc_toolchain_flag}')
             self._env['RUSTFLAGS_BOOTSTRAP'] += (
                 f' -L native={gcc_toolchain_path}/lib64')
-            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+            self._env['CARGO_TARGET_I686_UNKNOWN_LINUX_GNU_RUSTFLAGS'] += (
+                f' -L native={gcc_toolchain_path}/lib32')
+            self._env['CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS'] += (
                 f' -L native={gcc_toolchain_path}/lib64')
 
         # TODO(danakj): On windows we point the to lld-link in config.toml so
@@ -549,16 +551,23 @@ def GetLatestRustCommit():
     return main['commit']
 
 
-def RustTargetTriple(build_mac_arm):
+def RustTargetTriple(build_mac_arm=False, target_x86=False):
     if sys.platform == 'darwin':
+        assert not target_x86  # No cross-compile to x86 on MacOS.
         if platform.machine() == 'arm64' or build_mac_arm:
             return 'aarch64-apple-darwin'
         else:
             return 'x86_64-apple-darwin'
     elif sys.platform == 'win32':
-        return 'x86_64-pc-windows-msvc'
+        if target_x86:
+            return 'i686-pc-windows-msvc'
+        else:
+            return 'x86_64-pc-windows-msvc'
     else:
-        return 'x86_64-unknown-linux-gnu'
+        if target_x86:
+            return 'i686-unknown-linux-gnu'
+        else:
+            return 'x86_64-unknown-linux-gnu'
 
 
 # Fetch or build the LLVM libraries, for the host machine and when
@@ -776,14 +785,31 @@ def main():
     else:
         assert not rest
 
-    building_on_host_triple = RustTargetTriple(False)
-    building_for_host_triple = RustTargetTriple(args.build_mac_arm)
-
+    building_on_host_triple = RustTargetTriple()
     xpy_args = ['--build', building_on_host_triple]
     if args.build_mac_arm:
+        building_for_host_triple = RustTargetTriple(build_mac_arm=True)
         xpy_args.extend([
-            '--host', building_for_host_triple, '--target',
+            # The compiler will run on ARM.
+            '--host',
+            building_for_host_triple,
+            # The compiler will build stuff for ARM.
+            '--target',
             building_for_host_triple
+        ])
+    elif sys.platform.startswith('linux'):
+        # We have Linux x86 machines, and they need the prebuilt stdlib to be
+        # available for them in the same package.
+        #
+        # TODO(crbug.com/1448334): or sys.platform == 'win32':
+        # Windows x64 targeting x86 uses x86 as the host toolchain too in our
+        # GN rules, so we need the stdlib to be available for x86.
+        x86_target_triple = RustTargetTriple(target_x86=True)
+        xpy_args.extend([
+            # The compiler will build stuff for the host, and
+            # the compiler can also build stuff for x86 targets.
+            '--target',
+            f'{building_on_host_triple},{x86_target_triple}'
         ])
 
     if not args.skip_clean:

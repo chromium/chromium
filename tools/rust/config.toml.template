@@ -50,6 +50,15 @@ cc = "$LLVM_BIN/clang-cl"
 cxx = "$LLVM_BIN/clang-cl"
 linker = "$LLVM_BIN/lld-link"
 
+[target.i686-pc-windows-msvc]
+llvm-config = "$LLVM_CONFIG_WINDOWS_x86_64"
+# TODO(danakj): We don't ship this in the clang toolchain package.
+# ranlib = "$LLVM_BIN/llvm-ranlib"
+ar = "$LLVM_BIN/llvm-lib"
+cc = "$LLVM_BIN/clang-cl"
+cxx = "$LLVM_BIN/clang-cl"
+linker = "$LLVM_BIN/lld-link"
+
 [target.aarch64-apple-darwin]
 llvm-config = "$LLVM_CONFIG_APPLE_AARCH64"
 # TODO(danakj): We don't ship this in the clang toolchain package.
@@ -69,6 +78,15 @@ cxx = "$LLVM_BIN/clang++"
 linker = "$LLVM_BIN/clang"
 
 [target.x86_64-unknown-linux-gnu]
+llvm-config = "$LLVM_CONFIG_LINUX_X86_64"
+# TODO(danakj): We don't ship this in the clang toolchain package.
+# ranlib = "$LLVM_BIN/llvm-ranlib"
+ar = "$LLVM_BIN/llvm-ar"
+cc = "$LLVM_BIN/clang"
+cxx = "$LLVM_BIN/clang++"
+linker = "$LLVM_BIN/clang"
+
+[target.i686-unknown-linux-gnu]
 llvm-config = "$LLVM_CONFIG_LINUX_X86_64"
 # TODO(danakj): We don't ship this in the clang toolchain package.
 # ranlib = "$LLVM_BIN/llvm-ranlib"

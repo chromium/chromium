@@ -113,8 +113,8 @@ def main():
         # along with the host and target stdlib to a sysroot dir.
         root = InstallRustBetaSysroot(
             RUST_REVISION,
-            [RustTargetTriple(None),
-             RustTargetTriple(args.build_mac_arm)])
+            [RustTargetTriple(),
+             RustTargetTriple(build_mac_arm=True)])
         cargo_bin = os.path.join(root, 'bin', f'cargo{EXE}')
         rustc_bin = os.path.join(root, 'bin', f'rustc{EXE}')
 
@@ -221,7 +221,7 @@ def main():
         'build',
         f'--manifest-path={BINDGEN_SRC_DIR}/Cargo.toml',
         f'--target-dir={build_dir}',
-        f'--target={RustTargetTriple(args.build_mac_arm)}',
+        f'--target={RustTargetTriple(build_mac_arm = args.build_mac_arm)}',
         f'--no-default-features',
         f'--features=logging',
         '--release',
@@ -234,7 +234,8 @@ def main():
     print(f'Installing bindgen to {install_dir} ...')
 
     shutil.copy(
-        os.path.join(build_dir, RustTargetTriple(args.build_mac_arm),
+        os.path.join(build_dir,
+                     RustTargetTriple(build_mac_arm=args.build_mac_arm),
                      'release', f'bindgen{EXE}'),
         os.path.join(install_dir, 'bin'))
     if sys.platform == 'win32':
