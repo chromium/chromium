@@ -14,6 +14,11 @@
     padding: 0 16px 32px;
   }
 
+  :host-context([chrome-refresh-2023]) cr-grid {
+    --cr-grid-gap: 8px;
+    padding: 0 var(--sp-card-inline-padding) 16px;
+  }
+
   .tile {
     cursor: pointer;
     grid-column: span 2;
@@ -70,14 +75,46 @@
     text-align: center;
   }
 
+  :host-context([chrome-refresh-2023]) .label {
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 16px;
+  }
+
   .tile:nth-child(-n+4) {
     grid-column: span 3;
+     /* To result in an extra 5px horizontal gap between first 4 tiles. */
     padding-inline-end: 2.5px;
+  }
+
+  :host-context([chrome-refresh-2023]) .tile:nth-child(-n+4) {
+    /* To result in an extra 8px horizontal gap between first 4 tiles. */
+    padding-inline-end: 4px;
+  }
+
+  :host-context([chrome-refresh-2023]) .tile:nth-child(-n+4) {
+    /* To result in an extra 10px vertical gap between large and small tiles. */
+    padding-block-end: 10px;
+    /* To result in an extra 8px vertical gap between first 4 tiles. */
+    padding-block-start: 4px;
+  }
+
+  :host-context([chrome-refresh-2023]) .tile:nth-child(-n+2) {
+    /* To result in an extra 8px vertical gap between first 4 tiles. */
+    padding-block-end: 4px;
+    padding-block-start: 0;
   }
 
   .tile:nth-child(-n+4):nth-child(even) {
     padding-inline-end: 0;
+     /* To result in an extra 5px horizontal gap between first 4 tiles. */
     padding-inline-start: 2.5px;
+  }
+
+  :host-context([chrome-refresh-2023]) .tile:nth-child(-n+4):nth-child(even) {
+    padding-inline-end: 0;
+    /* To result in an extra 8px horizontal gap between first 4 tiles. */
+    padding-inline-start: 4px;
   }
 
   .tile:nth-child(-n+4) .image-container {
@@ -90,6 +127,12 @@
     padding-top: 12px;
   }
 
+  :host-context([chrome-refresh-2023]) .tile:nth-child(-n+4) .label {
+    font-size: 12px;
+    line-height: 16px;
+    padding-top: 8px;
+  }
+
   .image-container {
     border-radius: 12px;
   }
@@ -98,6 +141,10 @@
     font-size: 11px;
     line-height: 16px;
     padding-top: 7px;
+  }
+
+  :host-context([chrome-refresh-2023]) .label {
+    padding-top: 4px;
   }
 
   .icon-external {
