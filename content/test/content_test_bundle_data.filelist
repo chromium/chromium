@@ -614,6 +614,7 @@ data/accessibility/aria/aria-details-expected-blink.txt
 data/accessibility/aria/aria-details-expected-mac.txt
 data/accessibility/aria/aria-details-expected-win.txt
 data/accessibility/aria/aria-details-multiple-expected-android-external.txt
+data/accessibility/aria/aria-details-multiple-expected-auralinux.txt
 data/accessibility/aria/aria-details-multiple-expected-blink.txt
 data/accessibility/aria/aria-details-multiple-expected-mac.txt
 data/accessibility/aria/aria-details-multiple-expected-uia-win.txt

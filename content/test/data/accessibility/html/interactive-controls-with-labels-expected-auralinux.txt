@@ -1,32 +1,32 @@
 [document web]
-++[label] label-for
+++[label] label-for=[combo box,combo box,date editor,entry,push button,push button,section,spin button,spin button,spin button]
 ++++[static] name='Test label'
 ++[section] name='aria label'
 ++++[static] name='Generic container'
-++[section] name='Test label' labelled-by
+++[section] name='Test label' labelled-by=[label]
 ++++[static] name='Generic container with aria-labelledby'
 ++[entry] name='aria label' selectable-text
 ++++[static] name='Textbox'
-++[entry] name='Test label' selectable-text labelled-by
+++[entry] name='Test label' selectable-text labelled-by=[label]
 ++++[static] name='Textbox with aria-labelledby'
 ++[push button] name='aria label'
-++[push button] name='Test label' labelled-by
-++[combo box] name='aria label' selectable-text controller-for
-++[list box] controlled-by
+++[push button] name='Test label' labelled-by=[label]
+++[combo box] name='aria label' selectable-text controller-for=[list box]
+++[list box] controlled-by=[combo box]
 ++++[list item] name='Option 1' selectable
 ++++[list item] name='Option 2' selectable
-++[combo box] name='Test label' selectable-text controller-for labelled-by
-++[list box] controlled-by
+++[combo box] name='Test label' selectable-text controller-for=[list box] labelled-by=[label]
+++[list box] controlled-by=[combo box]
 ++++[list item] name='Option 3' selectable
 ++++[list item] name='Option 4' selectable
-++[combo box] name='aria label' controller-for
+++[combo box] name='aria label' controller-for=[list box]
 ++++[static] name='Combobox'
 ++[list box]
 ++++[list item] name='Option 5' selectable
 ++++[list item] name='Option 6' selectable
-++[combo box] name='Test label' controller-for labelled-by
+++[combo box] name='Test label' controller-for=[list box] labelled-by=[label]
 ++++[static] name='Combobox with aria-labelledby'
-++[list box] controlled-by
+++[list box] controlled-by=[combo box,combo box]
 ++++[list item] name='Option 7' selectable
 ++++[list item] name='Option 8' selectable
 ++[dateeditor] name='aria label'
@@ -38,14 +38,14 @@
 ++++++++[static] name=' '
 ++++++++[spin button] name='AM/PM aria label' current=2.000000 minimum=1.000000 maximum=2.000000
 ++++[push button] name='Show time picker'
-++[dateeditor] name='Test label' labelled-by
+++[dateeditor] name='Test label' labelled-by=[label]
 ++++[section]
 ++++++[section]
-++++++++[spin button] name='Hours Test label' labelled-by current=12.000000 minimum=1.000000 maximum=12.000000
+++++++++[spin button] name='Hours Test label' labelled-by=[label] current=12.000000 minimum=1.000000 maximum=12.000000
 ++++++++[static] name=':'
-++++++++[spin button] name='Minutes Test label' labelled-by current=5.000000 minimum=0.000000 maximum=59.000000
+++++++++[spin button] name='Minutes Test label' labelled-by=[label] current=5.000000 minimum=0.000000 maximum=59.000000
 ++++++++[static] name=' '
-++++++++[spin button] name='AM/PM Test label' labelled-by current=2.000000 minimum=1.000000 maximum=2.000000
+++++++++[spin button] name='AM/PM Test label' labelled-by=[label] current=2.000000 minimum=1.000000 maximum=2.000000
 ++++[push button] name='Show time picker'
 ++[push button] name='aria label'
-++[push button] name='Test label' labelled-by
+++[push button] name='Test label' labelled-by=[label]

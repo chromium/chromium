@@ -1,9 +1,9 @@
 [document web]
 ++[section]
-++++[entry] name='Invalid is true' error-message
+++++[entry] name='Invalid is true' error-message=[paragraph]
 ++++[entry] name='Invalid is false'
 ++++[entry] name='Invalid is not set'
-++[paragraph] error-for
+++[paragraph] error-for=[entry]
 ++++[static] name='Error for invalid input'
 ++[paragraph]
 ++++[static] name='Error for input which is not invalid'

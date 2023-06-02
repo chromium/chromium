@@ -2,9 +2,9 @@
 ++[push button] name='InnerText0'
 ++[push button] name='InnerText1' description='Title1' description-from:tooltip
 ++[push button] name='AriaLabel2' description='Title2' description-from:tooltip explicit-name:true
-++[push button] name='LabelledBy3' description='Title3' labelled-by description-from:tooltip explicit-name:true
-++[push button] name='LabelledBy4' description='DescribedBy4' labelled-by described-by description-from:aria-describedby explicit-name:true
-++[push button] name='InnerText5' description='DescribedBy5' described-by description-from:aria-describedby
+++[push button] name='LabelledBy3' description='Title3' labelled-by=[section] description-from:tooltip explicit-name:true
+++[push button] name='LabelledBy4' description='DescribedBy4' labelled-by=[section] described-by=[section] description-from:aria-describedby explicit-name:true
+++[push button] name='InnerText5' description='DescribedBy5' described-by=[section] description-from:aria-describedby
 ++[push button] name='Outer inner'
 ++++[static] name='Outer'
 ++++[section]

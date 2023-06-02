@@ -1,18 +1,18 @@
 [document web]
 ++[section]
-++++[label] label-for
+++++[label] label-for=[entry]
 ++++++[static] name='l1'
-++++[entry] name='l1' single-line labelled-by
-++++[label] label-for
+++++[entry] name='l1' single-line labelled-by=[label]
+++++[label] label-for=[entry]
 ++++++[static] name='l2'
-++++[entry] name='l2' single-line labelled-by
+++++[entry] name='l2' single-line labelled-by=[label]
 ++++[entry] name='l2' single-line
 ++++[entry] name='l2' single-line
-++++[label] label-for
+++++[label] label-for=[entry,entry]
 ++++++[static] name='Email'
-++++[section] label-for
-++++[entry] name='Email' single-line labelled-by
-++++[entry] name='Email' single-line labelled-by
+++++[section] label-for=[entry]
+++++[entry] name='Email' single-line labelled-by=[label]
+++++[entry] name='Email' single-line labelled-by=[label,section]
 ++++[entry] name='l5' multi-line
 ++++[entry] name='l6' multi-line
 ++++[entry] name='Name' description='Description' single-line description-from:tooltip

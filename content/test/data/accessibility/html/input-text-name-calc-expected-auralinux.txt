@@ -1,11 +1,11 @@
 [document web]
 ++[entry] name='Title0' explicit-name:true
-++[entry] name='Label1' description='Title1' labelled-by description-from:tooltip explicit-name:true
+++[entry] name='Label1' description='Title1' labelled-by=[label] description-from:tooltip explicit-name:true
 ++[entry] name='AriaLabel2' description='Title2' description-from:tooltip explicit-name:true
-++[entry] name='LabelledBy3' description='Title3' labelled-by description-from:tooltip explicit-name:true
+++[entry] name='LabelledBy3' description='Title3' labelled-by=[section] description-from:tooltip explicit-name:true
 ++[entry] name='Placeholder4' explicit-name:true
 ++[entry] name='ARIA Placeholder4a' explicit-name:true
 ++[entry] name='Placeholder4b' explicit-name:true
 ++[entry] name='Title5' explicit-name:true
-++[entry] name='LabelledBy6' description='DescribedBy6' labelled-by described-by description-from:aria-describedby explicit-name:true
-++[entry] name='AriaLabel7' description='DescribedBy7' described-by description-from:aria-describedby explicit-name:true
+++[entry] name='LabelledBy6' description='DescribedBy6' labelled-by=[section] described-by=[section] description-from:aria-describedby explicit-name:true
+++[entry] name='AriaLabel7' description='DescribedBy7' described-by=[section] description-from:aria-describedby explicit-name:true

@@ -45,11 +45,17 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterAuraLinux
                               base::Value::Dict* dict) const;
   void AddActionProperties(AtkObject* atk_object,
                            base::Value::Dict* dict) const;
+  void AddRelationProperties(AtkObject* atk_object,
+                             base::Value::Dict* dict) const;
   void AddValueProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
   void AddTableProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
   void AddTableCellProperties(const AXPlatformNodeAuraLinux* node,
                               AtkObject* atk_object,
                               base::Value::Dict* dict) const;
+
+  // Returns a string with the relation's name and the roles of the targets it
+  // points to.
+  static std::string ToString(AtkRelation* relation);
 };
 
 }  // namespace ui
