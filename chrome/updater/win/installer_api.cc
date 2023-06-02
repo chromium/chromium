@@ -100,6 +100,13 @@ void PersistLastInstallerResultValues(UpdaterScope updater_scope,
                  kRegValueLastInstallerSuccessLaunchCmdLine);
 }
 
+bool ClientStateAppKeyExists(UpdaterScope updater_scope,
+                             const std::string& app_id) {
+  return base::win::RegKey(UpdaterScopeToHKeyRoot(updater_scope),
+                           CLIENT_STATE_KEY, Wow6432(KEY_QUERY_VALUE))
+      .Valid();
+}
+
 }  // namespace
 
 InstallerOutcome::InstallerOutcome() = default;
@@ -159,6 +166,9 @@ bool SetInstallerProgressForTesting(UpdaterScope updater_scope,
 
 bool DeleteInstallerProgress(UpdaterScope updater_scope,
                              const std::string& app_id) {
+  if (!ClientStateAppKeyExists(updater_scope, app_id)) {
+    return false;
+  }
   absl::optional<base::win::RegKey> key =
       ClientStateAppKeyOpen(updater_scope, app_id, KEY_SET_VALUE);
   return key && key->DeleteValue(kRegValueInstallerProgress) == ERROR_SUCCESS;
@@ -166,6 +176,9 @@ bool DeleteInstallerProgress(UpdaterScope updater_scope,
 
 bool DeleteInstallerOutput(UpdaterScope updater_scope,
                            const std::string& app_id) {
+  if (!ClientStateAppKeyExists(updater_scope, app_id)) {
+    return false;
+  }
   absl::optional<base::win::RegKey> key = ClientStateAppKeyOpen(
       updater_scope, app_id, KEY_SET_VALUE | KEY_QUERY_VALUE);
   if (!key) {
