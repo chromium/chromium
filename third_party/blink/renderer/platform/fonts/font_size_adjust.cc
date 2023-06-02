@@ -35,9 +35,9 @@ String FontSizeAdjust::ToString() const {
     return "none";
   }
   return metric_ == Metric::kExHeight
-             ? String::Format("%f", value_)
-             : String::Format("%s %f", ToString(metric_).Ascii().c_str(),
-                              value_);
+             ? String::Format("%s", String::Number(value_).Ascii().c_str())
+             : String::Format("%s %s", ToString(metric_).Ascii().c_str(),
+                              String::Number(value_).Ascii().c_str());
 }
 
 }  // namespace blink

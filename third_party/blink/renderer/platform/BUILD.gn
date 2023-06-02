@@ -2038,6 +2038,7 @@ source_set("blink_platform_unittests_sources") {
     "fonts/font_palette_test.cc",
     "fonts/font_platform_data_test.cc",
     "fonts/font_selection_types_test.cc",
+    "fonts/font_size_adjust_test.cc",
     "fonts/font_test.cc",
     "fonts/font_test_utilities.cc",
     "fonts/generic_font_family_settings_test.cc",
