@@ -5043,15 +5043,7 @@ crbug.com/1223601 [ Linux ] fast/scrolling/autoscroll-latch-clicked-node-if-pare
 crbug.com/1223601 [ Linux ] fast/scrolling/reset-scroll-in-onscroll.html [ Failure Pass ]
 
 # Sheriff 2021-06-29
-# Flaky on Mac11 Tests
-crbug.com/1197464 [ Debug Mac ] plugins/refcount-leaks.html [ Failure Pass ]
-crbug.com/1197464 [ Mac10.13 Release ] plugins/refcount-leaks.html [ Failure Pass ]
-crbug.com/1197464 [ Mac10.14 Release ] plugins/refcount-leaks.html [ Failure Pass ]
-crbug.com/1197464 [ Mac10.15 Release ] plugins/refcount-leaks.html [ Failure Pass ]
-crbug.com/1197464 [ Mac11 Release ] plugins/refcount-leaks.html [ Failure Pass ]
-crbug.com/1197464 [ Mac11-arm64 Release ] plugins/refcount-leaks.html [ Failure Pass ]
-crbug.com/1197464 [ Mac12 Release ] plugins/refcount-leaks.html [ Failure Pass ]
-crbug.com/1197464 [ Mac12-arm64 Release ] plugins/refcount-leaks.html [ Failure Pass ]
+crbug.com/1197464 [ Mac ] plugins/refcount-leaks.html [ Failure Pass ]
 
 # Sheriff 2021-07-12
 crbug.com/1228432 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback-before-xr-session.https.html [ Pass Timeout ]
