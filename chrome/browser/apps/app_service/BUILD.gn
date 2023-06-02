@@ -70,13 +70,7 @@ source_set("app_service") {
     "//components/crx_file",
     "//components/favicon/core",
     "//components/keyed_service/content",
-    "//components/services/app_service/public/cpp:app_types",
-    "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/cpp:icon_loader",
-    "//components/services/app_service/public/cpp:icon_types",
-    "//components/services/app_service/public/cpp:intents",
-    "//components/services/app_service/public/cpp:preferred_apps",
-    "//components/services/app_service/public/cpp:types",
+    "//components/services/app_service",
     "//extensions/browser",
     "//extensions/common",
   ]
@@ -251,9 +245,6 @@ source_set("app_service") {
       "//components/image_fetcher/core",
       "//components/metrics/structured:structured_events",
       "//components/resources:components_resources",
-      "//components/services/app_service/public/cpp:crosapi_utils",
-      "//components/services/app_service/public/cpp:instance_update",
-      "//components/services/app_service/public/cpp:macros",
       "//components/ukm",
       "//components/webapps/browser",
       "//services/metrics/public/cpp:ukm_builders",
@@ -289,8 +280,6 @@ source_set("app_service") {
       "app_service_proxy_desktop.cc",
       "app_service_proxy_desktop.h",
     ]
-
-    deps += [ "//components/services/app_service/public/cpp:run_on_os_login" ]
   }
 
   if (!is_chromeos_lacros) {
@@ -306,8 +295,6 @@ source_set("app_service") {
       "publishers/extension_apps_base.cc",
       "publishers/extension_apps_base.h",
     ]
-
-    deps += [ "//components/services/app_service/public/cpp:preferred_app" ]
   }
 }
 
@@ -367,17 +354,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/account_id",
     "//components/app_constants",
-
-    # TODO: Depend on "//components/services/app_service" once
-    # crrev.com/c/4570160 lands.
-    "//components/services/app_service/public/cpp:app_file_handling",
-    "//components/services/app_service/public/cpp:app_types",
-    "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/cpp:icon_loader",
-    "//components/services/app_service/public/cpp:icon_types",
-    "//components/services/app_service/public/cpp:intents",
-    "//components/services/app_service/public/cpp:preferred_app",
-    "//components/services/app_service/public/cpp:preferred_apps",
+    "//components/services/app_service",
     "//components/services/app_service/public/cpp:test_support",
     "//components/user_manager",
     "//content/test:test_support",
@@ -469,9 +446,7 @@ source_set("test_support") {
   deps = [
     "//build:chromeos_buildflags",
     "//chrome/test:test_support",
-    "//components/services/app_service/public/cpp:app_types",
-    "//components/services/app_service/public/cpp:icon_types",
-    "//components/services/app_service/public/cpp:run_on_os_login",
+    "//components/services/app_service",
     "//skia",
   ]
 

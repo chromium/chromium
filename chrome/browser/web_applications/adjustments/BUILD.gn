@@ -20,9 +20,7 @@ source_set("adjustments") {
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//components/keyed_service/content",
-    "//components/services/app_service/public/cpp:app_types",
-    "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/cpp:types",
+    "//components/services/app_service",
   ]
 
   if (is_chromeos_ash) {

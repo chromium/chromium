@@ -4,6 +4,10 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
+# Prefer to depend on the component's public target
+# "//components/services/app_service" instead of several individual targets in
+# this directory.
+
 source_set("app_file_handling") {
   sources = [
     "file_handler.cc",

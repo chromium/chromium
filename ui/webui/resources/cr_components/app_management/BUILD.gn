@@ -56,16 +56,13 @@ mojom("mojo_bindings") {
         },
       ]
       traits_headers = [
-        "//ui/webui/resources/cr_components/app_management/app_management_mojom_traits.h",
         "//components/services/app_service/public/cpp/app_types.h",
         "//components/services/app_service/public/cpp/permission.h",
         "//components/services/app_service/public/cpp/run_on_os_login_types.h",
+        "//ui/webui/resources/cr_components/app_management/app_management_mojom_traits.h",
       ]
       traits_sources = [ "//ui/webui/resources/cr_components/app_management/app_management_mojom_traits.cc" ]
-      traits_public_deps = [
-        "//components/services/app_service/public/cpp:app_types",
-        "//components/services/app_service/public/cpp:run_on_os_login",
-      ]
+      traits_public_deps = [ "//components/services/app_service" ]
     },
   ]
 }
