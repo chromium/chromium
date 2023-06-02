@@ -7,7 +7,8 @@
     grid-template-columns: minmax(min-content, 286px) 50%;
   }
 
-  #container:hover accelerator-view::part(edit-icon) {
+  #container:hover accelerator-view:first-of-type::part(edit-icon),
+  #container:hover .edit-icon-container {
     opacity: 1;
   }
 
@@ -49,6 +50,17 @@
     justify-content: center;
     padding: 0;
   }
+
+  #noShortcutAssignedContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  #noShortcutAssignedContainer[hidden] {
+    display: none;
+  }
 </style>
 
 <tr id="container">
@@ -61,8 +73,15 @@
             show-edit-icon="true">
         </accelerator-view>
       </template>
-      <div id="noShortcutAssigned" hidden="[[!isEmptyList(acceleratorInfos)]]">
-        [[i18n('noShortcutAssigned')]]
+      <div id="noShortcutAssignedContainer" hidden="[[!isEmptyList(acceleratorInfos)]]">
+        <div id="noShortcutAssignedMessage">
+          [[i18n('noShortcutAssigned')]]
+        </div>
+        <div class="edit-icon-container" on-click="onEditIconClicked">
+          <cr-icon-button class="edit-button" class="clickable-button"
+            iron-icon="shortcut-customization:edit">
+          </cr-icon-button>
+        </div>
       </div>
     </template>
     <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">

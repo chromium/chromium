@@ -54,3 +54,22 @@ iron-icon[icon='shortcut-customization:lock'] {
 .lock-icon-container[hidden] {
   display: none; /* Required for flexbox hidden. */
 }
+
+.edit-icon-container {
+  align-items: center;
+  display: flex;
+  margin-inline-start: 8px;
+  opacity: 0;
+  transition: opacity 300ms, transform 100ms;
+}
+
+.edit-icon-container[hidden] {
+  display: none; /* Required for flexbox hidden. */
+}
+
+.edit-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-fill-color: var(--cros-text-color-secondary);
+  --cr-icon-button-icon-start-offset: 3px;
+  padding-top: 3px;
+}

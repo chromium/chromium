@@ -68,7 +68,7 @@ suite('acceleratorViewTest', function() {
 
   function getEditIcon(): HTMLDivElement {
     return strictQuery(
-        '#editIconContainer', viewElement!.shadowRoot, HTMLDivElement);
+        '.edit-icon-container', viewElement!.shadowRoot, HTMLDivElement);
   }
 
   test('LoadsBasicAccelerator', async () => {

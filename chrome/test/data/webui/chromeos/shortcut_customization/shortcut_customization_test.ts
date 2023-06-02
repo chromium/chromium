@@ -146,7 +146,7 @@ suite('shortcutCustomizationAppTest', function() {
     const acceleratorView =
         accelerators[0]!.shadowRoot!.querySelectorAll('accelerator-view');
     const editIconContainer = acceleratorView[0]!.shadowRoot!.querySelector(
-                                  '#editIconContainer') as HTMLDivElement;
+                                  '.edit-icon-container') as HTMLDivElement;
     editIconContainer.click();
     await flushTasks();
   }
@@ -321,7 +321,7 @@ suite('shortcutCustomizationAppTest', function() {
         accelerators[0]!.shadowRoot!.querySelectorAll('accelerator-view');
     assertEquals(1, acceleratorView.length);
     const editIconContainer = acceleratorView[0]!.shadowRoot!.querySelector(
-                                  '#editIconContainer') as HTMLDivElement;
+                                  '.edit-icon-container') as HTMLDivElement;
     editIconContainer.click();
 
     await flushTasks();

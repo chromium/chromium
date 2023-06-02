@@ -142,6 +142,11 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
     return infos.length === 0;
   }
 
+  private onEditIconClicked(): void {
+    this.dispatchEvent(
+        new CustomEvent('edit-icon-clicked', {bubbles: true, composed: true}));
+  }
+
   static get template(): HTMLTemplateElement {
     return getTemplate();
   }

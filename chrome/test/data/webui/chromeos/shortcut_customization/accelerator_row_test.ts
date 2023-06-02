@@ -130,7 +130,7 @@ suite('acceleratorRowTest', function() {
         rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
     assertEquals(1, acceleratorViewElement.length);
     const editIconContainerElement = strictQuery(
-        '#editIconContainer', acceleratorViewElement[0]!.shadowRoot,
+        '.edit-icon-container', acceleratorViewElement[0]!.shadowRoot,
         HTMLDivElement);
 
     editIconContainerElement.click();
@@ -166,7 +166,7 @@ suite('acceleratorRowTest', function() {
     assertEquals(1, acceleratorViewElement.length);
 
     const editIconContainerElement = strictQuery(
-        '#editIconContainer', acceleratorViewElement[0]!.shadowRoot,
+        '.edit-icon-container', acceleratorViewElement[0]!.shadowRoot,
         HTMLDivElement);
 
 

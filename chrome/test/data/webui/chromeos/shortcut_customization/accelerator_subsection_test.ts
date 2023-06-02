@@ -137,8 +137,9 @@ suite('acceleratorSubsectionTest', function() {
     assertEquals(
         manager!.getAcceleratorCategory(/*source=*/ 0, /*action=*/ 5)!,
         AcceleratorCategory.kGeneral);
-    let shortcutsAssignedElement = rowListElement[1]!.shadowRoot!.querySelector(
-                                       '#noShortcutAssigned') as HTMLDivElement;
+    let shortcutsAssignedElement =
+        rowListElement[1]!.shadowRoot!.querySelector(
+            '#noShortcutAssignedContainer') as HTMLDivElement;
     assertTrue(shortcutsAssignedElement.hidden);
 
     // Second accelerator row in General -> Apps category corresponds to
@@ -150,9 +151,27 @@ suite('acceleratorSubsectionTest', function() {
         manager!.getAcceleratorCategory(/*source=*/ 0, /*action=*/ 4)!,
         AcceleratorCategory.kGeneral);
     // Expect the `noShortcutsAssigned` view to be available.
-    shortcutsAssignedElement = rowListElement[0]!.shadowRoot!.querySelector(
-                                   '#noShortcutAssigned') as HTMLDivElement;
+    shortcutsAssignedElement =
+        rowListElement[0]!.shadowRoot!.querySelector(
+            '#noShortcutAssignedContainer') as HTMLDivElement;
     assertFalse(shortcutsAssignedElement.hidden);
+
+    // Expect 'noShortcutsAssigned' has an edit button.
+    const editButtonElement = rowListElement[0]!.shadowRoot!.querySelector(
+                                  '.edit-icon-container') as HTMLDivElement;
+    assertTrue(!!editButtonElement);
+
+    // Add event listend and verify clicking edit-button will open the dialog.
+    let showDialogListenerCalled = false;
+    rowListElement[0]!.addEventListener('show-edit-dialog', () => {
+      showDialogListenerCalled = true;
+    });
+
+    editButtonElement.click();
+    await flushTasks();
+
+    // Expect the dialog is opened.
+    assertTrue(showDialogListenerCalled);
   });
 
   test('RemoveAcceleratorWhenCertainKeysAreUnavailable', async () => {

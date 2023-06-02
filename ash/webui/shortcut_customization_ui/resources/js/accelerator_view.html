@@ -25,24 +25,6 @@
     --iron-icon-width: 16px;
   }
 
-  #editIconContainer {
-    align-items: center;
-    display: flex;
-    margin-inline-start: 8px;
-    opacity: 0;
-    transition: opacity 300ms, transform 100ms;
-  }
-
-  #editIconContainer[hidden] {
-    display: none; /* Required for flexbox hidden. */
-  }
-
-  #editButton {
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-fill-color: var(--cros-text-color-secondary);
-    --cr-icon-button-icon-start-offset: 3px;
-    padding-top: 3px;
-  }
 </style>
 
 <div id="container" class="flex-row" tabindex$="[[getTabIndex()]]">
@@ -60,9 +42,9 @@
         hidden="[[!shouldShowLockIcon(acceleratorInfo.locked, sourceIsLocked)]]">
       <iron-icon icon="shortcut-customization:lock"></iron-icon>
     </div>
-    <div id="editIconContainer" part="edit-icon" on-click="onEditIconClicked"
+    <div class="edit-icon-container" part="edit-icon" on-click="onEditIconClicked"
         hidden="[[!shouldShowEditIcon(acceleratorInfo.locked, sourceIsLocked)]]">
-      <cr-icon-button id="editButton" class="clickable-button"
+      <cr-icon-button class="edit-button" class="clickable-button"
           iron-icon="shortcut-customization:edit">
       </cr-icon-button>
     </div>
