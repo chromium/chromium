@@ -1,0 +1,147 @@
+<style>
+  #dialog {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 512px;
+  }
+
+  .body-wrapper {
+    padding: 32px;
+  }
+
+  #dialog:focus-visible {
+    outline: none;
+  }
+
+  svg {
+    background-color: var(--cros-highlight-color);
+    height: 236px;
+    width: 512px;
+  }
+
+  #title {
+    color: var(--cros-text-color-primary);
+    font: var(--cros-display-6-font);
+  }
+
+  .normal-text {
+    color: var(--cros-text-color-secondary);
+    font: var(--cros-body-1-font);
+    height: 148px;
+    margin-block-start: 16px;
+  }
+
+  #error-message {
+    align-items: center;
+    color: var(--cros-text-color-alert);
+    display: flex;
+    margin-top: 12px;
+  }
+
+  #error-message[hidden] {
+    /* display: flex overrides the hidden visibility */
+    display: none;
+  }
+
+  .error-text {
+    margin-inline-start: 5px;
+  }
+
+  .icon {
+    -webkit-mask-image: url(icons/error.svg);
+    background-color: var(--cros-icon-color-alert);
+    height: 17px;
+    width: 17px;
+  }
+
+  #button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 32px;
+  }
+
+  :host-context([theme='legacy']) cr-button {
+    border-radius: 16px;
+  }
+
+  :host-context([theme='legacy']) cr-button:focus-visible {
+    /* disable cr-button default keyboard focus style */
+    box-shadow: none;
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
+
+  :host-context([theme='refresh23']) cr-button {
+    --active-bg: transparent;
+    --active-shadow: none;
+    --active-shadow-action: none;
+    --bg-action: var(--cros-sys-primary);
+    --cr-button-height: 36px;
+    --disabled-bg-action:
+        var(--cros-sys-disabled_container);
+    --disabled-bg: var(--cros-sys-disabled_container);;
+    --disabled-text-color: var(--cros-sys-disabled);
+    /* Use the default bg color as hover color because we
+        rely on hoverBackground layer below.  */
+    --hover-bg-action: var(--cros-sys-primary);
+    --hover-bg-color: var(--cros-sys-primary_container);
+    --ink-color: var(--cros-sys-ripple_primary);
+    --ripple-opacity-action: 1;
+    --ripple-opacity: 1;
+    --text-color-action: var(--cros-sys-on_primary);
+    --text-color: var(--cros-sys-on_primary_container);
+    border: none;
+    border-radius: 18px;
+    box-shadow: none;
+  }
+
+  :host-context([theme='refresh23']) cr-button.cancel-button {
+    background-color: var(--cros-sys-primary_container);
+  }
+
+  :host-context([theme='refresh23'])
+      cr-button.cancel-button:hover::part(hoverBackground) {
+    background-color: var(--cros-sys-hover_on_subtle);
+    display: block;
+  }
+
+  :host-context([theme='refresh23'])
+      cr-button.action-button:hover::part(hoverBackground) {
+    background-color: var(--cros-sys-hover_on_prominent);
+    display: block;
+  }
+
+  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
+      cr-button:focus {
+    outline: 2px solid var(--cros-sys-focus_ring);
+    outline-offset: 2px;
+  }
+</style>
+
+<svg viewBox="0 0 448 200">
+  <use id="install" href="images/install_onedrive_alone.svg#EXPORT_image"></use>
+  <use id="success" visibility="hidden"
+      href="images/one_drive_success.svg#EXPORT_image"></use>
+</svg>
+<!-- autofocus for screen reader to read header on dialog open-->
+<div id="dialog" role="dialog" autofocus tabindex="-1" aria-labelledby="title">
+  <div class="body-wrapper">
+    <div id="title">
+      $i18n{connectToOneDriveTitle}
+    </div>
+    <div class="normal-text" id="body-text">
+      $i18n{connectToOneDriveBodyText}
+      <div id="error-message" hidden>
+        <div class="icon"></div>
+        <span class="error-text">
+          $i18n{cantConnectOneDrive}
+        </span>
+      </div>
+    </div>
+    <div id="button-container">
+      <cr-button class="cancel-button">$i18n{close}</cr-button>
+      <cr-button class="action-button">$i18n{connectOneDrive}</cr-button>
+    </div>
+  </div>
+</div>

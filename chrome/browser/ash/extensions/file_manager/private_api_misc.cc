@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
@@ -59,8 +60,10 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/api/manifest_types.h"
@@ -493,6 +496,24 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
   using extensions::api::file_manager_private::AddProvidedFileSystem::Params;
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+
+  if (ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
+      params->provider_id ==
+          file_manager::file_tasks::GetODFSExtensionId(profile)) {
+    // Get Files App window, if it exists.
+    Browser* browser =
+        FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
+    gfx::NativeWindow modal_parent =
+        browser ? browser->window()->GetNativeWindow() : nullptr;
+
+    // This will call into service->RequestMount() if necessary. This is 'fire
+    // and forget' as Files app doesn't do anything if this succeeds or fails.
+    bool started = ash::cloud_upload::ShowConnectOneDriveDialog(modal_parent);
+    return RespondNow(started ? NoArguments()
+                              : Error("Failed to request a new mount."));
+  }
 
   using ash::file_system_provider::ProviderId;
   using ash::file_system_provider::Service;

@@ -1187,6 +1187,9 @@ const int kDialogWidthForMoveConfirmation = 512;
 const int kDialogHeightForMoveConfirmationWithCheckbox = 500;
 
 const int kDialogHeightForMoveConfirmationWithoutCheckbox = 448;
+
+const int kDialogWidthForConnectToOneDrive = 512;
+const int kDialogHeightForConnectToOneDrive = 556;
 }  // namespace
 
 void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
@@ -1213,7 +1216,36 @@ void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
       }
       return;
     }
+    case mojom::DialogPage::kConnectToOneDrive: {
+      size->set_width(kDialogWidthForConnectToOneDrive);
+      size->set_height(kDialogHeightForConnectToOneDrive);
+    }
   }
+}
+
+bool ShowConnectOneDriveDialog(gfx::NativeWindow modal_parent) {
+  DCHECK(modal_parent);
+
+  // Allow no more than one upload dialog at a time. Only one of either this
+  // dialog, or CloudOpenTask can be shown at a time because they use the same
+  // WebUI for dialogs.
+  if (SystemWebDialogDelegate::HasInstance(
+          GURL(chrome::kChromeUICloudUploadURL))) {
+    return false;
+  }
+
+  mojom::DialogArgsPtr args = mojom::DialogArgs::New();
+  args->dialog_page = mojom::DialogPage::kConnectToOneDrive;
+
+  // This CloudUploadDialog pointer is managed by an instance of
+  // `views::WebDialogView` and deleted in
+  // `SystemWebDialogDelegate::OnDialogClosed`.
+  CloudUploadDialog* dialog = new CloudUploadDialog(
+      std::move(args), base::DoNothing(), mojom::DialogPage::kConnectToOneDrive,
+      /*office_move_confirmation_shown=*/false);
+
+  dialog->ShowSystemDialog(modal_parent);
+  return true;
 }
 
 }  // namespace ash::cloud_upload

@@ -11,6 +11,7 @@ ts_library("build_ts") {
   tsconfig_base = "../../tsconfig_base.json"
   in_files = [
     "cloud_upload_dialog_test.ts",
+    "connect_onedrive_test.ts",
     "file_handler_page_test.ts",
     "move_confirmation_page_test.ts",
     "cloud_upload_test_browser_proxy.ts",

@@ -599,6 +599,54 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DefaultSetForDocsOnly) {
       &default_task));
 }
 
+// Helper to launch Files app and return its NativeWindow.
+gfx::NativeWindow LaunchFilesAppAndWait(Profile* profile) {
+  GURL files_swa_url = file_manager::util::GetFileManagerMainPageUrlWithParams(
+      ui::SelectFileDialog::SELECT_NONE, /*title=*/std::u16string(),
+      /*current_directory_url=*/{},
+      /*selection_url=*/GURL(),
+      /*target_name=*/{}, /*file_types=*/{},
+      /*file_type_index=*/0,
+      /*search_query=*/{},
+      /*show_android_picker_apps=*/false,
+      /*volume_filter=*/{});
+  ash::SystemAppLaunchParams params;
+  params.url = files_swa_url;
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
+                               params);
+  Browser* files_app = ui_test_utils::WaitForBrowserToOpen();
+  return files_app->window()->GetNativeWindow();
+}
+
+IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
+                       ShowConnectOneDriveDialog_OpensAndClosesDialog) {
+  // Watch for the Connect OneDrive dialog URL chrome://cloud-upload.
+  content::TestNavigationObserver navigation_observer_dialog(
+      (GURL(chrome::kChromeUICloudUploadURL)));
+  navigation_observer_dialog.StartWatchingNewWebContents();
+
+  // Launch the Connect OneDrive dialog.
+  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait(browser()->profile());
+  ASSERT_TRUE(ShowConnectOneDriveDialog(modal_parent));
+
+  // Wait for the Connect OneDrive dialog to open at chrome://cloud-upload.
+  navigation_observer_dialog.Wait();
+  ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
+
+  // Check that we have the right dialog page (Connect OneDrive).
+  content::WebContents* web_contents = GetWebContentsFromCloudUploadDialog();
+  content::EvalJsResult eval_result = content::EvalJs(
+      web_contents, "!!document.querySelector('connect-onedrive')");
+  ASSERT_TRUE(eval_result.ExtractBool());
+
+  // Click the close button and wait for the dialog to close.
+  content::WebContentsDestroyedWatcher watcher(web_contents);
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.querySelector('connect-onedrive')"
+                              ".$('.cancel-button').click()"));
+  watcher.Wait();
+}
+
 // Tests that OnDialogComplete() opens the specified fake file task.
 IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
                        OnDialogCompleteOpensFileTasks) {
@@ -693,26 +741,6 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
         apps::AppServiceProxyFactory::GetForProfile(profile()));
   }
 
-  // Launch Files app and return its NativeWindow.
-  gfx::NativeWindow LaunchFilesAppAndWait() {
-    GURL files_swa_url =
-        file_manager::util::GetFileManagerMainPageUrlWithParams(
-            ui::SelectFileDialog::SELECT_NONE, /*title=*/std::u16string(),
-            /*current_directory_url=*/{},
-            /*selection_url=*/GURL(),
-            /*target_name=*/{}, /*file_types=*/{},
-            /*file_type_index=*/0,
-            /*search_query=*/{},
-            /*show_android_picker_apps=*/false,
-            /*volume_filter=*/{});
-    ash::SystemAppLaunchParams params;
-    params.url = files_swa_url;
-    ash::LaunchSystemWebAppAsync(browser()->profile(),
-                                 ash::SystemWebAppType::FILE_MANAGER, params);
-    Browser* files_app = ui_test_utils::WaitForBrowserToOpen();
-    return files_app->window()->GetNativeWindow();
-  }
-
  protected:
   // Use a non-managed user in this browser test to ensure
   // |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
@@ -747,7 +775,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, FixUpFlowWhenODFSNotMounted) {
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
+  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait(browser()->profile());
 
   CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive,
                          modal_parent);
@@ -792,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait();
+  gfx::NativeWindow modal_parent = LaunchFilesAppAndWait(browser()->profile());
 
   CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive,
                          modal_parent);

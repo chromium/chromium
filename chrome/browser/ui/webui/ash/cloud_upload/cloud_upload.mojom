@@ -24,6 +24,9 @@ enum DialogPage {
   kMoveConfirmationOneDrive,
   // Confirm that the user wants to move the file to Google Drive.
   kMoveConfirmationGoogleDrive,
+
+  // A separate dialog when we're only connecting OneDrive by itself.
+  kConnectToOneDrive,
 };
 
 // Operation used to upload the source file.
