@@ -763,11 +763,12 @@ void OpenXrApiWrapper::CreateSharedMailboxes() {
     gpu_memory_buffer_handle.dxgi_handle.Set(shared_handle);
     gpu_memory_buffer_handle.dxgi_token = gfx::DXGIHandleToken();
     gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
+    gfx::Size buffer_size =
+        gfx::Size(texture2d_desc.Width, texture2d_desc.Height);
 
     std::unique_ptr<gpu::GpuMemoryBufferImplDXGI> gpu_memory_buffer =
         gpu::GpuMemoryBufferImplDXGI::CreateFromHandle(
-            std::move(gpu_memory_buffer_handle),
-            gfx::Size(texture2d_desc.Width, texture2d_desc.Height),
+            std::move(gpu_memory_buffer_handle), buffer_size,
             gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ,
             base::DoNothing(), nullptr, nullptr);
 
@@ -777,11 +778,11 @@ void OpenXrApiWrapper::CreateSharedMailboxes() {
 
     gpu::MailboxHolder& mailbox_holder = swap_chain_info.mailbox_holder;
     mailbox_holder.mailbox = shared_image_interface->CreateSharedImage(
-        gpu_memory_buffer.get(), nullptr,
+        viz::SinglePlaneFormat::kRGBA_8888, buffer_size,
         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
                         gfx::ColorSpace::TransferID::LINEAR),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
-        "OpenXrSwapChain");
+        "OpenXrSwapChain", gpu_memory_buffer->CloneHandle());
     mailbox_holder.sync_token = shared_image_interface->GenVerifiedSyncToken();
     mailbox_holder.texture_target = GL_TEXTURE_2D;
   }
