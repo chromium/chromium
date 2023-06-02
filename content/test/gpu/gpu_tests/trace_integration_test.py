@@ -11,7 +11,7 @@ import os
 import posixpath
 import sys
 import tempfile
-from typing import Any, Dict, Generator, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Generator, Iterator, List, Optional, Set, Tuple
 import unittest
 
 from gpu_tests import common_browser_args as cba
@@ -265,6 +265,28 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def Name(cls) -> str:
     return 'trace_test'
+
+  @classmethod
+  def _SuiteSupportsParallelTests(cls) -> bool:
+    return True
+
+  def _GetSerialGlobs(self) -> Set[str]:
+    serial_globs = set()
+    if sys.platform == 'win32':
+      serial_globs |= {
+          # Flaky when run in parallel on Windows.
+          'OverlayModeTraceTest_DirectComposition_Underlay*',
+      }
+    return serial_globs
+
+  def _GetSerialTests(self) -> Set[str]:
+    serial_tests = set()
+    if sys.platform == 'darwin':
+      serial_tests |= {
+          # Flaky when run in parallel on Mac.
+          'WebGPUTraceTest_WebGPUCanvasOneCopyCapture',
+      }
+    return serial_tests
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:

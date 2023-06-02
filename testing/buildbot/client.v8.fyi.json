@@ -240,7 +240,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--jobs=1"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
         "merge": {
@@ -619,7 +620,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -994,7 +996,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -1376,7 +1379,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -2272,7 +2276,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {

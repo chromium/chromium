@@ -2494,6 +2494,9 @@
         ],
       },
       'trace_test': {
+        'args': [
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+        ],
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
