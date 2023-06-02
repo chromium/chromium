@@ -57,4 +57,7 @@ void TestPageBroadcast::CreateRemoteMainFrame(
     blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
     blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {}
 
+void TestPageBroadcast::UpdatePageBrowsingContextGroup(
+    const blink::BrowsingContextGroupInfo& browsing_context_group_info) {}
+
 }  // namespace content

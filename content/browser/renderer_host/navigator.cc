@@ -615,6 +615,31 @@ void Navigator::DidNavigate(
         site_instance->group());
   }
 
+  // If this was the navigation of a top-level frame to another browsing context
+  // group, update the browsing context group in all the renderers that have a
+  // representation of this page. Do not update the page in the main frame's own
+  // process, as it was already updated during commit.
+  // TODO(https://crbug.com/1446696): See if that can be consolidated with other
+  // similar IPCs.
+  if (render_frame_host->is_main_frame() &&
+      navigation_request->browsing_context_group_swap().ShouldSwap()) {
+    SiteInstanceImpl* final_site_instance =
+        render_frame_host->GetSiteInstance();
+    blink::BrowsingContextGroupInfo browsing_context_group_info(
+        final_site_instance->browsing_instance_token(),
+        final_site_instance->coop_related_group_token());
+    frame_tree.root()->render_manager()->ExecutePageBroadcastMethod(
+        base::BindRepeating(
+            [](const blink::BrowsingContextGroupInfo& info,
+               RenderViewHostImpl* rvh) {
+              if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
+                broadcast->UpdatePageBrowsingContextGroup(info);
+              }
+            },
+            browsing_context_group_info),
+        final_site_instance->group());
+  }
+
   // Store some information for recording WebPlatform security metrics. These
   // metrics depends on information present in the NavigationRequest. However
   // they must be recorded after the NavigationRequest has been destroyed and

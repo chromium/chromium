@@ -1156,6 +1156,11 @@ const base::UnguessableToken& Page::CoopRelatedGroupToken() {
   return browsing_context_group_info_.coop_related_group_token;
 }
 
+void Page::UpdateBrowsingContextGroup(
+    const blink::BrowsingContextGroupInfo& browsing_context_group_info) {
+  browsing_context_group_info_ = browsing_context_group_info;
+}
+
 template class CORE_TEMPLATE_EXPORT Supplement<Page>;
 
 const char InternalSettingsPageSupplementBase::kSupplementName[] =

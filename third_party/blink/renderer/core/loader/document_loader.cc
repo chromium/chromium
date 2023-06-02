@@ -52,6 +52,7 @@
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
+#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
@@ -320,6 +321,7 @@ struct SameSizeAsDocumentLoader
       fenced_frame_properties;
   bool has_storage_access;
   mojom::blink::ParentResourceTimingAccess parent_resource_timing_access;
+  const absl::optional<BrowsingContextGroupInfo> browsing_context_group_info;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -519,7 +521,8 @@ DocumentLoader::DocumentLoader(
       reduced_accept_language_(params_->reduced_accept_language),
       navigation_delivery_type_(params_->navigation_delivery_type),
       view_transition_state_(std::move(params_->view_transition_state)),
-      load_with_storage_access_(params_->load_with_storage_access) {
+      load_with_storage_access_(params_->load_with_storage_access),
+      browsing_context_group_info_(params_->browsing_context_group_info) {
   DCHECK(frame_);
   DCHECK(params_);
 
@@ -2607,6 +2610,16 @@ void DocumentLoader::CommitNavigation() {
 
   if (commit_reason_ == CommitReason::kXSLT)
     DocumentXSLT::SetHasTransformSource(*document);
+
+  // If we've received browsing context group information, update the Page's
+  // browsing context group. This can only ever happen for a top-level frame,
+  // because subframes can never change browsing context group, and the
+  // value is omitted by the browser process at commit time.
+  if (browsing_context_group_info_.has_value()) {
+    CHECK(frame_->IsMainFrame());
+    frame_->GetPage()->UpdateBrowsingContextGroup(
+        browsing_context_group_info_.value());
+  }
 
   DidInstallNewDocument(document);
 

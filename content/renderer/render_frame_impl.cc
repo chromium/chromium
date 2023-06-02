@@ -1072,6 +1072,9 @@ void FillMiscNavigationParams(
 
   navigation_params->ancestor_or_self_has_cspee =
       commit_params.ancestor_or_self_has_cspee;
+
+  navigation_params->browsing_context_group_info =
+      commit_params.browsing_context_group_info;
 }
 
 std::string GetUniqueNameOfWebFrame(WebFrame* web_frame) {

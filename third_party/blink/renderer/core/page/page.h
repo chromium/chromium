@@ -432,6 +432,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // in.
   const base::UnguessableToken& CoopRelatedGroupToken();
 
+  // Update this Page's browsing context group after a navigation has taken
+  // place.
+  void UpdateBrowsingContextGroup(const blink::BrowsingContextGroupInfo&);
+
  private:
   friend class ScopedPagePauser;
 

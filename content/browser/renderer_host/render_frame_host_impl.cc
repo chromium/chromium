@@ -13107,6 +13107,20 @@ void RenderFrameHostImpl::SendCommitNavigation(
   //    otherwise).
   MaybeSendFencedFrameReportingBeacon(*navigation_request);
 
+  // If this commit is for a main frame in another browsing context group, warn
+  // the renderer that it should update the browsing context group information
+  // of the page if this frame successfully commits. Note that the
+  // BrowsingContextGroupInfo in the params should only be populated at commit
+  // time, and only in the case of a swap.
+  CHECK(!commit_params->browsing_context_group_info.has_value());
+  if (is_main_frame() &&
+      navigation_request->browsing_context_group_swap().ShouldSwap()) {
+    commit_params->browsing_context_group_info =
+        blink::BrowsingContextGroupInfo(
+            GetSiteInstance()->browsing_instance_token(),
+            GetSiteInstance()->coop_related_group_token());
+  }
+
   commit_params->commit_sent = base::TimeTicks::Now();
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
@@ -13146,6 +13160,20 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
   DCHECK_NE(GURL(), common_params->url);
   DCHECK_NE(net::OK, error_code);
   IncreaseCommitNavigationCounter();
+
+  // If this commit is for a main frame in another browsing context group, warn
+  // the renderer that it should update the browsing context group information
+  // of the page. Note that the BrowsingContextGroupInfo in the params should
+  // only be populated at commit time, and only in the case of a swap.
+  CHECK(!commit_params->browsing_context_group_info.has_value());
+  if (is_main_frame() &&
+      navigation_request->browsing_context_group_swap().ShouldSwap()) {
+    commit_params->browsing_context_group_info =
+        blink::BrowsingContextGroupInfo(
+            GetSiteInstance()->browsing_instance_token(),
+            GetSiteInstance()->coop_related_group_token());
+  }
+
   navigation_client->CommitFailedNavigation(
       std::move(common_params), std::move(commit_params),
       has_stale_copy_in_cache, error_code, extended_error_code,

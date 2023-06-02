@@ -819,6 +819,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Only container-initiated navigations (e.g. iframe change src) report
   // their resource timing to the parent.
   mojom::blink::ParentResourceTimingAccess parent_resource_timing_access_;
+
+  // Indicates which browsing context group this frame belongs to. It is only
+  // set for a main frame committing in another browsing context group.
+  const absl::optional<BrowsingContextGroupInfo> browsing_context_group_info_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

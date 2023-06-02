@@ -3944,4 +3944,12 @@ scheduler::WebAgentGroupScheduler& WebViewImpl::GetWebAgentGroupScheduler() {
   return web_agent_group_scheduler_;
 }
 
+void WebViewImpl::UpdatePageBrowsingContextGroup(
+    const BrowsingContextGroupInfo& browsing_context_group_info) {
+  Page* page = GetPage();
+  CHECK(page);
+
+  page->UpdateBrowsingContextGroup(browsing_context_group_info);
+}
+
 }  // namespace blink
