@@ -60,6 +60,9 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
   static void DeleteWhenLastResourceHasBeenReclaimed(
       std::unique_ptr<LayerTreeFrameSinkHolder> holder);
 
+  // If a frame is submitted "now" (meaning before returning to event loop)
+  // via SubmitCompositorFrame(), whether it needs full damage.
+  bool NeedsFullDamageForNextFrame() const { return cached_frame_.has_value(); }
   void SubmitCompositorFrame(viz::CompositorFrame frame);
 
   // Returns true if owned LayerTreeFrameSink has been lost.

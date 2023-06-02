@@ -144,7 +144,8 @@ TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
   constexpr bool kClientSubmitsInPixelCoordinates = true;
   parent->AppendSurfaceHierarchyContentsToFrame(
       gfx::PointF{}, 1, kClientSubmitsInPixelCoordinates,
-      frame_sink_holder->resource_manager(), &frame1);
+      /*needs_full_damage=*/false, frame_sink_holder->resource_manager(),
+      &frame1);
 
   // Parent surface damage is extended when sub_surface stacking order changes.
   EXPECT_FALSE(frame1.render_pass_list.back()->damage_rect.IsEmpty());
@@ -157,7 +158,8 @@ TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
   frame2.render_pass_list.push_back(viz::CompositorRenderPass::Create());
   parent->AppendSurfaceHierarchyContentsToFrame(
       gfx::PointF{}, 1, kClientSubmitsInPixelCoordinates,
-      frame_sink_holder->resource_manager(), &frame2);
+      /*needs_full_damage=*/false, frame_sink_holder->resource_manager(),
+      &frame2);
 
   // Parent surface damage is unaffected.
   EXPECT_TRUE(frame2.render_pass_list.back()->damage_rect.IsEmpty());

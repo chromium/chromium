@@ -1139,6 +1139,7 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
     const gfx::PointF& origin,
     float device_scale_factor,
     bool client_submits_in_pixel_coords,
+    bool needs_full_damage,
     FrameSinkResourceManager* resource_manager,
     viz::CompositorFrame* frame) {
   // The top most sub-surface is at the front of the RenderPass's quad_list,
@@ -1150,8 +1151,8 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
     sub_surface->AppendSurfaceHierarchyContentsToFrame(
         origin + sub_surface_entry.second.OffsetFromOrigin(),
 
-        device_scale_factor, client_submits_in_pixel_coords, resource_manager,
-        frame);
+        device_scale_factor, client_submits_in_pixel_coords, needs_full_damage,
+        resource_manager, frame);
   }
 
   // Update the resource, or if not required, ensure we call the buffer release
@@ -1164,7 +1165,8 @@ void Surface::AppendSurfaceHierarchyContentsToFrame(
   }
 
   AppendContentsToFrame(origin, device_scale_factor,
-                        client_submits_in_pixel_coords, frame);
+                        client_submits_in_pixel_coords, needs_full_damage,
+                        frame);
 }
 
 bool Surface::IsSynchronized() const {
@@ -1437,6 +1439,7 @@ static viz::SharedQuadState* AppendOrCreateSharedQuadState(
 void Surface::AppendContentsToFrame(const gfx::PointF& origin,
                                     float device_scale_factor,
                                     bool client_submits_in_pixel_coords,
+                                    bool needs_full_damage,
                                     viz::CompositorFrame* frame) {
   const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame->render_pass_list.back();
@@ -1445,7 +1448,9 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
 
   // Surface bounds are in DIPs, but |damage_rect| and |output_rect| are in
   // pixels, so we need to scale by the |device_scale_factor|.
-  gfx::RectF damage_rect = gfx::RectF(state_.damage.bounds());
+  gfx::RectF damage_rect = needs_full_damage
+                               ? gfx::RectF(content_size_)
+                               : gfx::RectF(state_.damage.bounds());
   if (!damage_rect.IsEmpty()) {
     // Outset damage by 1 DIP to as damage is in surface coordinate space and
     // client might not be aware of |device_scale_factor| and the
