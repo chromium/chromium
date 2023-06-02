@@ -75,6 +75,8 @@ constexpr char kSetting[] = "setting";
 constexpr char kSites[] = "sites";
 constexpr char kSource[] = "source";
 constexpr char kType[] = "type";
+constexpr char kNotificationPermissionsReviewListMaybeChangedEvent[] =
+    "notification-permission-review-list-maybe-changed";
 
 enum class SiteSettingSource {
   kAllowlist,
@@ -217,6 +219,11 @@ std::string GetDisplayNameForGURL(Profile* profile,
 // Returns data about all currently installed Isolated Web Apps.
 std::vector<web_app::IsolatedWebAppUrlInfo> GetInstalledIsolatedWebApps(
     Profile* profile);
+
+// Returns a list of domains to be shown on the 'Review Notification
+// Permissions' module in site settings notification page. Those domains send
+// a lot of notifications, but have low site engagement.
+base::Value::List PopulateNotificationPermissionReviewData(Profile* profile);
 
 }  // namespace site_settings
 

@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -24,6 +25,8 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
 
   ~SafetyHubHandler() override;
 
+  static std::unique_ptr<SafetyHubHandler> GetForProfile(Profile* profile);
+
  private:
   friend class SafetyHubHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
@@ -32,6 +35,24 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
                            HandleAllowPermissionsAgainForUnusedSite);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            HandleAcknowledgeRevokedUnusedSitePermissionsList);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           HandleIgnoreOriginsForNotificationPermissionReview);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           HandleBlockNotificationPermissionForOrigins);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           HandleAllowNotificationPermissionForOrigins);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           HandleResetNotificationPermissionForOrigins);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           PopulateNotificationPermissionReviewData);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafetyHubHandlerTest,
+      HandleUndoIgnoreOriginsForNotificationPermissionReview);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           SendNotificationPermissionReviewList_FeatureEnabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafetyHubHandlerTest,
+      SendNotificationPermissionReviewList_FeatureDisabled);
 
   // SettingsPageUIHandler implementation.
   void OnJavascriptAllowed() override;
@@ -72,7 +93,39 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   // Sends the list of unused site permissions to review to the WebUI.
   void SendUnusedSitePermissionsReviewList();
 
+  // Returns the list of notification permissions that needs to be reviewed.
+  void HandleGetNotificationPermissionReviewList(const base::Value::List& args);
+
+  // Handles ignoring origins for the review notification permissions feature.
+  void HandleIgnoreOriginsForNotificationPermissionReview(
+      const base::Value::List& args);
+
+  // Handles resetting a notification permission for given origins.
+  void HandleResetNotificationPermissionForOrigins(
+      const base::Value::List& args);
+
+  // Handles blocking notification permissions for multiple origins.
+  void HandleBlockNotificationPermissionForOrigins(
+      const base::Value::List& args);
+
+  // Handles allowing notification permissions for multiple origins.
+  void HandleAllowNotificationPermissionForOrigins(
+      const base::Value::List& args);
+
+  // Handles reverting the action of ignoring origins for review notification
+  // permissions feature by removing them from the notification permission
+  // verification blocklist.
+  void HandleUndoIgnoreOriginsForNotificationPermissionReview(
+      const base::Value::List& args);
+
+  // Sends the list of notification permissions to review to the WebUI.
+  void SendNotificationPermissionReviewList();
+
   const raw_ptr<Profile, DanglingUntriaged> profile_;
+
+  raw_ptr<base::Clock> clock_;
+
+  void SetClockForTesting(base::Clock* clock);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SAFETY_HUB_HANDLER_H_

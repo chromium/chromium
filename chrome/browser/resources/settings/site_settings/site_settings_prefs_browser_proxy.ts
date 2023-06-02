@@ -170,15 +170,6 @@ export interface ZoomLevelEntry {
 }
 
 /**
- * The notification permission information passed from
- * site_settings_handler.cc.
- */
-export interface NotificationPermission {
-  origin: string;
-  notificationInfoString: string;
-}
-
-/**
  * TODO(crbug.com/1373962): Remove the origin key from `RawFileSystemGrant`
  * before the launch of the Persistent Permissions settings page UI.
  */
@@ -478,27 +469,6 @@ export interface SiteSettingsPrefsBrowserProxy {
    */
   recordAction(action: number): void;
 
-  /** Gets the site list that send a lot of notifications. */
-  getNotificationPermissionReview(): Promise<NotificationPermission[]>;
-
-  /** Blocks the notification permission for all origins in the list. */
-  blockNotificationPermissionForOrigins(origins: string[]): void;
-
-  /** Allows the notification permission for all origins in the list */
-  allowNotificationPermissionForOrigins(origins: string[]): void;
-
-  /** Adds the origins to blocklist for the notification permissions feature. */
-  ignoreNotificationPermissionForOrigins(origins: string[]): void;
-
-  /**
-   * Removes the origins from the blocklist for the notification permissions
-   * feature.
-   */
-  undoIgnoreNotificationPermissionForOrigins(origins: string[]): void;
-
-  /** Resets the notification permission for the origins. */
-  resetNotificationPermissionForOrigins(origin: string[]): void;
-
   /**
    * Gets display string for FPS information of owner and member count.
    * @param fpsNumMembers The number of members in the first party set.
@@ -674,40 +644,6 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   recordAction(action: number) {
     chrome.send('recordAction', [action]);
-  }
-
-  getNotificationPermissionReview() {
-    return sendWithPromise('getNotificationPermissionReview');
-  }
-
-  blockNotificationPermissionForOrigins(origins: string[]) {
-    chrome.send('blockNotificationPermissionForOrigins', [
-      origins,
-    ]);
-  }
-
-  allowNotificationPermissionForOrigins(origins: string[]) {
-    chrome.send('allowNotificationPermissionForOrigins', [
-      origins,
-    ]);
-  }
-
-  ignoreNotificationPermissionForOrigins(origins: string[]) {
-    chrome.send('ignoreNotificationPermissionReviewForOrigins', [
-      origins,
-    ]);
-  }
-
-  undoIgnoreNotificationPermissionForOrigins(origins: string[]) {
-    chrome.send('undoIgnoreNotificationPermissionReviewForOrigins', [
-      origins,
-    ]);
-  }
-
-  resetNotificationPermissionForOrigins(origins: string[]) {
-    chrome.send('resetNotificationPermissionForOrigins', [
-      origins,
-    ]);
   }
 
   getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {

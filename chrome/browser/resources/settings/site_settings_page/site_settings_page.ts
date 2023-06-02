@@ -476,11 +476,9 @@ export class SettingsSiteSettingsPageElement extends
         (sites: UnusedSitePermissions[]) =>
             this.onUnusedSitePermissionListChanged_(sites));
 
-    this.siteSettingsPermissionsBrowserProxy_
-        .getRevokedUnusedSitePermissionsList()
-        .then(
-            (sites: UnusedSitePermissions[]) =>
-                this.onUnusedSitePermissionListChanged_(sites));
+    this.safetyHubBrowserProxy_.getRevokedUnusedSitePermissionsList().then(
+        (sites: UnusedSitePermissions[]) =>
+            this.onUnusedSitePermissionListChanged_(sites));
   }
 
   prefs: Object;
@@ -490,7 +488,7 @@ export class SettingsSiteSettingsPageElement extends
   private noRecentSitePermissions_: boolean;
   private showUnusedSitePermissions_: boolean;
   private unusedSitePermissionsEnabled_: boolean;
-  private siteSettingsPermissionsBrowserProxy_: SafetyHubBrowserProxy =
+  private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
 
   private lists_: {

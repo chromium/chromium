@@ -13,16 +13,22 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 // clang-format on
 
+
+/**
+ * The notification permission information passed from
+ * site_settings_permissions_handler.cc.
+ */
+export interface NotificationPermission {
+  origin: string;
+  notificationInfoString: string;
+}
+
 export interface UnusedSitePermissions {
   origin: string;
   permissions: ContentSettingsTypes[];
   expiration: string;
 }
 
-/**
- * TODO(crbug.com/1383197): Move functions related to notification permission
- * review here as well.
- */
 export interface SafetyHubBrowserProxy {
   /**
    * Mark revoked permissions of unused sites as reviewed by the user so they
@@ -56,6 +62,27 @@ export interface SafetyHubBrowserProxy {
    */
   undoAllowPermissionsAgainForUnusedSite(unusedSitePermissions:
                                              UnusedSitePermissions): void;
+
+  /** Gets the site list that send a lot of notifications. */
+  getNotificationPermissionReview(): Promise<NotificationPermission[]>;
+
+  /** Blocks the notification permission for all origins in the list. */
+  blockNotificationPermissionForOrigins(origins: string[]): void;
+
+  /** Allows the notification permission for all origins in the list */
+  allowNotificationPermissionForOrigins(origins: string[]): void;
+
+  /** Adds the origins to blocklist for the notification permissions feature. */
+  ignoreNotificationPermissionForOrigins(origins: string[]): void;
+
+  /**
+   * Removes the origins from the blocklist for the notification permissions
+   * feature.
+   */
+  undoIgnoreNotificationPermissionForOrigins(origins: string[]): void;
+
+  /** Resets the notification permission for the origins. */
+  resetNotificationPermissionForOrigins(origin: string[]): void;
 }
 
 export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
@@ -82,6 +109,30 @@ export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
                                              UnusedSitePermissions) {
     chrome.send(
         'undoAllowPermissionsAgainForUnusedSite', [unusedSitePermissions]);
+  }
+
+  getNotificationPermissionReview() {
+    return sendWithPromise('getNotificationPermissionReview');
+  }
+
+  blockNotificationPermissionForOrigins(origins: string[]) {
+    chrome.send('blockNotificationPermissionForOrigins', [origins]);
+  }
+
+  allowNotificationPermissionForOrigins(origins: string[]) {
+    chrome.send('allowNotificationPermissionForOrigins', [origins]);
+  }
+
+  ignoreNotificationPermissionForOrigins(origins: string[]) {
+    chrome.send('ignoreNotificationPermissionReviewForOrigins', [origins]);
+  }
+
+  undoIgnoreNotificationPermissionForOrigins(origins: string[]) {
+    chrome.send('undoIgnoreNotificationPermissionReviewForOrigins', [origins]);
+  }
+
+  resetNotificationPermissionForOrigins(origins: string[]) {
+    chrome.send('resetNotificationPermissionForOrigins', [origins]);
   }
 
   static getInstance(): SafetyHubBrowserProxy {

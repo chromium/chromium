@@ -10,8 +10,10 @@
 #include "base/time/clock.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/permissions/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -21,6 +23,7 @@
 #include "components/permissions/constants.h"
 #include "components/permissions/unused_site_permissions_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,6 +102,25 @@ class SafetyHubHandlerTest : public testing::Test {
         ContentSetting::CONTENT_SETTING_ASK,
         hcsm()->GetContentSetting(GURL(kUnusedTestSite), GURL(kUnusedTestSite),
                                   kUnusedPermission));
+  }
+
+  void ValidateNotificationPermissionUpdate() {
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
+
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("notification-permission-review-list-maybe-changed",
+              data.arg1()->GetString());
+
+    ASSERT_TRUE(data.arg2()->is_list());
+  }
+
+  base::Value::List GetOriginList(int size) {
+    base::Value::List origins;
+    for (int i = 0; i < size; i++) {
+      origins.Append("https://example" + base::NumberToString(i) + ".org:443");
+    }
+    return origins;
   }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -181,4 +203,132 @@ TEST_F(SafetyHubHandlerTest,
   handler()->HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(undo_args);
   EXPECT_EQ(revoked_permissions_before,
             handler()->PopulateUnusedSitePermissionsData());
+}
+
+TEST_F(SafetyHubHandlerTest,
+       HandleIgnoreOriginsForNotificationPermissionReview) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      ::features::kSafetyCheckNotificationPermissions);
+
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ContentSettingsForOneType ignored_patterns;
+  content_settings->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  ASSERT_EQ(0U, ignored_patterns.size());
+
+  base::Value::List args;
+  args.Append(GetOriginList(1));
+  handler()->HandleIgnoreOriginsForNotificationPermissionReview(args);
+
+  // Check there is 1 origin in ignore list.
+  content_settings->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  ASSERT_EQ(1U, ignored_patterns.size());
+
+  ValidateNotificationPermissionUpdate();
+}
+
+TEST_F(SafetyHubHandlerTest,
+       HandleUndoIgnoreOriginsForNotificationPermissionReview) {
+  base::Value::List args;
+  args.Append(GetOriginList(1));
+  handler()->HandleIgnoreOriginsForNotificationPermissionReview(args);
+
+  // Check there is 1 origin in ignore list.
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ContentSettingsForOneType ignored_patterns;
+  ASSERT_EQ(0U, ignored_patterns.size());
+  content_settings->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  ASSERT_EQ(1U, ignored_patterns.size());
+
+  // Check there are no origins in ignore list.
+  handler()->HandleUndoIgnoreOriginsForNotificationPermissionReview(args);
+  content_settings->GetSettingsForOneType(
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, &ignored_patterns);
+  ASSERT_EQ(0U, ignored_patterns.size());
+}
+
+TEST_F(SafetyHubHandlerTest, HandleAllowNotificationPermissionForOrigins) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      ::features::kSafetyCheckNotificationPermissions);
+
+  base::Value::List args;
+  base::Value::List origins = GetOriginList(2);
+  args.Append(origins.Clone());
+  handler()->HandleAllowNotificationPermissionForOrigins(args);
+
+  // Check the permission for the two origins is allow.
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ContentSettingsForOneType notification_permissions;
+  content_settings->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
+                                          &notification_permissions);
+  auto type = content_settings->GetContentSetting(
+      GURL(origins[0].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
+  ASSERT_EQ(CONTENT_SETTING_ALLOW, type);
+
+  type = content_settings->GetContentSetting(
+      GURL(origins[1].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
+  ASSERT_EQ(CONTENT_SETTING_ALLOW, type);
+
+  ValidateNotificationPermissionUpdate();
+}
+
+TEST_F(SafetyHubHandlerTest, HandleBlockNotificationPermissionForOrigins) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      ::features::kSafetyCheckNotificationPermissions);
+
+  base::Value::List args;
+  base::Value::List origins = GetOriginList(2);
+  args.Append(origins.Clone());
+
+  handler()->HandleBlockNotificationPermissionForOrigins(args);
+
+  // Check the permission for the two origins is block.
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ContentSettingsForOneType notification_permissions;
+  content_settings->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
+                                          &notification_permissions);
+  auto type = content_settings->GetContentSetting(
+      GURL(origins[0].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
+  ASSERT_EQ(CONTENT_SETTING_BLOCK, type);
+
+  type = content_settings->GetContentSetting(
+      GURL(origins[1].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
+  ASSERT_EQ(CONTENT_SETTING_BLOCK, type);
+
+  ValidateNotificationPermissionUpdate();
+}
+
+TEST_F(SafetyHubHandlerTest, HandleResetNotificationPermissionForOrigins) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      ::features::kSafetyCheckNotificationPermissions);
+
+  HostContentSettingsMap* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  base::Value::List args;
+  base::Value::List origins = GetOriginList(1);
+  args.Append(origins.Clone());
+
+  content_settings->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString(origins[0].GetString()),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
+      CONTENT_SETTING_ALLOW);
+
+  handler()->HandleResetNotificationPermissionForOrigins(args);
+
+  // Check the permission for the origin is reset.
+  auto type = content_settings->GetContentSetting(
+      GURL(origins[0].GetString()), GURL(), ContentSettingsType::NOTIFICATIONS);
+  ASSERT_EQ(CONTENT_SETTING_ASK, type);
+
+  ValidateNotificationPermissionUpdate();
 }

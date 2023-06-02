@@ -192,24 +192,6 @@ class SiteSettingsHandler
                            HandleGetFpsMembershipLabel);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, NonTreeModelDeletion);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, FirstPartySetsMembership);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleIgnoreOriginsForNotificationPermissionReview);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleBlockNotificationPermissionForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleAllowNotificationPermissionForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           HandleResetNotificationPermissionForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           PopulateNotificationPermissionReviewData);
-  FRIEND_TEST_ALL_PREFIXES(
-      SiteSettingsHandlerTest,
-      HandleUndoIgnoreOriginsForNotificationPermissionReview);
-  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
-                           SendNotificationPermissionReviewList_FeatureEnabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      SiteSettingsHandlerTest,
-      SendNotificationPermissionReviewList_FeatureDisabled);
   FRIEND_TEST_ALL_PREFIXES(
       SiteSettingsHandlerInfobarTest,
       SettingPermissionsDoesNotTriggerInfobarOnDifferentProfile);
@@ -301,9 +283,6 @@ class SiteSettingsHandler
   // Returns the list of chooser exceptions for a given chooser type.
   void HandleGetChooserExceptionList(const base::Value::List& args);
 
-  // Returns the list of notification permissions that needs to be reviewed.
-  void HandleGetNotificationPermissionReviewList(const base::Value::List& args);
-
   // Returns the list of the allowed permission grants as defined by the
   // File System Access API.
   void HandleGetFileSystemGrants(const base::Value::List& args);
@@ -330,28 +309,6 @@ class SiteSettingsHandler
   // simply (origin) and update all call sites.
   // Handles resetting a chooser exception for the given site.
   void HandleResetChooserExceptionForSite(const base::Value::List& args);
-
-  // Handles ignoring origins for the review notification permissions feature.
-  void HandleIgnoreOriginsForNotificationPermissionReview(
-      const base::Value::List& args);
-
-  // Handles resetting a notification permission for given origins.
-  void HandleResetNotificationPermissionForOrigins(
-      const base::Value::List& args);
-
-  // Handles blocking notification permissions for multiple origins.
-  void HandleBlockNotificationPermissionForOrigins(
-      const base::Value::List& args);
-
-  // Handles allowing notification permissions for multiple origins.
-  void HandleAllowNotificationPermissionForOrigins(
-      const base::Value::List& args);
-
-  // Handles reverting the action of ignoring origins for review notification
-  // permissions feature by removing them from the notification permission
-  // verification blocklist.
-  void HandleUndoIgnoreOriginsForNotificationPermissionReview(
-      const base::Value::List& args);
 
   // Returns whether a given string is a valid origin.
   void HandleIsOriginValid(const base::Value::List& args);
@@ -407,11 +364,6 @@ class SiteSettingsHandler
   // Notifies the JS side the effective cookies setting has changed and
   // provides the updated description label for display.
   void SendCookieSettingDescription();
-
-  // Returns a list of domains to be shown on the 'Review Notification
-  // Permissions' module in site settings notification page. Those domains send
-  // a lot of notifications, but have low site engagement.
-  base::Value::List PopulateNotificationPermissionReviewData();
 
   // Returns a dictionary containing the lists of the allowed permission
   // grant objects granted via the File System Access API, per origin.

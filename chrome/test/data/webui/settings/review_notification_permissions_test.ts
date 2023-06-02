@@ -7,7 +7,7 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {SettingsReviewNotificationPermissionsElement, SafetyHubBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrActionMenuElement, MetricsBrowserProxyImpl, Router, routes, SafetyCheckNotificationsModuleInteractions, SettingsRoutes} from 'chrome://settings/settings.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -15,7 +15,7 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 
 // clang-format on
 
@@ -23,7 +23,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSafetyHubBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   let testElement: SettingsReviewNotificationPermissionsElement;
@@ -109,9 +109,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
   }
 
   setup(async function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    browserProxy = new TestSafetyHubBrowserProxy();
     browserProxy.setNotificationPermissionReview(mockData);
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    SafetyHubBrowserProxyImpl.setInstance(browserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     testRoutes = {

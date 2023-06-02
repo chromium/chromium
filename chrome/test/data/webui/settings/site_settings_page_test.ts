@@ -268,17 +268,17 @@ const unusedSitePermissionMockData = [{
 
 suite('UnusedSitePermissionsReview', function() {
   let page: SettingsSiteSettingsPageElement;
-  let siteSettingsPermissionsBrowserProxy: TestSafetyHubBrowserProxy;
+  let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
 
   setup(function() {
-    siteSettingsPermissionsBrowserProxy = new TestSafetyHubBrowserProxy();
-    SafetyHubBrowserProxyImpl.setInstance(siteSettingsPermissionsBrowserProxy);
+    safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   test('VisibilityWithChangingPermissionList', async function() {
     // The element is not visible when there is nothing to review.
-    siteSettingsPermissionsBrowserProxy.setUnusedSitePermissions([]);
+    safetyHubBrowserProxy.setUnusedSitePermissions([]);
     page = document.createElement('settings-site-settings-page');
     document.body.appendChild(page);
     await flushTasks();
@@ -313,7 +313,7 @@ suite('UnusedSitePermissionsReview', function() {
  */
 suite('UnusedSitePermissionsReviewDisabled', function() {
   let page: SettingsSiteSettingsPageElement;
-  let siteSettingsPermissionsBrowserProxy: TestSafetyHubBrowserProxy;
+  let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -322,13 +322,13 @@ suite('UnusedSitePermissionsReviewDisabled', function() {
   });
 
   setup(function() {
-    siteSettingsPermissionsBrowserProxy = new TestSafetyHubBrowserProxy();
-    SafetyHubBrowserProxyImpl.setInstance(siteSettingsPermissionsBrowserProxy);
+    safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   test('InvisibleWhenFeatureDisabled', async function() {
-    siteSettingsPermissionsBrowserProxy.setUnusedSitePermissions([]);
+    safetyHubBrowserProxy.setUnusedSitePermissions([]);
     page = document.createElement('settings-site-settings-page');
     document.body.appendChild(page);
     await flushTasks();
@@ -337,7 +337,7 @@ suite('UnusedSitePermissionsReviewDisabled', function() {
   });
 
   test('InvisibleWhenFeatureDisabledWithItemsToReview', async function() {
-    siteSettingsPermissionsBrowserProxy.setUnusedSitePermissions(
+    safetyHubBrowserProxy.setUnusedSitePermissions(
         unusedSitePermissionMockData);
     page = document.createElement('settings-site-settings-page');
     document.body.appendChild(page);

@@ -37,8 +37,9 @@ import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl} from '../safety_hub/safety_hub_browser_proxy.js';
 import {ChooserType, ContentSettingsTypes, CookieControlsMode, NotificationSetting} from '../site_settings/constants.js';
-import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import {SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide/privacy_guide_availability_mixin.js';
 import {getTemplate} from './privacy_page.html.js';
@@ -303,8 +304,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       PrivacyPageBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private siteSettingsBrowserProxy_: SiteSettingsPrefsBrowserProxy =
+  private siteSettingsPrefsBrowserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
+  private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
+      SafetyHubBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -323,7 +326,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
 
-    this.siteSettingsBrowserProxy_.getCookieSettingDescription().then(
+    this.siteSettingsPrefsBrowserProxy_.getCookieSettingDescription().then(
         (description: string) => this.cookieSettingDescription_ = description);
 
     this.addWebUiListener(
@@ -335,7 +338,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));
 
-    this.siteSettingsBrowserProxy_.getNotificationPermissionReview().then(
+    this.safetyHubBrowserProxy_.getNotificationPermissionReview().then(
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));
   }

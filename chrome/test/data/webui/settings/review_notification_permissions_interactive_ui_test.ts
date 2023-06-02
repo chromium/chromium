@@ -6,16 +6,16 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 
-import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {SettingsReviewNotificationPermissionsElement, SafetyHubBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 // clang-format on
 
 suite('CrSettingsReviewNotificationPermissionsInteractiveUITest', function() {
   // The mock proxy object to use during test.
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSafetyHubBrowserProxy;
 
   let testElement: SettingsReviewNotificationPermissionsElement;
 
@@ -56,9 +56,9 @@ suite('CrSettingsReviewNotificationPermissionsInteractiveUITest', function() {
   }
 
   setup(function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    browserProxy = new TestSafetyHubBrowserProxy();
     browserProxy.setNotificationPermissionReview(mockData);
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    SafetyHubBrowserProxyImpl.setInstance(browserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('review-notification-permissions');

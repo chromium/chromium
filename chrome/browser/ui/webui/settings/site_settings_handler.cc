@@ -41,7 +41,6 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
-#include "chrome/browser/permissions/notification_permission_review_service_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
@@ -648,34 +647,6 @@ void ConvertSiteGroupMapToList(
   }
 }
 
-bool ShouldAddToNotificationPermissionReviewList(
-    site_engagement::SiteEngagementService* service,
-    GURL url,
-    int notification_count) {
-  // The notification permission should be added to the list if one of the
-  // criteria below holds:
-  // - Site engagement level is NONE OR MINIMAL and average daily notification
-  // count is more than 0.
-  // - Site engamment level is LOW and average daily notification count is
-  // more than 3. Otherwise, the notification permission should not be added
-  // to review list.
-  double score = service->GetScore(url);
-  int low_engagement_notification_limit =
-      features::kSafetyCheckNotificationPermissionsLowEnagementLimit.Get();
-  bool is_low_engagement =
-      !site_engagement::SiteEngagementService::IsEngagementAtLeast(
-          score, blink::mojom::EngagementLevel::MEDIUM) &&
-      notification_count > low_engagement_notification_limit;
-  int min_engagement_notification_limit =
-      features::kSafetyCheckNotificationPermissionsMinEnagementLimit.Get();
-  bool is_minimal_engagement =
-      !site_engagement::SiteEngagementService::IsEngagementAtLeast(
-          score, blink::mojom::EngagementLevel::LOW) &&
-      notification_count > min_engagement_notification_limit;
-
-  return is_minimal_engagement || is_low_engagement;
-}
-
 base::Value::Dict CreateZoomLevelException(
     const std::string& host_or_spec,
     const std::string& origin_for_favicon,
@@ -847,11 +818,6 @@ void SiteSettingsHandler::RegisterMessages() {
       base::BindRepeating(&SiteSettingsHandler::HandleGetChooserExceptionList,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getNotificationPermissionReview",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleGetNotificationPermissionReviewList,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "getOriginPermissions",
       base::BindRepeating(&SiteSettingsHandler::HandleGetOriginPermissions,
                           base::Unretained(this)));
@@ -873,33 +839,6 @@ void SiteSettingsHandler::RegisterMessages() {
       "resetChooserExceptionForSite",
       base::BindRepeating(
           &SiteSettingsHandler::HandleResetChooserExceptionForSite,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "ignoreNotificationPermissionReviewForOrigins",
-      base::BindRepeating(
-          &SiteSettingsHandler::
-              HandleIgnoreOriginsForNotificationPermissionReview,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "resetNotificationPermissionForOrigins",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleResetNotificationPermissionForOrigins,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "blockNotificationPermissionForOrigins",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleBlockNotificationPermissionForOrigins,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "allowNotificationPermissionForOrigins",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleAllowNotificationPermissionForOrigins,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "undoIgnoreNotificationPermissionReviewForOrigins",
-      base::BindRepeating(
-          &SiteSettingsHandler::
-              HandleUndoIgnoreOriginsForNotificationPermissionReview,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "isOriginValid",
@@ -1636,17 +1575,6 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
   ResolveJavascriptCallback(callback_id, exceptions);
 }
 
-void SiteSettingsHandler::HandleGetNotificationPermissionReviewList(
-    const base::Value::List& args) {
-  AllowJavascript();
-
-  const base::Value& callback_id = args[0];
-
-  base::Value::List result = PopulateNotificationPermissionReviewData();
-
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
-}
-
 void SiteSettingsHandler::HandleGetFileSystemGrants(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
@@ -1964,97 +1892,6 @@ void SiteSettingsHandler::HandleResetChooserExceptionForSite(
   permissions::ObjectPermissionContextBase* chooser_context =
       chooser_type->get_context(profile_);
   chooser_context->RevokeObjectPermission(origin, args[2].GetDict());
-}
-
-void SiteSettingsHandler::HandleIgnoreOriginsForNotificationPermissionReview(
-    const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
-  const base::Value::List& origins = args[0].GetList();
-
-  auto* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  DCHECK(service);
-
-  for (const auto& origin : origins) {
-    const ContentSettingsPattern primary_pattern =
-        ContentSettingsPattern::FromString(origin.GetString());
-    service->AddPatternToNotificationPermissionReviewBlocklist(
-        primary_pattern, ContentSettingsPattern::Wildcard());
-  }
-
-  SendNotificationPermissionReviewList();
-}
-
-void SiteSettingsHandler::HandleResetNotificationPermissionForOrigins(
-    const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
-
-  const base::Value::List& origins = args[0].GetList();
-
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-
-  for (const auto& origin : origins) {
-    map->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromString(origin.GetString()),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        CONTENT_SETTING_DEFAULT);
-  }
-
-  SendNotificationPermissionReviewList();
-}
-
-void SiteSettingsHandler::HandleBlockNotificationPermissionForOrigins(
-    const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
-  const base::Value::List& origins = args[0].GetList();
-
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  for (const auto& origin : origins) {
-    map->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromString(origin.GetString()),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        CONTENT_SETTING_BLOCK);
-  }
-
-  SendNotificationPermissionReviewList();
-}
-
-void SiteSettingsHandler::HandleAllowNotificationPermissionForOrigins(
-    const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
-  const base::Value::List& origins = args[0].GetList();
-
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-
-  for (const auto& origin : origins) {
-    map->SetContentSettingCustomScope(
-        ContentSettingsPattern::FromString(origin.GetString()),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        CONTENT_SETTING_ALLOW);
-  }
-
-  SendNotificationPermissionReviewList();
-}
-
-void SiteSettingsHandler::
-    HandleUndoIgnoreOriginsForNotificationPermissionReview(
-        const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
-  const base::Value::List& origins = args[0].GetList();
-  auto* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  DCHECK(service);
-
-  for (const auto& origin : origins) {
-    const ContentSettingsPattern& primary_pattern =
-        ContentSettingsPattern::FromString(origin.GetString());
-    service->RemovePatternFromNotificationPermissionReviewBlocklist(
-        primary_pattern, ContentSettingsPattern::Wildcard());
-  }
-  SendNotificationPermissionReviewList();
 }
 
 void SiteSettingsHandler::HandleIsOriginValid(const base::Value::List& args) {
@@ -2632,61 +2469,6 @@ void SiteSettingsHandler::SendCookieSettingDescription() {
                     base::Value(GetCookieSettingDescription(profile_)));
 }
 
-base::Value::List
-SiteSettingsHandler::PopulateNotificationPermissionReviewData() {
-  base::Value::List result;
-  if (!base::FeatureList::IsEnabled(
-          features::kSafetyCheckNotificationPermissions))
-    return result;
-
-  auto* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
-  if (!service)
-    return result;
-
-  auto notification_permissions = service->GetNotificationSiteListForReview();
-
-  site_engagement::SiteEngagementService* engagement_service =
-      site_engagement::SiteEngagementService::Get(profile_);
-
-  // Sort notification permissions by their priority for surfacing to the user.
-  auto notification_permission_ordering =
-      [](const permissions::NotificationPermissions& left,
-         const permissions::NotificationPermissions& right) {
-        return left.notification_count > right.notification_count;
-      };
-  std::sort(notification_permissions.begin(), notification_permissions.end(),
-            notification_permission_ordering);
-
-  for (const auto& notification_permission : notification_permissions) {
-    // Converting primary pattern to GURL should always be valid, since
-    // Notification Permission Review list only contains single origins. Those
-    // are filtered in
-    // NotificationPermissionsReviewService::GetNotificationSiteListForReview.
-    GURL url = GURL(notification_permission.primary_pattern.ToString());
-    DCHECK(url.is_valid());
-    if (!ShouldAddToNotificationPermissionReviewList(
-            engagement_service, url,
-            notification_permission.notification_count)) {
-      continue;
-    }
-
-    base::Value::Dict permission;
-    permission.Set(site_settings::kOrigin,
-                   notification_permission.primary_pattern.ToString());
-
-    std::string notification_info_string =
-        base::UTF16ToUTF8(l10n_util::GetPluralStringFUTF16(
-            IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_COUNT_LABEL,
-            notification_permission.notification_count));
-    permission.Set(site_settings::kNotificationInfoString,
-                   notification_info_string);
-    result.Append(std::move(permission));
-  }
-
-  return result;
-}
-
 // Dictionary keys for an individual `FileSystemPermissionGrant`.
 // Schema (per grant):
 // {
@@ -2810,8 +2592,9 @@ void SiteSettingsHandler::SendNotificationPermissionReviewList() {
   // an unchanged list may be sent. This is the case for
   // HandleResetCategoryPermissionForPattern and
   // HandleSetCategoryPermissionForPattern.
-  FireWebUIListener("notification-permission-review-list-maybe-changed",
-                    PopulateNotificationPermissionReviewData());
+  FireWebUIListener(
+      site_settings::kNotificationPermissionsReviewListMaybeChangedEvent,
+      site_settings::PopulateNotificationPermissionReviewData(profile_));
 }
 
 }  // namespace settings

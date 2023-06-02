@@ -23,12 +23,12 @@ import {BaseMixin} from '../base_mixin.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckNotificationsModuleInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin} from '../router.js';
+import {NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl} from '../safety_hub/safety_hub_browser_proxy.js';
 import {MODEL_UPDATE_DELAY_MS} from '../site_settings/constants.js';
 import {TooltipMixin} from '../tooltip_mixin.js';
 
 import {getTemplate} from './review_notification_permissions.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
 export interface SettingsReviewNotificationPermissionsElement {
   $: {
@@ -124,8 +124,8 @@ export class SettingsReviewNotificationPermissionsElement extends
   private toastText_: string|null;
   private eventTracker_: EventTracker = new EventTracker();
   private shouldRefocusExpandButton_: boolean = false;
-  private browserProxy_: SiteSettingsPrefsBrowserProxy =
-      SiteSettingsPrefsBrowserProxyImpl.getInstance();
+  private browserProxy_: SafetyHubBrowserProxy =
+      SafetyHubBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
