@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -70,6 +71,8 @@ std::unique_ptr<ash::attestation::AttestationFlow> CreateAttestationFlow() {
       std::make_unique<ash::attestation::AttestationCAClient>());
 }
 
+base::NoDestructor<EnrollmentLauncher::Factory> g_testing_factory;
+
 // A helper class that takes care of asynchronously revoking a given token.
 class TokenRevoker : public GaiaAuthConsumer {
  public:
@@ -106,7 +109,7 @@ void TokenRevoker::OnOAuth2RevokeTokenCompleted(
 
 class EnrollmentLauncherImpl : public EnrollmentLauncher {
  public:
-  EnrollmentLauncherImpl();
+  explicit EnrollmentLauncherImpl(EnrollmentStatusConsumer* status_consumer);
 
   EnrollmentLauncherImpl(const EnrollmentLauncherImpl&) = delete;
   EnrollmentLauncherImpl& operator=(const EnrollmentLauncherImpl&) = delete;
@@ -154,6 +157,8 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
   // `callback` is a callback, that was passed to ClearAuth() before.
   void OnSigninProfileCleared(base::OnceClosure callback);
 
+  raw_ptr<EnrollmentStatusConsumer, ExperimentalAsh> status_consumer_;
+
   // Returns either OAuth token or DM token needed for the device attribute
   // update permission request.
   absl::optional<policy::DMAuth> GetDMAuthForDeviceAttributeUpdate(
@@ -182,7 +187,9 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
   base::WeakPtrFactory<EnrollmentLauncherImpl> weak_ptr_factory_{this};
 };
 
-EnrollmentLauncherImpl::EnrollmentLauncherImpl() {
+EnrollmentLauncherImpl::EnrollmentLauncherImpl(
+    EnrollmentStatusConsumer* status_consumer)
+    : status_consumer_(status_consumer) {
   // Init the TPM if it has not been done until now (in debug build we might
   // have not done that yet).
   chromeos::TpmManagerClient::Get()->TakeOwnership(
@@ -280,7 +287,7 @@ void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
     if (oauth_status_ != OAUTH_NOT_STARTED) {
       oauth_status_ = OAUTH_FINISHED;
     }
-    status_consumer()->OnOtherError(OTHER_ERROR_DOMAIN_MISMATCH);
+    status_consumer_->OnOtherError(OTHER_ERROR_DOMAIN_MISMATCH);
     return;
   }
 
@@ -390,7 +397,7 @@ void EnrollmentLauncherImpl::OnTokenFetched(
   if (error.state() != GoogleServiceAuthError::NONE) {
     ReportAuthStatus(error);
     oauth_status_ = OAUTH_FINISHED;
-    status_consumer()->OnAuthError(error);
+    status_consumer_->OnAuthError(error);
     return;
   }
 
@@ -417,7 +424,7 @@ void EnrollmentLauncherImpl::OnEnrollmentFinished(
   }
 
   if (status.status() != policy::EnrollmentStatus::SUCCESS) {
-    status_consumer()->OnEnrollmentError(status);
+    status_consumer_->OnEnrollmentError(status);
     return;
   }
 
@@ -435,15 +442,15 @@ void EnrollmentLauncherImpl::OnEnrollmentFinished(
 
   success_ = true;
   StartupUtils::MarkOobeCompleted();
-  status_consumer()->OnDeviceEnrolled();
+  status_consumer_->OnDeviceEnrolled();
 }
 
 void EnrollmentLauncherImpl::OnDeviceAttributeUpdatePermission(bool granted) {
-  status_consumer()->OnDeviceAttributeUpdatePermission(granted);
+  status_consumer_->OnDeviceAttributeUpdatePermission(granted);
 }
 
 void EnrollmentLauncherImpl::OnDeviceAttributeUploadCompleted(bool success) {
-  status_consumer()->OnDeviceAttributeUploadCompleted(success);
+  status_consumer_->OnDeviceAttributeUploadCompleted(success);
 }
 
 void EnrollmentLauncherImpl::ReportAuthStatus(
@@ -648,20 +655,9 @@ void EnrollmentLauncherImpl::OnSigninProfileCleared(
 
 }  // namespace
 
-EnrollmentLauncher* EnrollmentLauncher::mock_enrollment_helper_ = nullptr;
-
 EnrollmentLauncher::EnrollmentLauncher() = default;
 
 EnrollmentLauncher::~EnrollmentLauncher() = default;
-
-// static
-void EnrollmentLauncher::SetEnrollmentHelperMock(
-    std::unique_ptr<EnrollmentLauncher> mock) {
-  if (mock_enrollment_helper_) {
-    delete mock_enrollment_helper_;
-  }
-  mock_enrollment_helper_ = mock.release();
-}
 
 // static
 std::unique_ptr<EnrollmentLauncher> EnrollmentLauncher::Create(
@@ -669,24 +665,15 @@ std::unique_ptr<EnrollmentLauncher> EnrollmentLauncher::Create(
     const policy::EnrollmentConfig& enrollment_config,
     const std::string& enrolling_user_domain,
     policy::LicenseType license_type) {
-  std::unique_ptr<EnrollmentLauncher> result;
-
-  // Create a mock instance.
-  if (mock_enrollment_helper_) {
-    result = base::WrapUnique(mock_enrollment_helper_);
-    mock_enrollment_helper_ = nullptr;
-  } else {
-    result = std::make_unique<EnrollmentLauncherImpl>();
+  if (!g_testing_factory->is_null()) {
+    CHECK_IS_TEST();
+    return g_testing_factory->Run(status_consumer, enrollment_config,
+                                  enrolling_user_domain, license_type);
   }
-  result->set_status_consumer(status_consumer);
+
+  auto result = std::make_unique<EnrollmentLauncherImpl>(status_consumer);
   result->Setup(enrollment_config, enrolling_user_domain, license_type);
   return result;
-}
-
-void EnrollmentLauncher::set_status_consumer(
-    EnrollmentStatusConsumer* status_consumer) {
-  DCHECK(status_consumer);
-  status_consumer_ = status_consumer;
 }
 
 ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting::
@@ -701,6 +688,31 @@ ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting::
 ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting::
     ~ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting() {
   g_testing_attestation_flow_factory->Reset();
+}
+
+ScopedEnrollmentLauncherFactoryOverrideForTesting::
+    ScopedEnrollmentLauncherFactoryOverrideForTesting(
+        EnrollmentLauncher::Factory testing_factory) {
+  CHECK_IS_TEST();
+  CHECK(g_testing_factory->is_null()) << "Only one override allowed";
+  Reset(std::move(testing_factory));
+}
+
+ScopedEnrollmentLauncherFactoryOverrideForTesting::
+    ~ScopedEnrollmentLauncherFactoryOverrideForTesting() {
+  g_testing_factory->Reset();
+}
+
+void ScopedEnrollmentLauncherFactoryOverrideForTesting::Reset(
+    EnrollmentLauncher::Factory testing_factory) {
+  *g_testing_factory = std::move(testing_factory);
+}
+
+ScopedEnrollmentLauncherFactoryOverrideForTesting&
+ScopedEnrollmentLauncherFactoryOverrideForTesting::operator=(
+    EnrollmentLauncher::Factory testing_factory) {
+  Reset(std::move(testing_factory));
+  return *this;
 }
 
 }  // namespace ash
