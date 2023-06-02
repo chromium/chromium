@@ -789,7 +789,9 @@ TEST_P(UnifiedSystemTrayTest, InputMuteStateToggledButNoMicrophoneAvailable) {
   EXPECT_FALSE(IsMicrophoneMuteToastShown());
 }
 
-// Tests that the bubble is closed after entering or exiting tablet mode.
+// Tests that the bubble is closed after entering or exiting tablet mode. This
+// is required because the `FeatureTile`'s must be recreated to switch between
+// primary and compact.
 TEST_P(UnifiedSystemTrayTest, BubbleClosedAfterTabletModeChange) {
   auto* tray = GetPrimaryUnifiedSystemTray();
   TabletModeController* tablet_mode_controller =

@@ -211,7 +211,7 @@ TEST_F(FeatureTilesContainerViewTest, FeatureTileRows) {
   EXPECT_EQ(1, GetRowCount());
   EXPECT_EQ(2, GetVisibleCount());
 
-  // Expect one other row by adding a primary and two compact tiles.
+  // Add one primary, and two compact tiles. This should create a second row.
   std::vector<std::unique_ptr<FeatureTile>> one_primary_two_compact_tiles;
   one_primary_two_compact_tiles.push_back(mock_controller->CreateTile());
   one_primary_two_compact_tiles.push_back(
@@ -222,7 +222,7 @@ TEST_F(FeatureTilesContainerViewTest, FeatureTileRows) {
   EXPECT_EQ(2, GetRowCount());
   EXPECT_EQ(5, GetVisibleCount());
 
-  // Expect one other row by adding a single primary tile.
+  // Add one primary tile, this should result in a third row.
   std::vector<std::unique_ptr<FeatureTile>> one_primary_tile;
   one_primary_tile.push_back(mock_controller->CreateTile());
   container()->AddTiles(std::move(one_primary_tile));
