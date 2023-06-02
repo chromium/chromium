@@ -30,6 +30,8 @@ struct PromiseApp {
   explicit PromiseApp(const apps::PackageId& package_id);
   ~PromiseApp();
 
+  bool operator==(const PromiseApp&) const;
+
   PackageId package_id;
 
   absl::optional<std::string> name;

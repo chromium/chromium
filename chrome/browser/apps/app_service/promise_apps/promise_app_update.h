@@ -22,6 +22,8 @@ class PromiseAppUpdate {
   PromiseAppUpdate(const PromiseAppUpdate&) = delete;
   PromiseAppUpdate& operator=(const PromiseAppUpdate&) = delete;
 
+  bool operator==(const PromiseAppUpdate&) const;
+
   const PackageId& PackageId() const;
 
   // Indicates the app name for the package. If app name is not known or still

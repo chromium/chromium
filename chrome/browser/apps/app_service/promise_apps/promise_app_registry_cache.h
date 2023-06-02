@@ -25,37 +25,18 @@ class PromiseAppRegistryCache {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    Observer(const Observer&) = delete;
-    Observer& operator=(const Observer&) = delete;
-
-    // The apps::PromiseAppUpdate argument shouldn't be accessed after
-    // OnPromiseAppUpdate returns.
+    // Triggered when a new promise app is registered or an existing promise app
+    // is updated in the observed Promise App Registry Cache. `Update` contains
+    // information on which promise app has been updated and what changes have
+    // been made.
     virtual void OnPromiseAppUpdate(const PromiseAppUpdate& update) {}
 
     // Called when the PromiseAppRegistryCache object (the thing that this
     // observer observes) will be destroyed. In response, the observer, |this|,
     // should call "cache->RemoveObserver(this)", whether directly or indirectly
-    // (e.g. via base::ScopedObservation::Remove or via Observe(nullptr)).
+    // (e.g. via base::ScopedObservation::Reset)
     virtual void OnPromiseAppRegistryCacheWillBeDestroyed(
         PromiseAppRegistryCache* cache) = 0;
-
-   protected:
-    // Use this constructor when the observer |this| is tied to a single
-    // PromiseAppRegistryCache for its entire lifetime, or until the observee
-    // (the PromiseAppRegistryCache) is destroyed, whichever comes first.
-    explicit Observer(PromiseAppRegistryCache* cache);
-
-    // Use this constructor when the observer |this| wants to observe a
-    // PromiseAppRegistryCache for part of its lifetime. It can then call
-    // Observe() to start and stop observing.
-    Observer();
-
-    ~Observer() override;
-
-    void Observe(PromiseAppRegistryCache* cache);
-
-   private:
-    raw_ptr<PromiseAppRegistryCache> cache_ = nullptr;
   };
 
   PromiseAppRegistryCache();

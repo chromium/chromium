@@ -10,36 +10,14 @@
 
 namespace apps {
 
-PromiseAppRegistryCache::Observer::Observer(PromiseAppRegistryCache* cache) {
-  Observer::Observe(cache);
-}
-
-PromiseAppRegistryCache::Observer::Observer() = default;
-
-PromiseAppRegistryCache::Observer::~Observer() {
-  if (cache_) {
-    cache_->RemoveObserver(this);
-  }
-}
-
-void PromiseAppRegistryCache::Observer::Observe(
-    PromiseAppRegistryCache* cache) {
-  if (cache == cache_) {
-    // Early exit to avoid infinite loops if we're in the middle of a callback.
-    return;
-  }
-  if (cache_) {
-    cache_->RemoveObserver(this);
-  }
-  cache_ = cache;
-  if (cache_) {
-    cache_->AddObserver(this);
-  }
-}
-
 PromiseAppRegistryCache::PromiseAppRegistryCache() = default;
 
-PromiseAppRegistryCache::~PromiseAppRegistryCache() = default;
+PromiseAppRegistryCache::~PromiseAppRegistryCache() {
+  for (auto& obs : observers_) {
+    obs.OnPromiseAppRegistryCacheWillBeDestroyed(this);
+  }
+  CHECK(observers_.empty());
+}
 
 void PromiseAppRegistryCache::AddObserver(Observer* observer) {
   DCHECK(observer);

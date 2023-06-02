@@ -21,6 +21,25 @@ PromiseAppUpdate::PromiseAppUpdate(const PromiseApp* state,
   }
 }
 
+bool PromiseAppUpdate::operator==(const PromiseAppUpdate& rhs) const {
+  bool states_are_same = false;
+  bool deltas_are_same = false;
+  if (!this->state_ && !rhs.state_) {
+    states_are_same = true;
+  }
+  if (this->state_ && rhs.state_) {
+    states_are_same = *(this->state_) == *(rhs.state_);
+  }
+
+  if (!this->delta_ && !rhs.delta_) {
+    deltas_are_same = true;
+  }
+  if (this->delta_ && rhs.delta_) {
+    deltas_are_same = *(this->delta_) == *(rhs.delta_);
+  }
+  return states_are_same && deltas_are_same;
+}
+
 void PromiseAppUpdate::Merge(PromiseApp* state, const PromiseApp* delta) {
   DCHECK(state);
   if (!delta) {

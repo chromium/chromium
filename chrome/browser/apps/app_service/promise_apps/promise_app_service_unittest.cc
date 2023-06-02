@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
@@ -47,10 +48,7 @@ class PromiseAppServiceTest : public testing::Test,
             std::make_unique<image_fetcher::FakeImageDecoder>(),
             profile_->GetURLLoaderFactory());
     service_->SetImageFetcherForTesting(std::move(image_fetcher));
-    Observe(cache());
   }
-
-  ~PromiseAppServiceTest() override { Observe(nullptr); }
 
   network::TestURLLoaderFactory* url_loader_factory() {
     return url_loader_factory_.get();
@@ -64,9 +62,18 @@ class PromiseAppServiceTest : public testing::Test,
 
   PromiseAppService* service() { return service_.get(); }
 
-  void WaitForPromiseAppUpdates(int num_updates) {
+  void ExpectNumUpdates(int num_updates) {
     expected_num_updates_ = num_updates;
     current_num_updates_ = 0;
+    if (!obs_.IsObserving()) {
+      obs_.Observe(cache());
+    }
+  }
+
+  void WaitForPromiseAppUpdates() {
+    if (expected_num_updates_ == current_num_updates_) {
+      return;
+    }
     wait_run_loop_ = std::make_unique<base::RunLoop>();
     wait_run_loop_->Run();
   }
@@ -81,7 +88,9 @@ class PromiseAppServiceTest : public testing::Test,
   }
 
   void OnPromiseAppRegistryCacheWillBeDestroyed(
-      apps::PromiseAppRegistryCache* cache) override {}
+      apps::PromiseAppRegistryCache* cache) override {
+    obs_.Reset();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -89,6 +98,9 @@ class PromiseAppServiceTest : public testing::Test,
   std::unique_ptr<PromiseAppService> service_;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
+  base::ScopedObservation<PromiseAppRegistryCache,
+                          PromiseAppRegistryCache::Observer>
+      obs_{this};
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 
@@ -108,6 +120,8 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_AlmanacResponseUpdatesPromiseApp) {
   response.mutable_icons(0)->set_mime_type("image/png");
   response.mutable_icons(0)->set_is_masking_allowed(true);
 
+  // Wait for the registry cache update that follows the Almanac API response.
+  ExpectNumUpdates(/*num_updates=*/2);
   url_loader_factory()->AddResponse(
       PromiseAppAlmanacConnector::GetServerUrl().spec(),
       response.SerializeAsString());
@@ -115,8 +129,7 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_AlmanacResponseUpdatesPromiseApp) {
   // Add promise app to cache and trigger Almanac API call.
   service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
 
-  // Wait for the registry cache update that follows the Almanac API response.
-  WaitForPromiseAppUpdates(/*num_updates=*/1);
+  WaitForPromiseAppUpdates();
 
   const PromiseApp* promise_app_result =
       cache()->GetPromiseAppForTesting(kTestPackageId);
@@ -157,11 +170,12 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_IconsDownloaded) {
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 
   // Add promise app to cache and trigger Almanac API and image fetcher calls.
+  ExpectNumUpdates(/*num_updates=*/3);
   service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
 
   // Wait for the separate registry cache updates that follow the Almanac API
   // response and image fetcher completion.
-  WaitForPromiseAppUpdates(/*num_updates=*/2);
+  WaitForPromiseAppUpdates();
 
   // Verify that there are 2 icons now saved in cache.
   EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
@@ -200,10 +214,10 @@ TEST_F(PromiseAppServiceTest, OnPromiseApp_FailedIconDownload) {
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
 
   // Add promise app to cache and trigger Almanac API call.
+  ExpectNumUpdates(/*num_updates=*/2);
   service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
 
-  // Wait for the registry cache update that follows the Almanac API response.
-  WaitForPromiseAppUpdates(/*num_updates=*/1);
+  WaitForPromiseAppUpdates();
 
   // Icon cache should still be empty.
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
