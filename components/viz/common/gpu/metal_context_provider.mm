@@ -37,31 +37,27 @@ struct MetalContextProviderImpl : public MetalContextProvider {
   bool InitializeGraphiteContext(
       const skgpu::graphite::ContextOptions& options) override {
     CHECK(!graphite_context_);
-
-    if (device_) {
-      skgpu::graphite::MtlBackendContext backend_context = {};
-      backend_context.fDevice.reset(device_);
-      backend_context.fQueue.reset([device_ newCommandQueue]);
-      graphite_context_ =
-          skgpu::graphite::ContextFactory::MakeMetal(backend_context, options);
-    }
-
+    CHECK(device_);
+    skgpu::graphite::MtlBackendContext backend_context = {};
+    backend_context.fDevice.retain(device_);
+    backend_context.fQueue.reset([device_ newCommandQueue]);
+    graphite_context_ =
+        skgpu::graphite::ContextFactory::MakeMetal(backend_context, options);
     if (!graphite_context_) {
       DLOG(ERROR) << "Failed to create Graphite Context for Metal";
       return false;
     }
-
     return true;
   }
 
   skgpu::graphite::Context* GetGraphiteContext() override {
     return graphite_context_.get();
   }
+
   metal::MTLDevicePtr GetMTLDevice() override { return device_.get(); }
 
  private:
   base::scoped_nsprotocol<id<MTLDevice>> device_;
-  base::scoped_nsprotocol<id<MTLCommandQueue>> command_queue_;
   std::unique_ptr<skgpu::graphite::Context> graphite_context_;
 };
 

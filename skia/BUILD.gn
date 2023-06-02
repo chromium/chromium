@@ -825,6 +825,10 @@ if (skia_support_gpu) {
         "-fobjc-arc",
       ]
       deps = [ "//gpu/config:workaround_list" ]
+      if (skia_use_dawn) {
+        # Needed due to include chain containing webgpu_cpp.h via GrDawnTypes.h.
+        public_deps = [ "//third_party/dawn/include/dawn:cpp_headers" ]
+      }
       visibility = [ ":skia" ]
     }
   }
