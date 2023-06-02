@@ -167,6 +167,29 @@ void UpdateConfigUsingSessionParameters(
   }
 }
 
+void UpdateAudioConfigMaxBitrate(FrameSenderConfig& audio_config) {
+  CHECK(audio_config.is_audio());
+
+  // Taken from the legacy Session implementation.
+  // TODO(https://crbug.com/1316434): this matches legacy behavior, but
+  // testing should be done as part of migration to this class to determine
+  // what the right long term behavior is.
+  //
+  // Note on "AUTO" bitrate calculation: This is based on libopus source
+  // at the time of this writing. Internally, it uses the following math:
+  //
+  //   packet_overhead_bps = 60 bits * num_packets_in_one_second
+  //   approx_encoded_signal_bps = frequency * channels
+  //   estimated_bps = packet_overhead_bps + approx_encoded_signal_bps
+  //
+  // For 100 packets/sec at 48 kHz and 2 channels, this is 102kbps.
+  if (audio_config.max_bitrate == 0) {
+    audio_config.max_bitrate =
+        (60 * audio_config.max_frame_rate +
+         audio_config.rtp_timebase * audio_config.channels);
+  }
+}
+
 const std::string ToString(const media::VideoCaptureParams& params) {
   return base::StringPrintf(
       "requested_format = %s, buffer_type = %d, resolution_policy = %d",
@@ -1012,6 +1035,7 @@ void OpenscreenSessionHost::NegotiateMirroring() {
         RtpPayloadType::AUDIO_OPUS, Codec::kAudioOpus);
     UpdateConfigUsingSessionParameters(session_params_,
                                        *last_offered_audio_config_);
+    UpdateAudioConfigMaxBitrate(*last_offered_audio_config_);
     audio_configs.push_back(
         ToOpenscreenAudioConfig(*last_offered_audio_config_));
   }
@@ -1080,7 +1104,9 @@ void OpenscreenSessionHost::NegotiateMirroring() {
 void OpenscreenSessionHost::NegotiateRemoting() {
   FrameSenderConfig audio_config = MirrorSettings::GetDefaultAudioConfig(
       RtpPayloadType::REMOTE_AUDIO, Codec::kAudioRemote);
+  UpdateAudioConfigMaxBitrate(audio_config);
   UpdateConfigUsingSessionParameters(session_params_, audio_config);
+
   FrameSenderConfig video_config = MirrorSettings::GetDefaultVideoConfig(
       RtpPayloadType::REMOTE_VIDEO, Codec::kVideoRemote);
   UpdateConfigUsingSessionParameters(session_params_, video_config);

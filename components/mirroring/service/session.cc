@@ -172,8 +172,7 @@ void AddStreamObject(int stream_index,
   stream.Set("index", stream_index);
   stream.Set("codecName", base::ToLowerASCII(codec_name));
   stream.Set("rtpProfile", "cast");
-  const bool is_audio =
-      (config.rtp_payload_type <= media::cast::RtpPayloadType::AUDIO_LAST);
+  const bool is_audio = config.is_audio();
   stream.Set("rtpPayloadType",
              is_audio ? kAudioPayloadType : kVideoPayloadType);
   stream.Set("ssrc", static_cast<int>(config.sender_ssrc));

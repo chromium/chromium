@@ -193,6 +193,10 @@ struct FrameSenderConfig {
 
   // RTP payload type enum: Specifies the type/encoding of frame data.
   RtpPayloadType rtp_payload_type = RtpPayloadType::UNKNOWN;
+  bool is_audio() const {
+    return rtp_payload_type >= media::cast::RtpPayloadType::FIRST &&
+           rtp_payload_type <= media::cast::RtpPayloadType::AUDIO_LAST;
+  }
 
   // If true, use an external HW encoder rather than the built-in
   // software-based one. Note that this may be the ExternalVideoEncoder or
