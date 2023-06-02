@@ -158,7 +158,7 @@ public class AutocompleteMatch {
             GURL url, GURL imageUrl, String imageDominantColor, boolean isDeletable,
             String postContentType, byte[] postData, int groupId, List<QueryTile> tiles,
             byte[] clipboardImageData, boolean hasTabMatch, String[] suggestTileTitles,
-            GURL[] suggestTileUrls, int[] suggestTileTypes, OmniboxAction[] actions) {
+            GURL[] suggestTileUrls, int[] suggestTileTypes, @Nullable OmniboxAction[] actions) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -183,7 +183,7 @@ public class AutocompleteMatch {
                 relevance, transition, contents, contentClassifications, description,
                 new ArrayList<>(), answer, fillIntoEdit, url, imageUrl, imageDominantColor,
                 isDeletable, postContentType, postData, groupId, tiles, clipboardImageData,
-                hasTabMatch, suggestTiles, Arrays.asList(actions));
+                hasTabMatch, suggestTiles, actions == null ? null : Arrays.asList(actions));
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
                 description, descriptionClassificationOffsets, descriptionClassificationStyles);
