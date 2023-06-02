@@ -515,16 +515,21 @@ bool IsABookmarkNodeSectionForIdentifier(
   }
 }
 
+// `node` will be deleted from `folder`.
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+       willDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder {
+  DCHECK(node);
+  if (self.displayedNode && self.displayedNode->HasAncestor(node)) {
+    self.displayedNode = nullptr;
+  }
+}
+
 // `node` was deleted from `folder`.
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
         didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
-  if (self.currentlyShowingSearchResults) {
-    [self.consumer refreshContents];
-  } else if (self.displayedNode == node) {
-    self.displayedNode = NULL;
-    [self.consumer refreshContents];
-  }
+  [self.consumer refreshContents];
 }
 
 // All non-permanent nodes have been removed.

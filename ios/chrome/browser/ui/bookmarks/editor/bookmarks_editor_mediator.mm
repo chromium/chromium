@@ -175,18 +175,28 @@
 }
 
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-        didDeleteNode:(const bookmarks::BookmarkNode*)node
+       willDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   if (self.ignoresBookmarkModelChanges) {
     return;
   }
 
-  if (self.bookmark == node) {
+  if (self.bookmark->HasAncestor(node)) {
     _bookmark = nullptr;
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
-  } else if (self.folder == node) {
-    [self changeFolder:self.bookmarkModel->mobile_node()];
+  } else if (self.folder->HasAncestor(node)) {
+    // This might happen when the user has changed `self.folder` but has not
+    // commited the changes by pressing done. And in the background the chosen
+    // folder was deleted.
+    [self changeFolder:model->mobile_node()];
   }
+}
+
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+        didDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder {
+  // No-op. Bookmark deletion handled in
+  // `bookmarkModel:willDeleteNode:fromFolder:`
 }
 
 - (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
@@ -248,7 +258,7 @@
     [self.delegate
         showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                                 nodes, {[self bookmarkModel]}, _browserState)];
-    _bookmark = nullptr;
+    [self.delegate bookmarkEditorMediatorWantsDismissal:self];
   }
 }
 

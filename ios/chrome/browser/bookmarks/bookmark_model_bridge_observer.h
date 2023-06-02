@@ -35,6 +35,10 @@
 - (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model;
 
 @optional
+// Called before removing a bookmark node.
+- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
+       willDeleteNode:(const bookmarks::BookmarkNode*)node
+           fromFolder:(const bookmarks::BookmarkNode*)folder;
 // Called before removing all non-permanent nodes.
 - (void)bookmarkModelWillRemoveAllNodes:(const bookmarks::BookmarkModel*)model;
 // The node favicon changed.
@@ -63,6 +67,10 @@ class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
                          const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override;
+  void OnWillRemoveBookmarks(bookmarks::BookmarkModel* model,
+                             const bookmarks::BookmarkNode* parent,
+                             size_t old_index,
+                             const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
                            const bookmarks::BookmarkNode* parent,
                            size_t old_index,
