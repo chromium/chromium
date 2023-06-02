@@ -19,7 +19,11 @@ SaveUPIBubbleControllerImpl::SaveUPIBubbleControllerImpl(
     : content::WebContentsUserData<SaveUPIBubbleControllerImpl>(*web_contents) {
 }
 
-SaveUPIBubbleControllerImpl::~SaveUPIBubbleControllerImpl() = default;
+SaveUPIBubbleControllerImpl::~SaveUPIBubbleControllerImpl() {
+  if (save_upi_bubble_) {
+    save_upi_bubble_->Hide();
+  }
+}
 
 void SaveUPIBubbleControllerImpl::OfferUpiIdLocalSave(
     const std::string& upi_id,
