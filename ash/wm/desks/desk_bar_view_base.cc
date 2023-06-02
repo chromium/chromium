@@ -7,6 +7,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -457,6 +458,12 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
+
+  if (is_jellyroll_enabled) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  }
+
   SetBorder(std::make_unique<views::HighlightBorder>(
       /*corner_radius=*/0,
       chromeos::features::IsJellyrollEnabled()
@@ -464,6 +471,7 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
           : views::HighlightBorder::Type::kHighlightBorder2));
 
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+
   // Use layer scrolling so that the contents will paint on top of the parent,
   // which uses SetPaintToLayer()
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
@@ -490,7 +498,7 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
       scroll_view_->SetContents(std::make_unique<views::View>());
   scroll_view_contents_->SetPaintToLayer();
 
-  if (chromeos::features::IsJellyrollEnabled()) {
+  if (is_jellyroll_enabled) {
     default_desk_button_ = scroll_view_contents_->AddChildView(
         std::make_unique<CrOSNextDefaultDeskButton>(this));
     new_desk_button_ = scroll_view_contents_->AddChildView(
@@ -533,7 +541,7 @@ DeskBarViewBase::DeskBarViewBase(aura::Window* root, Type type)
       button_text_id = IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_SAVED_FOR_LATER;
     }
 
-    if (chromeos::features::IsJellyrollEnabled()) {
+    if (is_jellyroll_enabled) {
       library_button_ = scroll_view_contents_->AddChildView(
           std::make_unique<CrOSNextDeskIconButton>(
               this, &kDesksTemplatesIcon,
