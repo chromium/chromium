@@ -190,7 +190,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
  ['AppManagementDomSwitch', 'app_management/dom_switch_test.js'],
  ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
- ['AppManagementManagedApp', 'app_management/managed_apps_test.js'],
+ ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
  ['AppManagementPage', 'app_management/app_management_page_tests.js'],
  ['AppManagementPinToShelfItem', 'app_management/pin_to_shelf_item_test.js'],
  [
