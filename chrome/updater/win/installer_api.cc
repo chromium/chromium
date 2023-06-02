@@ -46,7 +46,8 @@ absl::optional<base::win::RegKey> ClientStateAppKeyCreate(
   }
   base::win::RegKey key(UpdaterScopeToHKeyRoot(updater_scope), CLIENT_STATE_KEY,
                         Wow6432(regsam));
-  if (key.CreateKey(subkey.c_str(), Wow6432(regsam)) != ERROR_SUCCESS) {
+  if (!key.Valid() ||
+      key.CreateKey(subkey.c_str(), Wow6432(regsam)) != ERROR_SUCCESS) {
     return absl::nullopt;
   }
   return key;
@@ -115,7 +116,8 @@ absl::optional<base::win::RegKey> ClientStateAppKeyOpen(
   }
   base::win::RegKey key(UpdaterScopeToHKeyRoot(updater_scope), CLIENT_STATE_KEY,
                         Wow6432(regsam));
-  if (key.OpenKey(subkey.c_str(), Wow6432(regsam)) != ERROR_SUCCESS) {
+  if (!key.Valid() ||
+      key.OpenKey(subkey.c_str(), Wow6432(regsam)) != ERROR_SUCCESS) {
     return absl::nullopt;
   }
   return key;
@@ -128,7 +130,7 @@ bool ClientStateAppKeyDelete(UpdaterScope updater_scope,
     return false;
   }
   return base::win::RegKey(UpdaterScopeToHKeyRoot(updater_scope),
-                           CLIENT_STATE_KEY, Wow6432(KEY_WRITE))
+                           CLIENT_STATE_KEY, Wow6432(DELETE))
              .DeleteKey(subkey.c_str()) == ERROR_SUCCESS;
 }
 
