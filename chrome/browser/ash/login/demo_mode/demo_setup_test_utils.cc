@@ -33,27 +33,32 @@ MATCHER(ConfigIsAttestation, "") {
 
 namespace test {
 
-void SetupDemoModeNoEnrollment(MockEnrollmentLauncher* mock) {
+void SetupMockDemoModeNoEnrollmentHelper() {
+  std::unique_ptr<MockEnrollmentLauncher> mock =
+      std::make_unique<MockEnrollmentLauncher>();
   EXPECT_CALL(*mock, Setup(_, _, _)).Times(0);
+  EnrollmentLauncher::SetEnrollmentHelperMock(std::move(mock));
 }
 
-void SetupDemoModeOnlineEnrollment(MockEnrollmentLauncher* mock,
-                                   DemoModeSetupResult result) {
+void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result) {
+  std::unique_ptr<MockEnrollmentLauncher> mock =
+      std::make_unique<MockEnrollmentLauncher>();
+  auto* mock_ptr = mock.get();
   EXPECT_CALL(*mock, Setup(ConfigIsAttestation(), _, _));
 
   EXPECT_CALL(*mock, EnrollUsingAttestation())
-      .WillRepeatedly(testing::Invoke([mock, result]() {
+      .WillRepeatedly(testing::Invoke([mock_ptr, result]() {
         switch (result) {
           case DemoModeSetupResult::SUCCESS:
-            mock->status_consumer()->OnDeviceEnrolled();
+            mock_ptr->status_consumer()->OnDeviceEnrolled();
             break;
           case DemoModeSetupResult::ERROR_POWERWASH_REQUIRED:
-            mock->status_consumer()->OnEnrollmentError(
+            mock_ptr->status_consumer()->OnEnrollmentError(
                 policy::EnrollmentStatus::ForLockError(
                     InstallAttributes::LOCK_ALREADY_LOCKED));
             break;
           case DemoModeSetupResult::ERROR_DEFAULT:
-            mock->status_consumer()->OnEnrollmentError(
+            mock_ptr->status_consumer()->OnEnrollmentError(
                 policy::EnrollmentStatus::ForRegistrationError(
                     policy::DeviceManagementStatus::
                         DM_STATUS_TEMPORARY_UNAVAILABLE));
@@ -62,6 +67,7 @@ void SetupDemoModeOnlineEnrollment(MockEnrollmentLauncher* mock,
             NOTREACHED();
         }
       }));
+  EnrollmentLauncher::SetEnrollmentHelperMock(std::move(mock));
 }
 
 bool SetupDummyOfflinePolicyDir(const std::string& account_id,

@@ -10,8 +10,6 @@
 #include "base/files/scoped_temp_dir.h"
 
 namespace ash {
-class MockEnrollmentLauncher;
-
 namespace test {
 
 // Result of Demo Mode setup.
@@ -22,15 +20,17 @@ enum class DemoModeSetupResult {
   ERROR_POWERWASH_REQUIRED
 };
 
-// Helper method that sets expectations on enrollment launcher to ensure that no
+// Helper method that mocks EnrollmentLauncher to ensure that no
 // enrollment attempt was made.
-void SetupDemoModeNoEnrollment(MockEnrollmentLauncher* mock);
+void SetupMockDemoModeNoEnrollmentHelper();
 
-// Helper method that sets expectations on enrollment launcher for online Demo
-// Mode setup. It simulates specified Demo Mode enrollment `result`.
-void SetupDemoModeOnlineEnrollment(
-    MockEnrollmentLauncher* mock_enrollment_process_launcher,
-    DemoModeSetupResult result);
+// Helper method that mocks EnrollmentLauncher for online Demo Mode
+// setup. It simulates specified Demo Mode enrollment `result`.
+void SetupMockDemoModeOnlineEnrollmentHelper(DemoModeSetupResult result);
+
+// Helper method that mocks EnrollmentLauncher for offline Demo Mode
+// setup. It simulates specified Demo Mode enrollment `result`.
+void SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult result);
 
 // Creates fake offline policy directory to be used in tests.
 bool SetupDummyOfflinePolicyDir(const std::string& account_id,

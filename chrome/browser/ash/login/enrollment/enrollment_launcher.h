@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 class GoogleServiceAuthError;
 
@@ -30,16 +31,8 @@ class AttestationFlow;
 // that are not longer needed.
 class EnrollmentLauncher {
  public:
-  class EnrollmentStatusConsumer;
-
   using AttestationFlowFactory = base::RepeatingCallback<
       std::unique_ptr<ash::attestation::AttestationFlow>()>;
-
-  using Factory = base::RepeatingCallback<std::unique_ptr<EnrollmentLauncher>(
-      EnrollmentStatusConsumer*,
-      const policy::EnrollmentConfig&,
-      const std::string&,
-      policy::LicenseType)>;
 
   // Enumeration of the possible errors that can occur during enrollment which
   // are not covered by GoogleServiceAuthError or EnrollmentStatus.
@@ -81,6 +74,10 @@ class EnrollmentLauncher {
       const policy::EnrollmentConfig& enrollment_config,
       const std::string& enrolling_user_domain,
       policy::LicenseType license_type);
+
+  // Sets up a mock object that would be returned by next Create call.
+  // This call passes ownership of `mock`.
+  static void SetEnrollmentHelperMock(std::unique_ptr<EnrollmentLauncher> mock);
 
   EnrollmentLauncher(const EnrollmentLauncher&) = delete;
   EnrollmentLauncher& operator=(const EnrollmentLauncher&) = delete;
@@ -135,6 +132,18 @@ class EnrollmentLauncher {
   virtual void Setup(const policy::EnrollmentConfig& enrollment_config,
                      const std::string& enrolling_user_domain,
                      policy::LicenseType license_type) = 0;
+
+  // This method is used in Create method. `status_consumer` must outlive
+  // `this`.
+  void set_status_consumer(EnrollmentStatusConsumer* status_consumer);
+
+  EnrollmentStatusConsumer* status_consumer() const { return status_consumer_; }
+
+ private:
+  raw_ptr<EnrollmentStatusConsumer, ExperimentalAsh> status_consumer_;
+
+  // If this is not nullptr, then it will be used to as next enrollment helper.
+  static EnrollmentLauncher* mock_enrollment_helper_;
 };
 
 class ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting {
@@ -149,27 +158,6 @@ class ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting {
   ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting& operator=(
       const ScopedAttestationFlowFactoryForEnrollmentOverrideForTesting&) =
       delete;
-};
-
-// Overrides `EnrollmentLauncher::Create` factory method for the lifetime
-// created override.
-class ScopedEnrollmentLauncherFactoryOverrideForTesting {
- public:
-  // When created, `EnrollmentLauncher::Create` returns objects created by
-  // `testing_factory` calls.
-  explicit ScopedEnrollmentLauncherFactoryOverrideForTesting(
-      EnrollmentLauncher::Factory testing_factory);
-  ~ScopedEnrollmentLauncherFactoryOverrideForTesting();
-
-  ScopedEnrollmentLauncherFactoryOverrideForTesting(
-      const ScopedEnrollmentLauncherFactoryOverrideForTesting&) = delete;
-  ScopedEnrollmentLauncherFactoryOverrideForTesting& operator=(
-      const ScopedEnrollmentLauncherFactoryOverrideForTesting&) = delete;
-
-  void Reset(EnrollmentLauncher::Factory testing_factory);
-
-  ScopedEnrollmentLauncherFactoryOverrideForTesting& operator=(
-      EnrollmentLauncher::Factory testing_factory);
 };
 
 }  // namespace ash

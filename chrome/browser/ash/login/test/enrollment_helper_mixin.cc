@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 namespace test {
@@ -23,7 +22,6 @@ using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
-using ::testing::Mock;
 
 MATCHER_P(ConfigModeMatches, mode, "") {
   return arg.mode == mode;
@@ -36,86 +34,99 @@ const char EnrollmentHelperMixin::kTestAuthCode[] = "test_auth_code";
 
 EnrollmentHelperMixin::EnrollmentHelperMixin(
     InProcessBrowserTestMixinHost* host)
-    : InProcessBrowserTestMixin(host),
-      scoped_factory_override_(
-          base::BindRepeating(FakeEnrollmentLauncher::Create,
-                              &mock_enrollment_launcher_)) {}
+    : InProcessBrowserTestMixin(host) {}
 
 EnrollmentHelperMixin::~EnrollmentHelperMixin() = default;
 
+void EnrollmentHelperMixin::SetUpInProcessBrowserTestFixture() {
+  ResetMock();
+}
+
+void EnrollmentHelperMixin::TearDownInProcessBrowserTestFixture() {
+  mock_ = nullptr;
+  EnrollmentLauncher::SetEnrollmentHelperMock(nullptr);
+  // Enrollment screen might have reference to enrollment_launcher_.
+  if (WizardController::default_controller()) {
+    auto* screen_manager =
+        WizardController::default_controller()->screen_manager();
+    if (screen_manager->HasScreen(EnrollmentScreenView::kScreenId)) {
+      EnrollmentScreen::Get(screen_manager)->enrollment_launcher_.reset();
+    }
+  }
+}
+
 void EnrollmentHelperMixin::ResetMock() {
-  Mock::VerifyAndClearExpectations(&mock_enrollment_launcher_);
+  std::unique_ptr<MockEnrollmentLauncher> mock =
+      std::make_unique<MockEnrollmentLauncher>();
+  mock_ = mock.get();
+  EnrollmentLauncher::SetEnrollmentHelperMock(std::move(mock));
 }
 
 void EnrollmentHelperMixin::ExpectNoEnrollment() {
-  EXPECT_CALL(mock_enrollment_launcher_, Setup(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_, Setup(_, _, _)).Times(0);
 }
 
 void EnrollmentHelperMixin::ExpectEnrollmentMode(
     policy::EnrollmentConfig::Mode mode) {
-  EXPECT_CALL(mock_enrollment_launcher_, Setup(ConfigModeMatches(mode), _, _));
+  EXPECT_CALL(*mock_, Setup(ConfigModeMatches(mode), _, _));
 }
 
 void EnrollmentHelperMixin::ExpectEnrollmentModeRepeated(
     policy::EnrollmentConfig::Mode mode) {
-  EXPECT_CALL(mock_enrollment_launcher_, Setup(ConfigModeMatches(mode), _, _))
-      .Times(AtLeast(1));
+  EXPECT_CALL(*mock_, Setup(ConfigModeMatches(mode), _, _)).Times(AtLeast(1));
 }
 
 void EnrollmentHelperMixin::ExpectSuccessfulOAuthEnrollment() {
-  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode))
-      .WillOnce(InvokeWithoutArgs([this]() {
-        mock_enrollment_launcher_.status_consumer()->OnDeviceEnrolled();
-      }));
+  EXPECT_CALL(*mock_, EnrollUsingAuthCode(kTestAuthCode))
+      .WillOnce(InvokeWithoutArgs(
+          [this]() { mock_->status_consumer()->OnDeviceEnrolled(); }));
 }
 
 void EnrollmentHelperMixin::ExpectOAuthEnrollmentError(
     policy::EnrollmentStatus status) {
-  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode))
+  EXPECT_CALL(*mock_, EnrollUsingAuthCode(kTestAuthCode))
       .WillOnce(InvokeWithoutArgs([this, status]() {
-        mock_enrollment_launcher_.status_consumer()->OnEnrollmentError(status);
+        mock_->status_consumer()->OnEnrollmentError(status);
       }));
 }
 
 void EnrollmentHelperMixin::ExpectAttestationEnrollmentSuccess() {
-  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
-      .WillOnce(InvokeWithoutArgs([this]() {
-        mock_enrollment_launcher_.status_consumer()->OnDeviceEnrolled();
-      }));
+  EXPECT_CALL(*mock_, EnrollUsingAttestation())
+      .WillOnce(InvokeWithoutArgs(
+          [this]() { mock_->status_consumer()->OnDeviceEnrolled(); }));
 }
 
 void EnrollmentHelperMixin::ExpectAttestationEnrollmentError(
     policy::EnrollmentStatus status) {
-  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
+  EXPECT_CALL(*mock_, EnrollUsingAttestation())
       .WillOnce(InvokeWithoutArgs([this, status]() {
-        mock_enrollment_launcher_.status_consumer()->OnEnrollmentError(status);
+        mock_->status_consumer()->OnEnrollmentError(status);
       }));
 }
 
 void EnrollmentHelperMixin::ExpectAttestationEnrollmentErrorRepeated(
     policy::EnrollmentStatus status) {
-  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAttestation())
+  EXPECT_CALL(*mock_, EnrollUsingAttestation())
       .Times(AtLeast(1))
       .WillRepeatedly(InvokeWithoutArgs([this, status]() {
-        mock_enrollment_launcher_.status_consumer()->OnEnrollmentError(status);
+        mock_->status_consumer()->OnEnrollmentError(status);
       }));
 }
 
 void EnrollmentHelperMixin::SetupClearAuth() {
-  ON_CALL(mock_enrollment_launcher_, ClearAuth(_))
+  ON_CALL(*mock_, ClearAuth(_))
       .WillByDefault(Invoke(
           [](base::OnceClosure callback) { std::move(callback).Run(); }));
 }
 
 void EnrollmentHelperMixin::ExpectEnrollmentCredentials() {
-  EXPECT_CALL(mock_enrollment_launcher_, EnrollUsingAuthCode(kTestAuthCode));
+  EXPECT_CALL(*mock_, EnrollUsingAuthCode(kTestAuthCode));
 }
 
 void EnrollmentHelperMixin::DisableAttributePromptUpdate() {
-  EXPECT_CALL(mock_enrollment_launcher_, GetDeviceAttributeUpdatePermission())
+  EXPECT_CALL(*mock_, GetDeviceAttributeUpdatePermission())
       .WillOnce(InvokeWithoutArgs([this]() {
-        mock_enrollment_launcher_.status_consumer()
-            ->OnDeviceAttributeUpdatePermission(false);
+        mock_->status_consumer()->OnDeviceAttributeUpdatePermission(false);
       }));
 }
 
@@ -123,18 +134,15 @@ void EnrollmentHelperMixin::ExpectAttributePromptUpdate(
     const std::string& asset_id,
     const std::string& location) {
   // Causes the attribute-prompt flow to activate.
-  ON_CALL(mock_enrollment_launcher_, GetDeviceAttributeUpdatePermission())
+  ON_CALL(*mock_, GetDeviceAttributeUpdatePermission())
       .WillByDefault(InvokeWithoutArgs([this]() {
-        mock_enrollment_launcher_.status_consumer()
-            ->OnDeviceAttributeUpdatePermission(true);
+        mock_->status_consumer()->OnDeviceAttributeUpdatePermission(true);
       }));
 
   // Ensures we receive the updates attributes.
-  EXPECT_CALL(mock_enrollment_launcher_,
-              UpdateDeviceAttributes(asset_id, location))
+  EXPECT_CALL(*mock_, UpdateDeviceAttributes(asset_id, location))
       .WillOnce(InvokeWithoutArgs([this]() {
-        mock_enrollment_launcher_.status_consumer()
-            ->OnDeviceAttributeUploadCompleted(true);
+        mock_->status_consumer()->OnDeviceAttributeUploadCompleted(true);
       }));
 }
 
