@@ -256,6 +256,12 @@ bool StructTraits<blink::mojom::EventDataView,
       }
     }
 
+    if (gesture_data->tap_down_data &&
+        type == blink::WebInputEvent::Type::kGestureTapDown) {
+      gesture_event->data.tap_down.tap_down_count =
+          gesture_data->tap_down_data->tap_down_count;
+    }
+
     if (gesture_data->fling_data) {
       switch (type) {
         default:
@@ -447,6 +453,8 @@ StructTraits<blink::mojom::EventDataView,
       gesture_data->contact_size =
           gfx::Size(gesture_event->data.tap_down.width,
                     gesture_event->data.tap_down.height);
+      gesture_data->tap_down_data = blink::mojom::TapDownData::New(
+          gesture_event->data.tap_down.tap_down_count);
       break;
     case blink::WebInputEvent::Type::kGestureShowPress:
       gesture_data->contact_size =

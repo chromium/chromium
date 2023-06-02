@@ -32,7 +32,7 @@ bool LongPressDragSelector::WillHandleTouchEvent(const MotionEvent& event) {
       touch_down_position_.SetPoint(event.GetX(), event.GetY());
       touch_down_time_ = event.GetEventTime();
       has_longpress_drag_start_anchor_ = false;
-      SetState(LONGPRESS_PENDING);
+      SetState(INITIATING_GESTURE_PENDING);
       return false;
 
     case MotionEvent::Action::UP:
@@ -117,11 +117,25 @@ void LongPressDragSelector::OnLongPressEvent(base::TimeTicks event_time,
   // observed touch stream. We only know that the gesture sequence is downstream
   // from the touch sequence. Using a time/distance heuristic helps ensure that
   // the observed longpress corresponds to the active touch sequence.
-  if (state_ == LONGPRESS_PENDING &&
+  if (state_ == INITIATING_GESTURE_PENDING &&
       // Ensure the down event occurs *before* the longpress event. Use a
       // small time epsilon to account for floating point time conversion.
       (touch_down_time_ < event_time + base::Microseconds(10)) &&
       client_->IsWithinTapSlop(touch_down_position_ - position)) {
+    SetState(SELECTION_PENDING);
+  }
+}
+
+void LongPressDragSelector::OnDoublePressEvent(base::TimeTicks event_time,
+                                               const gfx::PointF& position) {
+  // Handle a double press the same way as a long press.
+  if (state_ == INITIATING_GESTURE_PENDING &&
+      // Check event time and position to ensure that the observed double
+      // press corresponds to the active touch sequence. It should be ok to
+      // check the exact times and positions here, since a tap down gesture
+      // event is created directly from the corresponding down motion event when
+      // the gesture is initially detected.
+      touch_down_time_ == event_time && touch_down_position_ == position) {
     SetState(SELECTION_PENDING);
   }
 }

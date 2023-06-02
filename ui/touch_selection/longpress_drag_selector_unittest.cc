@@ -122,6 +122,53 @@ TEST_F(LongPressDragSelectorTest, BasicDrag) {
   EXPECT_TRUE(GetAndResetActiveStateChanged());
 }
 
+TEST_F(LongPressDragSelectorTest, DoublePressDrag) {
+  LongPressDragSelector selector(this);
+  MockMotionEvent event;
+
+  // Start a touch sequence.
+  EXPECT_FALSE(selector.WillHandleTouchEvent(event.PressPoint(0, 0)));
+  EXPECT_FALSE(GetAndResetActiveStateChanged());
+
+  // Activate a double press triggered selection.
+  constexpr gfx::PointF selection_start(0, 10);
+  constexpr gfx::PointF selection_end(10, 10);
+  selector.OnDoublePressEvent(event.GetEventTime(), gfx::PointF());
+  EXPECT_FALSE(GetAndResetActiveStateChanged());
+
+  // Motion should not be consumed until a selection is detected.
+  EXPECT_FALSE(selector.WillHandleTouchEvent(event.MovePoint(0, 0, 0)));
+  SetSelection(selection_start, selection_end);
+  selector.OnSelectionActivated();
+  EXPECT_TRUE(GetAndResetActiveStateChanged());
+  EXPECT_FALSE(IsDragging());
+
+  // Initiate drag motion.  Note that the first move event after activation is
+  // used to initialize the drag start anchor.
+  EXPECT_TRUE(selector.WillHandleTouchEvent(event.MovePoint(0, 0, 0)));
+  EXPECT_FALSE(IsDragging());
+
+  // The first slop exceeding motion will start the drag. As the motion is
+  // downward, the end selection point should be moved.
+  EXPECT_TRUE(selector.WillHandleTouchEvent(event.MovePoint(0, 0, kSlop)));
+  EXPECT_TRUE(IsDragging());
+  EXPECT_EQ(selection_end, DragPosition());
+
+  // Subsequent motion will extend the selection.
+  EXPECT_TRUE(selector.WillHandleTouchEvent(event.MovePoint(0, 0, kSlop * 2)));
+  EXPECT_TRUE(IsDragging());
+  EXPECT_EQ(selection_end + gfx::Vector2dF(0, kSlop), DragPosition());
+  EXPECT_TRUE(selector.WillHandleTouchEvent(event.MovePoint(0, 0, kSlop * 3)));
+  EXPECT_TRUE(IsDragging());
+  EXPECT_EQ(selection_end + gfx::Vector2dF(0, kSlop * 2), DragPosition());
+
+  // Release the touch sequence, ending the drag. The selector will never
+  // consume the start/end events, only move events after a double press.
+  EXPECT_FALSE(selector.WillHandleTouchEvent(event.ReleasePoint()));
+  EXPECT_FALSE(IsDragging());
+  EXPECT_TRUE(GetAndResetActiveStateChanged());
+}
+
 TEST_F(LongPressDragSelectorTest, BasicReverseDrag) {
   LongPressDragSelector selector(this);
   MockMotionEvent event;

@@ -200,6 +200,13 @@ void TouchSelectionController::HandleLongPressEvent(
   response_pending_input_event_ = LONG_PRESS;
 }
 
+void TouchSelectionController::HandleDoublePressEvent(
+    base::TimeTicks event_time,
+    const gfx::PointF& location) {
+  longpress_drag_selector_.OnDoublePressEvent(event_time, location);
+  response_pending_input_event_ = LONG_PRESS;
+}
+
 void TouchSelectionController::OnScrollBeginEvent() {
   // When there is an active selection, if the user performs a long-press that
   // does not trigger a new selection (e.g. a long-press on an empty area) and

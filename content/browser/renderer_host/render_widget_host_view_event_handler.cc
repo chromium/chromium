@@ -675,6 +675,12 @@ void RenderWidgetHostViewEventHandler::HandleGestureForTouchSelection(
       delegate_->selection_controller()->HandleLongPressEvent(
           event->time_stamp(), event->location_f());
       break;
+    case ui::ET_GESTURE_TAP_DOWN:
+      if (event->details().tap_down_count() == 2) {
+        delegate_->selection_controller()->HandleDoublePressEvent(
+            event->time_stamp(), event->location_f());
+      }
+      break;
     case ui::ET_GESTURE_TAP:
       delegate_->selection_controller()->HandleTapEvent(
           event->location_f(), event->details().tap_count());

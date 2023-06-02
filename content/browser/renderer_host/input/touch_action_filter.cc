@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/blink/blink_features.h"
 
 using blink::WebInputEvent;
@@ -258,6 +259,9 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
 
     case WebInputEvent::Type::kGestureTapDown:
       gesture_sequence_in_progress_ = true;
+      allow_cursor_control_ =
+          !::features::IsTouchTextEditingRedesignEnabled() ||
+          gesture_event->data.tap_down.tap_down_count <= 1;
       if (allowed_touch_action_.has_value())
         gesture_sequence_.append("AY");
       else

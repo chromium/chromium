@@ -229,6 +229,11 @@ int WebGestureEvent::TapCount() const {
   return data.tap.tap_count;
 }
 
+int WebGestureEvent::TapDownCount() const {
+  DCHECK_EQ(type_, WebInputEvent::Type::kGestureTapDown);
+  return data.tap_down.tap_down_count;
+}
+
 void WebGestureEvent::ApplyTouchAdjustment(
     const gfx::PointF& root_frame_coords) {
   // Update the window-relative position of the event so that the node that

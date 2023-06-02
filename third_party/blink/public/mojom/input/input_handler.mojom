@@ -131,6 +131,10 @@ struct TapData {
   bool needs_wheel_event;
 };
 
+struct TapDownData {
+  int32 tap_down_count;
+};
+
 struct GestureData {
   gfx.mojom.PointF screen_position;
   gfx.mojom.PointF widget_position;
@@ -145,6 +149,7 @@ struct GestureData {
   PinchUpdateData? pinch_update_data;
   PinchEndData? pinch_end_data;
   TapData? tap_data;
+  TapDownData? tap_down_data;
   FlingData? fling_data;
 };
 

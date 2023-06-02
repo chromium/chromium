@@ -929,6 +929,85 @@ TEST_F(EventHandlerTest, NonEmptyTextfieldInsertionOnLongPress) {
   ASSERT_TRUE(Selection().IsHandleVisible());
 }
 
+TEST_F(EventHandlerTest, SelectionOnDoublePress) {
+  ScopedTouchTextEditingRedesignForTest touch_text_editing_redesign(true);
+  SetHtmlInnerHTML(
+      R"HTML(
+        <div id='targetdiv' style='font-size:500%;width:50px;'>
+        <p id='target' contenteditable>Test selection</p>
+        </div>
+      )HTML");
+
+  Element* element = GetDocument().getElementById("target");
+  gfx::PointF tap_point = gfx::PointF(element->BoundsInWidget().CenterPoint());
+  TapDownEventBuilder single_tap_down_event(tap_point);
+  single_tap_down_event.data.tap_down.tap_down_count = 1;
+  TapEventBuilder single_tap_event(tap_point, 1);
+  TapDownEventBuilder double_tap_down_event(tap_point);
+  double_tap_down_event.data.tap_down.tap_down_count = 2;
+  TapEventBuilder double_tap_event(tap_point, 2);
+
+  // Double press should select nearest word.
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      single_tap_down_event);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      single_tap_event);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      double_tap_down_event);
+  EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
+  EXPECT_EQ(Selection().SelectedText(), "selection");
+
+  // Releasing double tap should keep the selection.
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      double_tap_event);
+  EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
+  EXPECT_EQ(Selection().SelectedText(), "selection");
+}
+
+TEST_F(EventHandlerTest, SelectionOnDoublePressPreventDefaultMousePress) {
+  ScopedTouchTextEditingRedesignForTest touch_text_editing_redesign(true);
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetHtmlInnerHTML(
+      R"HTML(
+        <div id='targetdiv' style='font-size:500%;width:50px;'>
+        <p id='target' contenteditable>Test selection</p>
+        </div>
+      )HTML");
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->setInnerHTML(
+      R"HTML(
+        let targetDiv = document.getElementById('targetdiv');
+        targetDiv.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+        });
+      )HTML");
+  GetDocument().body()->AppendChild(script);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Element* element = GetDocument().getElementById("target");
+  gfx::PointF tap_point = gfx::PointF(element->BoundsInWidget().CenterPoint());
+  TapDownEventBuilder single_tap_down_event(tap_point);
+  single_tap_down_event.data.tap_down.tap_down_count = 1;
+  TapEventBuilder single_tap_event(tap_point, 1);
+  TapDownEventBuilder double_tap_down_event(tap_point);
+  double_tap_down_event.data.tap_down.tap_down_count = 2;
+  TapEventBuilder double_tap_event(tap_point, 2);
+
+  // Double press should not select anything.
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      single_tap_down_event);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      single_tap_event);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      double_tap_down_event);
+  EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsNone());
+
+  // Releasing double tap also should not select anything.
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      double_tap_event);
+  EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsNone());
+}
+
 TEST_F(EventHandlerTest, ClearHandleAfterTap) {
   SetHtmlInnerHTML("<textarea cols=50  rows=10>Enter text</textarea>");
 

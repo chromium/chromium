@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<script src='../../../../resources/gesture-util.js'></script>
+<script src='../../../../resources/testharness.js'></script>
+<script src='../../../../resources/testharnessreport.js'></script>
+
+<style>
+div {
+  height: 30px;
+  width: 500px;
+}
+</style>
+
+<div id='default'>
+<p contenteditable>
+This text can be selected.
+</p>
+</div>
+
+<div id='preventdefaultpointerdown'>
+<p contenteditable>
+Canceling pointerdown should prevent double-tap from selecting text.
+</p>
+</div>
+
+<div id='preventdefaulttouchstart'>
+<p contenteditable>
+Canceling touchstart should also prevent double-tap from selecting text.
+</p>
+</div>
+
+<div id='preventdefaultmousedown'>
+<p contenteditable>
+Canceling mousedown should also prevent double-tap from selecting text.
+</p>
+</div>
+
+<script>
+document.getElementById("preventdefaultpointerdown").addEventListener("pointerdown", function(e) {
+  e.preventDefault();
+});
+document.getElementById("preventdefaulttouchstart").addEventListener("touchstart", function(e) {
+  e.preventDefault();
+});
+document.getElementById("preventdefaultmousedown").addEventListener("mousedown", function(e) {
+  e.preventDefault();
+});
+
+let selection_changed = false;
+document.addEventListener("selectionchange", e => {
+  selection_changed = true;
+});
+
+// Test that editable text can be selected by double-tapping.
+promise_test(async () => {
+  window.getSelection().empty();
+  await waitForCompositorCommit();
+  selection_changed = false;
+
+  var rect = document.getElementById("default").getBoundingClientRect();
+  await doubleTapAt(rect.left + 10, rect.top + 10);
+  await conditionHolds(
+      () => { return window.getSelection().type != "None"; },
+      "Double-tap did not select anything.");
+
+  assert_true(selection_changed);
+}, "double-tap selection");
+
+// Test that double-tap selection can be prevented using preventDefault on pointerdown.
+promise_test(async () => {
+  window.getSelection().empty();
+  await waitForCompositorCommit();
+  selection_changed = false;
+
+  var rect = document.getElementById("preventdefaultpointerdown").getBoundingClientRect();
+  await doubleTapAt(rect.left + 10, rect.top + 10);
+
+  assert_false(selection_changed);
+  assert_equals(window.getSelection().type, "None");
+}, "preventDefault pointerdown prevents double-tap selection");
+
+// Test that double-tap selection can be prevented using preventDefault on touchstart.
+promise_test(async () => {
+  window.getSelection().empty();
+  await waitForCompositorCommit();
+  selection_changed = false;
+
+  var rect = document.getElementById("preventdefaulttouchstart").getBoundingClientRect();
+  await doubleTapAt(rect.left + 10, rect.top + 10);
+
+  assert_false(selection_changed);
+  assert_equals(window.getSelection().type, "None");
+}, "preventDefault touchstart prevents double-tap selection");
+
+// Test that double-tap selection can be prevented using preventDefault on mousedown.
+promise_test(async () => {
+  window.getSelection().empty();
+  await waitForCompositorCommit();
+  selection_changed = false;
+
+  var rect = document.getElementById("preventdefaultmousedown").getBoundingClientRect();
+  await doubleTapAt(rect.left + 10, rect.top + 10);
+
+  assert_false(selection_changed);
+  assert_equals(window.getSelection().type, "None");
+}, "preventDefault mousedown prevents double-tap selection");
+</script>
