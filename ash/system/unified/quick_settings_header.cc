@@ -35,7 +35,7 @@ constexpr int kButtonSpacing = 8;
 constexpr gfx::Size kNarrowButtonSize(180, 32);
 
 // Header button size when the button is wide (e.g. one column layout).
-constexpr gfx::Size kWideButtonSize(468, 32);
+constexpr gfx::Size kWideButtonSize(408, 32);
 
 }  // namespace
 
@@ -109,8 +109,12 @@ void QuickSettingsHeader::UpdateVisibilityAndLayout() {
 
   // Use custom narrow layouts when two columns are showing.
   enterprise_managed_view_->SetNarrowLayout(two_columns);
-  if (channel_view_)
+  if (channel_view_) {
     channel_view_->SetNarrowLayout(two_columns);
+  }
+  if (eol_notice_) {
+    eol_notice_->SetNarrowLayout(two_columns);
+  }
 }
 
 BEGIN_METADATA(QuickSettingsHeader, views::View)

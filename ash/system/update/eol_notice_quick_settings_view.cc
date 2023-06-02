@@ -34,6 +34,8 @@ namespace ash {
 
 namespace {
 
+constexpr float kButtonStrokeWidth = 1.0f;
+
 SkColor GetBackgroundColor() {
   DCHECK(!features::IsQsRevampEnabled());
   return DarkLightModeController::Get()->IsDarkModeEnabled()
@@ -66,14 +68,15 @@ EolNoticeQuickSettingsView::EolNoticeQuickSettingsView()
 
             Shell::Get()->system_tray_model()->client()->ShowEolInfoPage();
           }),
-          l10n_util::GetStringUTF16(IDS_ASH_QUICK_SETTINGS_BUBBLE_EOL_NOTICE)) {
+          l10n_util::GetStringUTF16(IDS_ASH_QUICK_SETTINGS_BUBBLE_EOL_NOTICE)),
+      is_qs_revamp_enabled_(features::IsQsRevampEnabled()) {
   SetID(VIEW_ID_QS_EOL_NOTICE_BUTTON);
   SetMinSize(gfx::Size(0, GetButtonHeight()));
-  SetImageLabelSpacing(2);
+  SetImageLabelSpacing(is_qs_revamp_enabled_ ? 8 : 2);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
-  if (features::IsQsRevampEnabled()) {
+  if (is_qs_revamp_enabled_) {
     views::InkDrop::Get(this)->SetBaseColorId(kColorAshInkDropOpaqueColor);
     SetImageModel(views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
@@ -94,7 +97,7 @@ EolNoticeQuickSettingsView::EolNoticeQuickSettingsView()
 
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetColorId(
-      features::IsQsRevampEnabled()
+      is_qs_revamp_enabled_
           ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
           : ui::kColorAshFocusRing);
 
@@ -103,10 +106,16 @@ EolNoticeQuickSettingsView::EolNoticeQuickSettingsView()
 
 EolNoticeQuickSettingsView::~EolNoticeQuickSettingsView() = default;
 
+void EolNoticeQuickSettingsView::SetNarrowLayout(bool narrow) {
+  label()->SetText(l10n_util::GetStringUTF16(
+      narrow ? IDS_ASH_QUICK_SETTINGS_BUBBLE_EOL_NOTICE_SHORT
+             : IDS_ASH_QUICK_SETTINGS_BUBBLE_EOL_NOTICE));
+}
+
 void EolNoticeQuickSettingsView::OnThemeChanged() {
   views::LabelButton::OnThemeChanged();
 
-  if (!features::IsQsRevampEnabled()) {
+  if (!is_qs_revamp_enabled_) {
     const SkColor bg_color = GetBackgroundColor();
     views::InkDrop::Get(this)->SetBaseColor(bg_color);
 
@@ -120,18 +129,20 @@ void EolNoticeQuickSettingsView::OnThemeChanged() {
 
 void EolNoticeQuickSettingsView::PaintButtonContents(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
-  if (features::IsQsRevampEnabled()) {
+  gfx::RectF bounds(GetLocalBounds());
+  if (is_qs_revamp_enabled_) {
     flags.setColor(
         GetColorProvider()->GetColor(cros_tokens::kCrosSysSeparator));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setStrokeWidth(kButtonStrokeWidth);
+    bounds.Inset(kButtonStrokeWidth / 2.0f);
   } else {
     flags.setColor(GetBackgroundColor());
     flags.setStyle(cc::PaintFlags::kFill_Style);
   }
   flags.setAntiAlias(true);
-  canvas->DrawPath(
-      SkPath().addRoundRect(gfx::RectToSkRect(GetLocalBounds()), 16, 16),
-      flags);
+  canvas->DrawPath(SkPath().addRoundRect(gfx::RectFToSkRect(bounds), 16, 16),
+                   flags);
 }
 
 }  // namespace ash
