@@ -142,6 +142,7 @@ TEST_F(LanguagePackManagerTest, InstallSuccessTest) {
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
   EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(
@@ -227,6 +228,7 @@ TEST_F(LanguagePackManagerTest, GetPackStateSuccessTest) {
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::INSTALLED);
   EXPECT_EQ(pack_result_.path, "/path");
+  EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramGetPackStateFeatureId,
@@ -301,6 +303,7 @@ TEST_F(LanguagePackManagerTest, RemovePackSuccessTest) {
 
   EXPECT_EQ(pack_result_.operation_error, dlcservice::kErrorNone);
   EXPECT_EQ(pack_result_.pack_state, PackResult::NOT_INSTALLED);
+  EXPECT_EQ(pack_result_.language_code, kSupportedLocale);
 
   // Test UMA metrics: post-condition.
   histogram_tester.ExpectBucketCount(kHistogramUninstallCompleteSuccess,

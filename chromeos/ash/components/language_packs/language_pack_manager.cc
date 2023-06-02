@@ -188,9 +188,11 @@ void InstallDlc(const std::string& dlc_id,
 
 void OnInstallDlcComplete(OnInstallCompleteCallback callback,
                           const std::string& feature_id,
+                          const std::string& locale,
                           const DlcserviceClient::InstallResult& dlc_result) {
   PackResult result;
   result.operation_error = dlc_result.error;
+  result.language_code = locale;
 
   const bool success = dlc_result.error == dlcservice::kErrorNone;
   if (success) {
@@ -215,9 +217,11 @@ void OnInstallDlcComplete(OnInstallCompleteCallback callback,
 }
 
 void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
+                            const std::string& locale,
                             const std::string& err) {
   PackResult result;
   result.operation_error = err;
+  result.language_code = locale;
 
   const bool success = err == dlcservice::kErrorNone;
   if (success) {
@@ -233,15 +237,18 @@ void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
 }
 
 void OnGetDlcState(GetPackStateCallback callback,
+                   const std::string& locale,
                    const std::string& err,
                    const dlcservice::DlcState& dlc_state) {
   PackResult result;
+
   if (err == dlcservice::kErrorNone) {
     result = ConvertDlcStateToPackResult(dlc_state);
   } else {
     result.pack_state = PackResult::UNKNOWN;
   }
 
+  result.language_code = locale;
   result.operation_error = err;
 
   std::move(callback).Run(result);
@@ -285,7 +292,7 @@ void LanguagePackManager::InstallPack(const std::string& feature_id,
   }
 
   InstallDlc(*dlc_id, base::BindOnce(&OnInstallDlcComplete, std::move(callback),
-                                     feature_id));
+                                     feature_id, locale));
 }
 
 void LanguagePackManager::GetPackState(const std::string& feature_id,
@@ -307,7 +314,7 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
                                 GetFeatureIdValueForUma(feature_id));
 
   DlcserviceClient::Get()->GetDlcState(
-      *dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback)));
+      *dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback), locale));
 }
 
 void LanguagePackManager::RemovePack(const std::string& feature_id,
@@ -324,7 +331,8 @@ void LanguagePackManager::RemovePack(const std::string& feature_id,
   }
 
   DlcserviceClient::Get()->Uninstall(
-      *dlc_id, base::BindOnce(&OnUninstallDlcComplete, std::move(callback)));
+      *dlc_id,
+      base::BindOnce(&OnUninstallDlcComplete, std::move(callback), locale));
 }
 
 void LanguagePackManager::InstallBasePack(
@@ -344,7 +352,7 @@ void LanguagePackManager::InstallBasePack(
       GetFeatureIdValueForUma(feature_id));
 
   InstallDlc(*dlc_id, base::BindOnce(&OnInstallDlcComplete, std::move(callback),
-                                     feature_id));
+                                     feature_id, ""));
 }
 
 void LanguagePackManager::UpdatePacksForOobe(const std::string& locale) {
@@ -362,7 +370,7 @@ void LanguagePackManager::UpdatePacksForOobe(const std::string& locale) {
 
   if (dlc_id) {
     InstallDlc(*dlc_id, base::BindOnce(&OnInstallDlcComplete, base::DoNothing(),
-                                       kTtsFeatureId));
+                                       kTtsFeatureId, locale));
   }
 }
 
