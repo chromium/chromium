@@ -80,6 +80,16 @@ export class SettingsGoogleDriveSubpageElement extends
        * is updated.
        */
       totalPinnedSize_: String,
+
+      /**
+       * Ensures the showSpinner variable is bound to the parent element and
+       * updates are propagated as the spinner element is in the parent element.
+       */
+      showSpinner: {
+        type: Boolean,
+        notify: true,
+        value: false,
+      },
     };
   }
 
@@ -123,6 +133,11 @@ export class SettingsGoogleDriveSubpageElement extends
    * Keeps track of the last requested total pinned size.
    */
   private totalPinnedSize_: string|null = null;
+
+  /**
+   * Whether to show the spinner in the top right of the settings page.
+   */
+  private showSpinner: boolean = false;
 
   /**
    * Returns the browser proxy page handler (to invoke functions).
@@ -193,6 +208,16 @@ export class SettingsGoogleDriveSubpageElement extends
         status.requiredSpace !== this.bulkPinningStatus_?.requiredSpace) {
       this.bulkPinningStatus_ = status;
     }
+
+    let requiredSpace: number;
+    try {
+      requiredSpace = parseInt(status?.requiredSpace);
+    } catch (e) {
+      console.error('Could not parse required space', e);
+      return;
+    }
+
+    this.showSpinner = (status?.stage === Stage.kSyncing && requiredSpace > 0);
   }
 
   /**

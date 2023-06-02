@@ -45,8 +45,12 @@
     </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/googleDrive">
-    <os-settings-subpage page-title="$i18n{googleDriveLabel}">
-      <settings-google-drive-subpage prefs="{{prefs}}">
+    <os-settings-subpage
+        page-title="$i18n{googleDriveLabel}"
+        show-spinner="[[showSpinner_]]">
+      <settings-google-drive-subpage
+          prefs="{{prefs}}"
+          show-spinner="{{showSpinner_}}">
       </settings-google-drive-subpage>
     </os-settings-subpage>
   </template>
