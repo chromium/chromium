@@ -280,6 +280,8 @@ source_set("web_applications") {
     sources += [
       "chromeos_web_app_experiments.cc",
       "chromeos_web_app_experiments.h",
+      "isolated_web_apps/isolated_web_app_downloader.cc",
+      "isolated_web_apps/isolated_web_app_downloader.h",
       "isolated_web_apps/policy/isolated_web_app_external_install_options.cc",
       "isolated_web_apps/policy/isolated_web_app_external_install_options.h",
       "isolated_web_apps/policy/isolated_web_app_policy_constants.cc",
@@ -711,6 +713,7 @@ source_set("web_applications_unit_tests") {
 
   if (is_chromeos) {
     sources += [
+      "isolated_web_apps/isolated_web_app_downloader_unittest.cc",
       "isolated_web_apps/policy/isolated_web_app_external_install_options_unittest.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_manager_unittest.cc",
       "isolated_web_apps/update_manifest/update_manifest_fetcher_unittest.cc",

@@ -18,15 +18,16 @@
 #include "base/version.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -251,67 +252,62 @@ void IsolatedWebAppPolicyManager::OnIwaDirectoryCreated(
 }
 
 void IsolatedWebAppPolicyManager::DownloadWebBundle() {
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("iwa_policy_signed_web_bundle", R"(
-  semantics {
-    sender: "Isolated Web App Signed Web Bundle Downloader"
-    description:
-      "Downloads the Signed Web Bundle of the Isolated Web App (IWA) "
-      "by the URL taken form the Update Manifest."
-    trigger:
-      "Installing/update of every IWA (including policy-based installs) "
-      "require in a Signed Web Bundle that we download here."
-    data:
-      "This request does not send any data. It just downloads a Web Bundle."
-    destination: OTHER
-    internal {
-      contacts {
-        email: "peletskyi@google.com"
+  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
+      net::DefinePartialNetworkTrafficAnnotation("iwa_policy_signed_web_bundle",
+                                                 "iwa_bundle_downloader",
+                                                 R"(
+    semantics {
+      sender: "Isolated Web App Policy Manager"
+      description:
+        "Downloads the Signed Web Bundle of an Isolated Web App (IWA) from the "
+        "URL read from an Update Manifest that is provided in an enterprise "
+        "policy by the administrator. The Signed Web Bundle contains code and "
+        "other resources of the IWA."
+      trigger:
+        "An Isolated Web App is installed from an enterprise policy."
+      # TODO(cmfcmf): `internal` and `user_data` is duplicated in
+      # `IsolatedWebAppDownloader::DownloadSignedWebBundle`, but the
+      # traffic annotator script complains that it is missing if it is not also
+      # present here.
+      internal {
+        contacts {
+          email: "cmfcmf@google.com"
+        }
       }
-    }
-    user_data {
-      type: NONE
-    }
-    last_reviewed: "2023-01-09"
-  }
-  policy {
-    cookies_allowed: NO
-    setting: "This feature cannot be disabled in settings."
-    chrome_policy {
-      IsolatedWebAppInstallForceList {
-        IsolatedWebAppInstallForceList: ""
+      user_data {
+        type: NONE
       }
+      last_reviewed: "2023-06-01"
     }
-  })");
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = current_app_->web_bundle_url();
-  // Cookies are not allowed.
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-  std::unique_ptr<network::SimpleURLLoader> simple_loader =
-      network::SimpleURLLoader::Create(std::move(resource_request),
-                                       std::move(traffic_annotation));
-
-  simple_loader->SetRetryOptions(
-      /* max_retries=*/3,
-      network::SimpleURLLoader::RETRY_ON_5XX |
-          network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
-
-  network::SimpleURLLoader* const simple_loader_ptr = simple_loader.get();
-  base::OnceCallback<void(base::FilePath path)> cb =
-      base::BindOnce(&IsolatedWebAppPolicyManager::OnWebBundleDownloaded,
-                     weak_factory_.GetWeakPtr(), std::move(simple_loader));
+    policy {
+      setting: "This feature cannot be disabled in settings."
+      chrome_policy {
+        IsolatedWebAppInstallForceList {
+          IsolatedWebAppInstallForceList: ""
+        }
+      }
+    })");
 
   base::FilePath swbn_path =
       current_app_->app_directory().Append(kMainSignedWebBundleFileName);
-  simple_loader_ptr->DownloadToFile(url_loader_factory_.get(), std::move(cb),
-                                    swbn_path);
+
+  current_bundle_downloader_ =
+      IsolatedWebAppDownloader::CreateAndStartDownloading(
+          current_app_->web_bundle_url(), swbn_path,
+          std::move(partial_traffic_annotation), url_loader_factory_,
+          base::BindOnce(
+              &IsolatedWebAppPolicyManager::OnWebBundleDownloaded,
+              // If `this` is deleted, `current_bundle_downloader_` is deleted
+              // as well, and thus the callback will never run.
+              base::Unretained(this), swbn_path));
 }
 
 void IsolatedWebAppPolicyManager::OnWebBundleDownloaded(
-    std::unique_ptr<network::SimpleURLLoader> simple_loader,
-    base::FilePath path) {
-  if (path.empty()) {
+    const base::FilePath& path,
+    int32_t net_error) {
+  current_bundle_downloader_.reset();
+
+  if (net_error != net::OK) {
     SetResultAndContinue(
         EphemeralAppInstallResult::kErrorCantDownloadWebBundle);
     return;

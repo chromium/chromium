@@ -23,12 +23,12 @@
 
 namespace network {
 class SharedURLLoaderFactory;
-class SimpleURLLoader;
 }  // namespace network
 
 namespace web_app {
 
 class UpdateManifest;
+class IsolatedWebAppDownloader;
 
 // This component is responsible for installing, uninstalling, updating etc.
 // of the policy installed IWAs.
@@ -119,9 +119,7 @@ class IsolatedWebAppPolicyManager {
 
   // Downloading of the Signed Web Bundle.
   void DownloadWebBundle();
-  void OnWebBundleDownloaded(
-      std::unique_ptr<network::SimpleURLLoader> simple_loader,
-      base::FilePath path);
+  void OnWebBundleDownloaded(const base::FilePath& path, int32_t net_error);
 
   // Installing of the IWA using the downloaded Signed Web Bundle.
   void InstallIwa(base::FilePath path);
@@ -143,6 +141,7 @@ class IsolatedWebAppPolicyManager {
       ephemeral_iwa_install_options_;
   std::vector<IsolatedWebAppExternalInstallOptions>::iterator current_app_;
   std::unique_ptr<UpdateManifestFetcher> current_update_manifest_fetcher_;
+  std::unique_ptr<IsolatedWebAppDownloader> current_bundle_downloader_;
 
   const base::FilePath installation_dir_;
 
