@@ -5,62 +5,19 @@
 # found in the LICENSE file.
 """Contains helper class for processing javac output."""
 
-import dataclasses
 import os
 import pathlib
 import re
 import sys
 import traceback
-from typing import List
 
 from util import build_utils
+from util import dep_utils
 
 sys.path.insert(
     0,
     os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party', 'colorama', 'src'))
 import colorama
-sys.path.insert(
-    0,
-    os.path.join(build_utils.DIR_SOURCE_ROOT, 'tools', 'android',
-                 'modularization', 'convenience'))
-import lookup_dep
-
-
-def ReplaceGmsPackageIfNeeded(target_name: str) -> str:
-  if target_name.startswith(
-      ('//third_party/android_deps:google_play_services_',
-       '//clank/third_party/google3:google_play_services_')):
-    return f'$google_play_services_package:{target_name.split(":")[1]}'
-  return target_name
-
-
-def _DisambiguateDeps(class_entries: List[lookup_dep.ClassEntry]):
-  def filter_if_not_empty(entries, filter_func):
-    filtered_entries = [e for e in entries if filter_func(e)]
-    return filtered_entries or entries
-
-  # When some deps are preferred, ignore all other potential deps.
-  class_entries = filter_if_not_empty(class_entries, lambda e: e.preferred_dep)
-
-  # E.g. javax_annotation_jsr250_api_java.
-  class_entries = filter_if_not_empty(class_entries,
-                                      lambda e: 'jsr' in e.target)
-
-  # Avoid suggesting subtargets when regular targets exist.
-  class_entries = filter_if_not_empty(class_entries,
-                                      lambda e: '__' not in e.target)
-
-  # Swap out GMS package names if needed.
-  class_entries = [
-      dataclasses.replace(e, target=ReplaceGmsPackageIfNeeded(e.target))
-      for e in class_entries
-  ]
-
-  # Convert to dict and then use list to get the keys back to remove dups and
-  # keep order the same as before.
-  class_entries = list({e: True for e in class_entries})
-
-  return class_entries
 
 
 class JavacOutputProcessor:
@@ -181,7 +138,7 @@ class JavacOutputProcessor:
       return
 
     if self._class_lookup_index is None:
-      self._class_lookup_index = lookup_dep.ClassLookupIndex(
+      self._class_lookup_index = dep_utils.ClassLookupIndex(
           pathlib.Path(os.getcwd()),
           should_build=False,
       )
@@ -192,7 +149,7 @@ class JavacOutputProcessor:
     if not suggested_deps:
       return
 
-    suggested_deps = _DisambiguateDeps(suggested_deps)
+    suggested_deps = dep_utils.DisambiguateDeps(suggested_deps)
     suggested_deps_str = ', '.join(s.target for s in suggested_deps)
 
     if len(suggested_deps) > 1:

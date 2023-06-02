@@ -15,7 +15,6 @@
 ../../../third_party/colorama/src/colorama/initialise.py
 ../../../third_party/colorama/src/colorama/win32.py
 ../../../third_party/colorama/src/colorama/winterm.py
-../../../tools/android/modularization/convenience/lookup_dep.py
 ../../action_helpers.py
 ../../gn_helpers.py
 ../../print_python_deps.py
@@ -28,6 +27,7 @@ javac_output_processor.py
 turbine.py
 util/__init__.py
 util/build_utils.py
+util/dep_utils.py
 util/jar_info_utils.py
 util/jar_utils.py
 util/md5_check.py

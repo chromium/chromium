@@ -13,8 +13,8 @@ import pathlib
 import sys
 from typing import Dict, List
 
-import javac_output_processor
 from util import build_utils
+from util import dep_utils
 from util import jar_utils
 from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
@@ -215,7 +215,7 @@ def main(argv):
   args.full_classpath_jars = action_helpers.parse_gn_list(
       args.full_classpath_jars)
   args.full_classpath_gn_targets = [
-      javac_output_processor.ReplaceGmsPackageIfNeeded(t)
+      dep_utils.ReplaceGmsPackageIfNeeded(t)
       for t in action_helpers.parse_gn_list(args.full_classpath_gn_targets)
   ]
   args.missing_classes_allowlist = action_helpers.parse_gn_list(
