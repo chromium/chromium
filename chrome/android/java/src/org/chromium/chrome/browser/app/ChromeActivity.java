@@ -1025,8 +1025,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         Tab tab = getActivityTab();
         TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
-        if (tabModelSelector != null && !tabModelSelector.isReparentingInProgress()
-                && tab != null) {
+        // If tab reparenting is in progress and the activity Tab isn't being reparented, e.g.
+        // because it's an NTP, skip hiding the Tab since it will be destroyed when the Activity is
+        // destroyed prior to recreation.
+        if (tab != null
+                && ((tabModelSelector != null && !tabModelSelector.isReparentingInProgress())
+                        || AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(
+                                tab.getId()))) {
             tab.hide(TabHidingType.ACTIVITY_HIDDEN);
         }
     }
