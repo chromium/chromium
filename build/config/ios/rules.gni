@@ -823,6 +823,8 @@ set_defaults("ios_app_bundle") {
 #
 # For more information, see "gn help executable".
 template("ios_appex_bundle") {
+  assert(ios_is_app_extension,
+         "$target_name needs to be defined in app extension toolchain context")
   ios_app_bundle(target_name) {
     forward_variables_from(invoker,
                            "*",
