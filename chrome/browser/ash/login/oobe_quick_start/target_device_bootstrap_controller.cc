@@ -107,9 +107,6 @@ void TargetDeviceBootstrapController::StartAdvertising() {
 }
 
 void TargetDeviceBootstrapController::StopAdvertising() {
-  // No pending requests.
-  DCHECK(!weak_ptr_factory_.HasWeakPtrs());
-
   // Connection broker ignores the request if not advertising.
   connection_broker_->StopAdvertising(
       base::BindOnce(&TargetDeviceBootstrapController::OnStopAdvertising,

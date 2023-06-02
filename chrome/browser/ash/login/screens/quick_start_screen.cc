@@ -72,7 +72,9 @@ void QuickStartScreen::AttemptGoogleAccountTransfer() {
   bootstrap_controller_->AttemptGoogleAccountTransfer();
 }
 
-void QuickStartScreen::HideImpl() {}
+void QuickStartScreen::HideImpl() {
+  bootstrap_controller_.reset();
+}
 
 void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();

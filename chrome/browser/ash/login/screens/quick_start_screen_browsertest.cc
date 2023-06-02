@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
+#include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -23,8 +24,14 @@ namespace ash {
 namespace {
 constexpr char kWelcomeScreen[] = "welcomeScreen";
 constexpr char kQuickStartButton[] = "quickStart";
+constexpr char kLoadingDialog[] = "loadingDialog";
+constexpr char kCancelButton[] = "cancelButton";
 constexpr test::UIPath kQuickStartButtonPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartButton};
+constexpr test::UIPath kCancelButtonLoadingDialog = {
+    QuickStartView::kScreenId.name, kLoadingDialog, kCancelButton};
+constexpr test::UIPath kCancelButtonVerificationDialog = {
+    QuickStartView::kScreenId.name, kCancelButton};
 }  // namespace
 
 class QuickStartBrowserTestBase : public OobeBaseTest {
@@ -42,6 +49,16 @@ class QuickStartBrowserTestBase : public OobeBaseTest {
     quick_start::TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
         nullptr);
     OobeBaseTest::TearDownInProcessBrowserTestFixture();
+  }
+
+  void EnterQuickStartFlowFromWelcomeScreen() {
+    test::WaitForWelcomeScreen();
+    test::OobeJS()
+        .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
+        ->Wait();
+
+    test::OobeJS().ClickOnPath(kQuickStartButtonPath);
+    OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   }
 
  protected:
@@ -114,5 +131,42 @@ IN_PROC_BROWSER_TEST_F(QuickStartAcceleratorBrowserTest,
       .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
       ->Wait();
 }
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ClickingOnButtonEntersScreen) {
+  EnterQuickStartFlowFromWelcomeScreen();
+}
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ClickingCancelReturnsToWelcome) {
+  EnterQuickStartFlowFromWelcomeScreen();
+
+  // Cancel button must be present.
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kCancelButtonLoadingDialog)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kCancelButtonLoadingDialog);
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelOnQRCode) {
+  EnterQuickStartFlowFromWelcomeScreen();
+
+  // Initiate connection and expect the 'verification' step.
+  connection_broker_factory_.instances().front()->InitiateConnection(
+      "fake_device_id");
+  test::OobeJS()
+      .CreateWaiter(test::GetOobeElementPath({QuickStartView::kScreenId.name}) +
+                    ".uiStep === 'verification'")
+      ->Wait();
+
+  // Cancel button must be present.
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true,
+                              kCancelButtonVerificationDialog)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kCancelButtonVerificationDialog);
+  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+}
+
+// connection_broker_factory_.instances().front()
 
 }  // namespace ash

@@ -40,11 +40,11 @@ found in the LICENSE file.
 </style>
 <!-- WAITING FOR INITIAL CONNECTION | ADVERTISING -->
 <oobe-loading-dialog id="loadingDialog" for-step="loading" title-key="quickStartStartAfterResumeTitle"
-  subtitle-key="quickStartStartAfterResumeSubtitle">
+  subtitle-key="quickStartStartAfterResumeSubtitle" can-cancel on-cancel-loading="onCancelClicked_">
   <iron-icon slot="icon" icon="oobe-20:quick-start-android-device"></iron-icon>
 </oobe-loading-dialog>
 <!-- QR & PIN VERIFICATION | UNAUTHENTICATED CONNECTION -->
-<oobe-adaptive-dialog for-step="verification">
+<oobe-adaptive-dialog for-step="verification" id="verificationDialog">
   <iron-icon slot="icon" icon="oobe-20:quick-start-android-device">
   </iron-icon>
   <h1 slot="title">
