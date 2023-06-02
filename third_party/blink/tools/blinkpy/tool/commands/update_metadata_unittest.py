@@ -735,6 +735,9 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               expected: ERROR
               [subtest]
                 expected: FAIL
+
+            [variant.html?also-does-not-exist]
+              expected: ERROR
             """)
         self.update({
             'results': [{

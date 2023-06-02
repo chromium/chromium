@@ -884,7 +884,8 @@ class MetadataUpdater:
 
     def _remove_orphaned_tests(self,
                                expected: manifestupdate.ExpectedManifest):
-        for test in expected.iterchildren():
+        # Iterate over a copy, since `test.remove()` mutates `expected`.
+        for test in list(expected.iterchildren()):
             if test.id not in self._updater.id_test_map:
                 test.remove()
                 expected.modified = True
