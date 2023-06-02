@@ -4844,7 +4844,7 @@
       },
       'Leak Detection Linux': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'isolated_scripts': 'leak_detection_isolated_scripts',
