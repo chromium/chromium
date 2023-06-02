@@ -2063,10 +2063,8 @@ BASE_FEATURE(kShelfLauncherNudge,
              "ShelfLauncherNudge",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the shelf party.
-BASE_FEATURE(kShelfParty, "ShelfParty", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the shelf party.
+// Stacks the hotseat app bar above the shelf button panels/system tray when
+// there is not enough space for the app bar.
 BASE_FEATURE(kShelfStackedHotseat,
              "ShelfStackedHotseat",
              base::FEATURE_DISABLED_BY_DEFAULT);
