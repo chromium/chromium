@@ -17,5 +17,7 @@ class ProgressIndicatorNativeDemoElement extends CustomElement {
   }
 }
 
+export const tagName = ProgressIndicatorNativeDemoElement.is;
+
 customElements.define(
     ProgressIndicatorNativeDemoElement.is, ProgressIndicatorNativeDemoElement);

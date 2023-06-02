@@ -10,34 +10,12 @@ build_webui("build") {
   grd_prefix = "webui_gallery"
 
   static_files = [
-    "demos/buttons/index.html",
-    "demos/card/index.html",
-    "demos/cr_a11y_announcer/index.html",
-    "demos/cr_action_menu/index.html",
-    "demos/cr_checkbox/index.html",
-    "demos/cr_dialog/index.html",
-    "demos/cr_icons/index.html",
-    "demos/cr_input/index.html",
-    "demos/cr_radio/index.html",
-    "demos/cr_slider/index.html",
-    "demos/cr_tab_box/index.html",
-    "demos/cr_tabs/index.html",
-    "demos/cr_toast/index.html",
-    "demos/cr_toggle/index.html",
-    "demos/cr_toolbar/index.html",
-    "demos/cr_tree/index.html",
-    "demos/cr_url_list_item/index.html",
-    "demos/demo.css",
-    "demos/md_select/index.html",
-    "demos/nav_menu/index.html",
-    "demos/progress_indicators/index_native.html",
-    "demos/progress_indicators/index_polymer.html",
-    "demos/scroll_view/index.html",
     "demos/side_panel/empty.svg",
     "demos/side_panel/empty_dark.svg",
-    "demos/side_panel/index.html",
     "webui_gallery.html",
   ]
+
+  css_files = [ "demos/demo.css" ]
 
   # Files holding a Polymer or native custom element definition AND have an
   # equivalent .html template file.

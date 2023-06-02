@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
+import '../demo.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -41,5 +42,7 @@ class CrTabsDemoElement extends PolymerElement {
     this.selectedTabIndex_ = 1;
   }
 }
+
+export const tagName = CrTabsDemoElement.is;
 
 customElements.define(CrTabsDemoElement.is, CrTabsDemoElement);

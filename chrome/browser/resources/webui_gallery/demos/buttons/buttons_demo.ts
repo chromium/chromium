@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import '../demo.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,5 +30,7 @@ class ButtonsDemoElement extends PolymerElement {
 
   private exapanded_: boolean;
 }
+
+export const tagName = ButtonsDemoElement.is;
 
 customElements.define(ButtonsDemoElement.is, ButtonsDemoElement);

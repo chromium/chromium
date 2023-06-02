@@ -11,6 +11,10 @@ import {CustomElement} from '//resources/js/custom_element.js';
 import {getTemplate} from './cr_tab_box_demo.html.js';
 
 class CrTabBoxDemoElement extends CustomElement {
+  static get is() {
+    return 'cr-tab-box-demo';
+  }
+
   static override get template() {
     return getTemplate();
   }
@@ -91,4 +95,6 @@ class CrTabBoxDemoElement extends CustomElement {
   }
 }
 
-customElements.define('cr-tab-box-demo', CrTabBoxDemoElement);
+export const tagName = CrTabBoxDemoElement.is;
+
+customElements.define(CrTabBoxDemoElement.is, CrTabBoxDemoElement);

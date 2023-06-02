@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
+import '../demo.css.js';
 
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -85,5 +86,7 @@ class CrDialogDemoElement extends PolymerElement {
     this.push('statusTexts_', 'Dialog was closed and fired a `close` event.');
   }
 }
+
+export const tagName = CrDialogDemoElement.is;
 
 customElements.define(CrDialogDemoElement.is, CrDialogDemoElement);

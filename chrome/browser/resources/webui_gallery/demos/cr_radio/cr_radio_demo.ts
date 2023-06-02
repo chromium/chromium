@@ -7,6 +7,7 @@ import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import '//resources/cr_elements/cr_segmented_button/cr_segmented_button.js';
 import '//resources/cr_elements/cr_segmented_button/cr_segmented_button_option.js';
+import '../demo.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -31,5 +32,7 @@ class CrRadioDemoElement extends PolymerElement {
   private selectedRadioOption_: string;
   private selectedSegmentedButtonOption_: string;
 }
+
+export const tagName = CrRadioDemoElement.is;
 
 customElements.define(CrRadioDemoElement.is, CrRadioDemoElement);

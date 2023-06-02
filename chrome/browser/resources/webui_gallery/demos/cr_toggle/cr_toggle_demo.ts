@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import '../demo.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,5 +26,7 @@ class CrToggleDemoElement extends PolymerElement {
 
   private checked_: boolean;
 }
+
+export const tagName = CrToggleDemoElement.is;
 
 customElements.define(CrToggleDemoElement.is, CrToggleDemoElement);

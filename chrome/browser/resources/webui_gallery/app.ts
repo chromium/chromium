@@ -7,13 +7,20 @@ import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 
 import {CrMenuSelector} from '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 
+interface Demo {
+  name: string;
+  path: string;
+  src: string;
+}
+
 export interface WebuiGalleryAppElement {
   $: {
-    iframe: HTMLIFrameElement,
+    main: HTMLElement,
     selector: CrMenuSelector,
   };
 }
@@ -29,124 +36,124 @@ export class WebuiGalleryAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      demos: {
+      demos_: {
         type: Array,
         value: function() {
           return [
             {
               name: 'Accessibility Live Regions',
               path: 'a11y',
-              src: 'cr_a11y_announcer/index.html',
+              src: 'cr_a11y_announcer/cr_a11y_announcer_demo.js',
             },
             {
               name: 'Action Menus',
               path: 'action-menus',
-              src: 'cr_action_menu/index.html',
+              src: 'cr_action_menu/cr_action_menu_demo.js',
             },
             {
               name: 'Buttons',
               path: 'buttons',
-              src: 'buttons/index.html',
+              src: 'buttons/buttons_demo.js',
             },
             {
               name: 'Cards and rows',
               path: 'cards',
-              src: 'card/index.html',
+              src: 'card/card_demo.js',
             },
             {
               name: 'Checkboxes',
               path: 'checkboxes',
-              src: 'cr_checkbox/index.html',
+              src: 'cr_checkbox/cr_checkbox_demo.js',
             },
             {
               name: 'Dialogs',
               path: 'dialogs',
-              src: 'cr_dialog/index.html',
+              src: 'cr_dialog/cr_dialog_demo.js',
             },
             {
               name: 'Icons',
               path: 'icons',
-              src: 'cr_icons/index.html',
+              src: 'cr_icons/cr_icons_demo.js',
             },
             {
               name: 'Inputs',
               path: 'inputs',
-              src: 'cr_input/index.html',
+              src: 'cr_input/cr_input_demo.js',
             },
             {
               name: 'Navigation menus',
               path: 'nav-menus',
-              src: 'nav_menu/index.html',
+              src: 'nav_menu/nav_menu_demo.js',
             },
             {
               name: 'Progress indicators, Polymer',
               path: 'progress-polymer',
-              src: 'progress_indicators/index_polymer.html',
+              src: 'progress_indicators/progress_indicator_polymer_demo.js',
             },
             {
               name: 'Progress indicators, non-Polymer',
               path: 'progress-nonpolymer',
-              src: 'progress_indicators/index_native.html',
+              src: 'progress_indicators/progress_indicator_native_demo.js',
             },
             {
               name: 'Radio buttons and groups',
               path: 'radios',
-              src: 'cr_radio/index.html',
+              src: 'cr_radio/cr_radio_demo.js',
             },
             {
               name: 'Scroll view',
               path: 'scroll-view',
-              src: 'scroll_view/index.html',
+              src: 'scroll_view/scroll_view_demo.js',
             },
             {
               name: 'Select menu',
               path: 'select-menu',
-              src: 'md_select/index.html',
+              src: 'md_select/md_select_demo.js',
             },
             {
               name: 'Side panel',
               path: 'side-panel',
-              src: 'side_panel/index.html',
+              src: 'side_panel/sp_components_demo.js',
             },
             {
               name: 'Sliders',
               path: 'sliders',
-              src: 'cr_slider/index.html',
+              src: 'cr_slider/cr_slider_demo.js',
             },
             {
               name: 'Tabs, non-Polymer',
               path: 'tabs1',
-              src: 'cr_tab_box/index.html',
+              src: 'cr_tab_box/cr_tab_box_demo.js',
             },
             {
               name: 'Tabs, Polymer',
               path: 'tabs2',
-              src: 'cr_tabs/index.html',
+              src: 'cr_tabs/cr_tabs_demo.js',
             },
             {
               name: 'Toast',
               path: 'toast',
-              src: 'cr_toast/index.html',
+              src: 'cr_toast/cr_toast_demo.js',
             },
             {
               name: 'Toggles',
               path: 'toggles',
-              src: 'cr_toggle/index.html',
+              src: 'cr_toggle/cr_toggle_demo.js',
             },
             {
               name: 'Toolbar',
               path: 'toolbar',
-              src: 'cr_toolbar/index.html',
+              src: 'cr_toolbar/cr_toolbar_demo.js',
             },
             {
               name: 'Tree, non-Polymer',
               path: 'tree',
-              src: 'cr_tree/index.html',
+              src: 'cr_tree/cr_tree_demo.js',
             },
             {
               name: 'URL List Item',
               path: 'url-list-item',
-              src: 'cr_url_list_item/index.html',
+              src: 'cr_url_list_item/cr_url_list_item_demo.js',
             },
           ];
         },
@@ -159,18 +166,24 @@ export class WebuiGalleryAppElement extends PolymerElement {
     };
   }
 
-  demos: Array<{name: string, path: string, src: string}>;
+  private demos_: Demo[];
   private path_: string;
 
-  private onPathChanged_() {
-    const selectedIndex = Math.max(
-        0, this.demos.findIndex(demo => demo.path === this.path_.substring(1)));
-    this.$.selector.selected = selectedIndex;
+  private async onPathChanged_() {
+    const path = this.path_.substring(1);
+    const demoIndex =
+        path === '' ? 0 : this.demos_.findIndex(demo => demo.path === path);
+    assert(demoIndex !== -1);
+    this.$.selector.selected = demoIndex;
 
-    // Use `location.replace` instead of iframe's `src` to prevent the iframe's
-    // source from interfering with tab's history.
-    this.$.iframe.contentWindow!.location.replace(
-        'demos/' + this.demos[selectedIndex]!.src);
+    const demo = this.demos_[demoIndex]!;
+
+    const {tagName} = await import(`./demos/${demo.src}`);
+    assert(tagName);
+
+    const demoElement = document.createElement(tagName);
+    this.$.main.innerHTML = window.trustedTypes!.emptyHTML;
+    this.$.main.appendChild(demoElement);
   }
 }
 

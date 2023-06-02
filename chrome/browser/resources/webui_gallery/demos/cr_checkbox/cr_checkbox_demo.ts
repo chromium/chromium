@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '../demo.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,5 +26,7 @@ class CrCheckboxDemoElement extends PolymerElement {
 
   private myValue_: boolean;
 }
+
+export const tagName = CrCheckboxDemoElement.is;
 
 customElements.define(CrCheckboxDemoElement.is, CrCheckboxDemoElement);

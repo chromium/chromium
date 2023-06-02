@@ -6,6 +6,7 @@
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import '../demo.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -20,6 +21,8 @@ class ProgressIndicatorPolymerDemoElement extends PolymerElement {
     return getTemplate();
   }
 }
+
+export const tagName = ProgressIndicatorPolymerDemoElement.is;
 
 customElements.define(
     ProgressIndicatorPolymerDemoElement.is,

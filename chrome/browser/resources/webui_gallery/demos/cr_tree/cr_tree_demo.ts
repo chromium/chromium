@@ -13,6 +13,10 @@ import {CustomElement} from '//resources/js/custom_element.js';
 import {getTemplate} from './cr_tree_demo.html.js';
 
 class CrTreeDemoElement extends CustomElement {
+  static get is() {
+    return 'cr-tree-demo';
+  }
+
   static override get template() {
     return getTemplate();
   }
@@ -25,7 +29,6 @@ class CrTreeDemoElement extends CustomElement {
     this.tree_ = this.shadowRoot!.querySelector('cr-tree');
     assert(this.tree_);
 
-    this.populateTree_();
     this.tree_.addEventListener(
         'cr-tree-change', () => this.addLogItem_('Selected item changed'));
     this.tree_.addEventListener(
@@ -53,6 +56,11 @@ class CrTreeDemoElement extends CustomElement {
     const addItemButton = this.shadowRoot!.querySelector('#addItem');
     assert(addItemButton);
     addItemButton.addEventListener('click', () => this.addItem_());
+
+    window.setTimeout(() => {
+      // Need to wait so that the cr-tree instance has been upgraded.
+      this.populateTree_();
+    });
   }
 
   private addItem_() {
@@ -147,4 +155,6 @@ class CrTreeDemoElement extends CustomElement {
   }
 }
 
-customElements.define('cr-tree-demo', CrTreeDemoElement);
+export const tagName = CrTreeDemoElement.is;
+
+customElements.define(CrTreeDemoElement.is, CrTreeDemoElement);

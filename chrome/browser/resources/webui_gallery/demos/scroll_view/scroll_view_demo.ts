@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
+import '../demo.css.js';
 
 import {CrContainerShadowMixin} from '//resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
@@ -58,5 +59,7 @@ class ScrollViewDemoElement extends ScrollViewDemoElementBase {
     this.updateScrollableContents();
   }
 }
+
+export const tagName = ScrollViewDemoElement.is;
 
 customElements.define(ScrollViewDemoElement.is, ScrollViewDemoElement);
