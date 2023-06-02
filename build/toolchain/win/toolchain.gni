@@ -145,7 +145,25 @@ template("single_msvc_toolchain") {
 
     if (host_os != "win" || (use_lld && defined(invoker.sys_lib_flags))) {
       linker_wrapper = ""
-      sys_lib_flags = "${invoker.sys_lib_flags} "  # Note trailing space.
+      sys_lib_flags = "${invoker.sys_lib_flags}"
+
+      # TODO(thakis): Remove once crbug.com/1300005 is fixed
+      assert(toolchain_args.current_cpu == "x64" ||
+                 toolchain_args.current_cpu == "x86" ||
+                 toolchain_args.current_cpu == "arm" ||
+                 toolchain_args.current_cpu == "arm64",
+             "Only supports x64, x86, arm and arm64 CPUs")
+      if (toolchain_args.current_cpu == "x64") {
+        sys_lib_flags += " /MACHINE:X64"
+      } else if (toolchain_args.current_cpu == "x86") {
+        sys_lib_flags += " /MACHINE:X86"
+      } else if (toolchain_args.current_cpu == "arm") {
+        sys_lib_flags += " /MACHINE:ARM"
+      } else if (toolchain_args.current_cpu == "arm64") {
+        sys_lib_flags += " /MACHINE:ARM64"
+      }
+
+      sys_lib_flags += " "  # Note trailing space.
     } else {
       # link.exe must be run under a wrapper to set up the environment
       # (it needs %LIB% set to find libraries), and to work around its bugs.
@@ -609,6 +627,16 @@ template("msvc_toolchain") {
         is_debug = false
         is_component_build = false
         is_official_build = false
+
+        # On Windows, cross-compile for x86 changes the `host_toolchain`
+        # into x86 too so as to avoid compiling things twice (see
+        # //build/config/BUILDCONFIG.gn). But the prebuilt stdlib does not
+        # exist for Windows x86 and it's exceedingly difficult to get it
+        # built from a single build_rust.py invocation. So we just don't follow
+        # along in this toolchain, and always use the host cpu type (which will
+        # be x64). Things built with this toolchain are never built for the
+        # target_cpu anyhow, so the optimization there does not benefit them.
+        current_cpu = host_cpu
       }
     }
   }
@@ -673,20 +701,6 @@ template("win_toolchains") {
     if (use_lld) {
       sys_lib_flags =
           "-libpath:$_clang_lib_dir ${win_toolchain_data.libpath_lldlink_flags}"
-
-      # TODO(thakis): Remove once crbug.com/1300005 is fixed
-      assert(toolchain_arch == "x64" || toolchain_arch == "x86" ||
-                 toolchain_arch == "arm" || toolchain_arch == "arm64",
-             "Only supports x64, x86, arm and arm64 CPUs")
-      if (toolchain_arch == "x64") {
-        sys_lib_flags += " /MACHINE:X64"
-      } else if (toolchain_arch == "x86") {
-        sys_lib_flags += " /MACHINE:X86"
-      } else if (toolchain_arch == "arm") {
-        sys_lib_flags += " /MACHINE:ARM"
-      } else if (toolchain_arch == "arm64") {
-        sys_lib_flags += " /MACHINE:ARM64"
-      }
     }
 
     toolchain_args = {
