@@ -57,7 +57,7 @@ function platformTasks(platform) {
   tasks.push(testStaticTask);
 
   // Playwright tests are currently only supported on linux.
-  if (process.platform == "linux") {
+  if (platform == "linux") {
     const testPlaywrightTask = newTask(
       `Chromium Playwright Tests ${platform}`,
       {
