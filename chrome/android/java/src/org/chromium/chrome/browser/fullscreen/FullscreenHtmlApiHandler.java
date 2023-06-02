@@ -104,6 +104,8 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     @Nullable
     private Tab mTab;
 
+    private boolean mNotifyOnNextExit;
+
     // Current ContentView. Updates when active tab is switched or WebContents is swapped
     // in the current Tab.
     private ContentView mContentView;
@@ -334,7 +336,8 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         setEnterFullscreenRunnable(tab, null);
         boolean wasInPersistentFullscreenMode = getPersistentFullscreenMode();
         exitPersistentFullscreenMode();
-        if (wasInPersistentFullscreenMode) {
+        if (wasInPersistentFullscreenMode || mNotifyOnNextExit) {
+            mNotifyOnNextExit = false;
             for (FullscreenManager.Observer observer : mObservers) {
                 observer.onExitFullscreen(tab);
             }
@@ -386,6 +389,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     private void enterPersistentFullscreenMode(FullscreenOptions options) {
         if (!shouldSkipEnterFullscreenRequest(options)) {
             mPersistentModeSupplier.set(true);
+            mNotifyOnNextExit = true;
             if (mAreControlsHidden.get()) {
                 // The browser controls are currently hidden.
                 enterFullscreen(mTab, options);
