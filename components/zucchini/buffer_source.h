@@ -94,6 +94,8 @@ class BufferSource : public ConstBufferView {
   const T* GetPointer() {
     static_assert(std::is_standard_layout<T>::value,
                   "Value type must be a standard layout type");
+    // Ensures unaligned data access is allowed.
+    static_assert(alignof(T) == 1, "Value type requires byte alignment");
 
     DCHECK_NE(begin(), nullptr);
     if (Remaining() < sizeof(T)) {
@@ -112,6 +114,10 @@ class BufferSource : public ConstBufferView {
   const T* GetArray(size_t count) {
     static_assert(std::is_standard_layout<T>::value,
                   "Value type must be a standard layout type");
+    // Ensures unaligned data access is allowed. Currently this is not used
+    // with POD types. If the need arises, then more work will be needed (e.g.,
+    // create a POD wrapper template to force unaligned data access).
+    static_assert(alignof(T) == 1, "Value type requires byte alignment");
 
     if (Remaining() / sizeof(T) < count) {
       return nullptr;

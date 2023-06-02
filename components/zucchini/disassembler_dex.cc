@@ -170,8 +170,9 @@ class CodeItemParser {
 
     // TODO(huangs): Fail if |code_item->insns_size == 0| (Constraint A1).
     // Skip instruction bytes.
-    if (!source_.GetArray<uint16_t>(code_item->insns_size))
+    if (!source_.Skip(code_item->insns_size * sizeof(uint16_t))) {
       return kInvalidOffset;
+    }
     // Skip padding if present.
     if (code_item->tries_size > 0 && !source_.AlignOn(image_, 4U))
       return kInvalidOffset;
@@ -180,8 +181,9 @@ class CodeItemParser {
     // is nontrivial due to use of uleb128 / sleb128.
     if (code_item->tries_size > 0) {
       // Skip (try_item) tries[].
-      if (!source_.GetArray<dex::TryItem>(code_item->tries_size))
+      if (!source_.Skip(code_item->tries_size * sizeof(dex::TryItem))) {
         return kInvalidOffset;
+      }
 
       // Skip handlers_group.
       uint32_t handlers_size = 0;
