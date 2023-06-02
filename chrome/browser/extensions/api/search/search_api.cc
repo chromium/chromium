@@ -110,7 +110,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
       web_contents->GetController().LoadURL(
           url, content::Referrer(),
           ui::PageTransition::PAGE_TRANSITION_FROM_API,
-          /*extra_header=*/std::string());
+          /*extra_headers=*/std::string());
       break;
     case Disposition::DISPOSITION_NEW_TAB:
       NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB, browser, url);
