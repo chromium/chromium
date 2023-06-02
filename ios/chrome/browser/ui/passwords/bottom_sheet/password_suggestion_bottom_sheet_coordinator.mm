@@ -27,6 +27,7 @@
 #error "This file requires ARC support."
 #endif
 
+using PasswordSuggestionBottomSheetExitReason::kShowPasswordDetails;
 using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
 
 @interface PasswordSuggestionBottomSheetCoordinator () {
@@ -64,12 +65,10 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
 
     auto profilePasswordStore =
         IOSChromePasswordStoreFactory::GetForBrowserState(
-            self.browser->GetBrowserState(),
-            ServiceAccessType::EXPLICIT_ACCESS);
+            browserState, ServiceAccessType::EXPLICIT_ACCESS);
     auto accountPasswordStore =
         IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-            self.browser->GetBrowserState(),
-            ServiceAccessType::EXPLICIT_ACCESS);
+            browserState, ServiceAccessType::EXPLICIT_ACCESS);
 
     WebStateList* webStateList = browser->GetWebStateList();
     const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
@@ -123,22 +122,31 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
 #pragma mark - PasswordSuggestionBottomSheetHandler
 
 - (void)displayPasswordManager {
+  [self.mediator logExitReason:kShowPasswordManager];
+
+  __weak __typeof(self) weakSelf = self;
   [self.baseViewController.presentedViewController
       dismissViewControllerAnimated:NO
-                         completion:nil];
+                         completion:^{
+                           [weakSelf stop];
+                         }];
 
-  [_mediator logExitReason:kShowPasswordManager];
   [_passwordControllerDelegate displaySavedPasswordList];
 }
 
 - (void)displayPasswordDetailsForFormSuggestion:
     (FormSuggestion*)formSuggestion {
-  [self.baseViewController.presentedViewController
-      dismissViewControllerAnimated:NO
-                         completion:nil];
-
+  [self.mediator logExitReason:kShowPasswordDetails];
   absl::optional<password_manager::CredentialUIEntry> credential =
       [self.mediator getCredentialForFormSuggestion:formSuggestion];
+
+  __weak __typeof(self) weakSelf = self;
+  [self.baseViewController.presentedViewController
+      dismissViewControllerAnimated:NO
+                         completion:^{
+                           [weakSelf stop];
+                         }];
+
   if (credential.has_value()) {
     [_passwordControllerDelegate
         showPasswordDetailsForCredential:credential.value()];

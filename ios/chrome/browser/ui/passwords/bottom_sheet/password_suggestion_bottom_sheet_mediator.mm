@@ -240,12 +240,7 @@ using ReauthenticationEvent::kSuccess;
   if ([_reauthenticationModule canAttemptReauth]) {
     __weak __typeof(self) weakSelf = self;
     auto completionHandler = ^(ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        [self logReauthEvent:kSuccess];
-        [weakSelf selectSuggestion:suggestion];
-      } else {
-        [self logReauthEvent:kFailure];
-      }
+      [weakSelf selectSuggestion:suggestion reauthenticationResult:result];
     };
 
     NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
@@ -267,10 +262,14 @@ using ReauthenticationEvent::kSuccess;
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
-    web::WebFrame* frame =
-        feature->GetWebFramesManager(activeWebState)->GetFrameWithId(_frameId);
-    AutofillBottomSheetTabHelper::FromWebState(activeWebState)
-        ->DetachListenersAndRefocus(frame);
+    web::WebFramesManager* framesManager =
+        feature->GetWebFramesManager(activeWebState);
+    if (framesManager) {
+      web::WebFrame* frame = framesManager->GetFrameWithId(_frameId);
+      AutofillBottomSheetTabHelper::FromWebState(activeWebState)
+          ->DetachListenersAndRefocus(frame);
+      [self disconnect];
+    }
   }
 }
 
@@ -360,6 +359,19 @@ using ReauthenticationEvent::kSuccess;
 - (void)selectSuggestion:(FormSuggestion*)suggestion {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
   [self.suggestionsProvider didSelectSuggestion:suggestion];
+  [self disconnect];
+}
+
+// Perform suggestion selection based on the reauthentication result.
+- (void)selectSuggestion:(FormSuggestion*)suggestion
+    reauthenticationResult:(ReauthenticationResult)result {
+  if (result != ReauthenticationResult::kFailure) {
+    [self logReauthEvent:kSuccess];
+    [self selectSuggestion:suggestion];
+  } else {
+    [self logReauthEvent:kFailure];
+    [self disconnect];
+  }
 }
 
 // Returns the default favicon attributes after making sure they are
