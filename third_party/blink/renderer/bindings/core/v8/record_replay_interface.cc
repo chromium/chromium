@@ -93,6 +93,7 @@ const VerboseCommands = Verbose;
 const {
   log: log_,
   logTrace: logTrace_,
+  warning: warning_,
   setCDPMessageCallback,
   sendCDPMessage,
   setCommandCallback,
@@ -150,6 +151,10 @@ function log(...args) {
 
 function logTrace(...args) {
   logTrace_(args.join(' '));
+}
+
+function warning(...args) {
+  warning_(args.join(' '));
 }
 
 function assert(v, msg = "") {
@@ -1523,12 +1528,19 @@ function getInternalFunctionLocationProp(cdpProperties) {
 function previewFunction(cdpProperties) {
   const nameProperty = cdpProperties.result.find(prop => prop.name == "name");
   if (nameProperty) {
-    this.extra.functionName = nameProperty.value.value;
+    this.extra.functionName = nameProperty?.value?.value || "";
+    if (!this.extra.functionName) {
+      warning(`[RUN-1991] previewFunction missing name: ${JSON_stringify(nameProperty)}, ${JSON_stringify(locationProperty)}`);
+    }
   }
 
   const locationProperty = getInternalFunctionLocationProp(cdpProperties);
   if (locationProperty) {
-    this.extra.functionLocation = createProtocolLocation(locationProperty.value.value);
+    const loc = locationProperty?.value?.value || "";
+    if (!loc) {
+      warning(`[RUN-1991] previewFunction missing location: ${JSON_stringify(nameProperty)}, ${JSON_stringify(locationProperty)}`);
+    }
+    this.extra.functionLocation = createProtocolLocation(loc);
   }
 }
 
@@ -3361,6 +3373,13 @@ static void LogTraceCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
   recordreplay::Trace("%s", *text);
 }
 
+static void LogWarningCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() &&
+        "must be called with a single string");
+  v8::String::Utf8Value text(args.GetIsolate(), args[0]);
+  recordreplay::Warning("%s", *text);
+}
+
 // Function to invoke on CDP responses and events.
 static v8::Eternal<v8::Function>* gCDPMessageCallback;
 
@@ -4807,6 +4826,7 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
 
   SetFunctionProperty(isolate, args, "log", LogCallback);
   SetFunctionProperty(isolate, args, "logTrace", LogTraceCallback);
+  SetFunctionProperty(isolate, args, "warning", LogWarningCallback);
 
   // CDP debugger functionality
   SetFunctionProperty(isolate, args, "setCDPMessageCallback",
