@@ -1,3 +1,5 @@
+
+import {TestRunner} from 'test_runner';
 (async function() {
   TestRunner.addResult(`Tests that network-loaded UISourceCodes are highlighted according to their HTTP header`);
   TestRunner.addResult(`mime type instead of their extension. crbug.com/411863\n`);
