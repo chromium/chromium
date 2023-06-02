@@ -1206,6 +1206,7 @@
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
       'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials_reclient',
       'linux-js-code-coverage': 'js_coverage_reclient',
+      'linux-js-coverage-rel':  'js_coverage_reclient',
       'linux-lacros-asan-lsan-rel': 'asan_lsan_lacros_release_bot_dcheck_always_on_reclient',
       'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage_reclient',
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot_reclient',

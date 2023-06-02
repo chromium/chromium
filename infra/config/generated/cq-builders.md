@@ -568,6 +568,12 @@ as required builders.
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-1mbu-compile-fyi-rel""))
   * Experiment percentage: 5.0
 
+* [linux-js-coverage-rel](https://ci.chromium.org/p/chromium/builders/try/linux-js-coverage-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-js-coverage-rel""))
+  * Experiment percentage: 10.0
+
+  Location filters:
+  * [`//.*\.(js|ts)`](https://cs.chromium.org/search?q=+file:.*\.(js|ts))
+
 * [linux-rel-ml](https://ci.chromium.org/p/chromium/builders/try/linux-rel-ml) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-ml""))
   * Experiment percentage: 5.0
 

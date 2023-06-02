@@ -718,6 +718,26 @@ try_.gpu.optional_tests_builder(
     ),
 )
 
+# This builder is different from try/linux-js-code-coverage builder below as
+# this is a try builder meant to provide javascript coverage for webui related
+# CLs, where as try/linux-js-code-coverage builder is there to test changes in
+# ci/linux-js-code-coverage builder and would mostly be used by coverage devs
+# only.
+try_.builder(
+    name = "linux-js-coverage-rel",
+    mirrors = ["ci/linux-js-code-coverage"],
+    coverage_test_types = ["unit", "overall"],
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 10,
+        location_filters = [
+            cq.location_filter(path_regexp = r".*\.(js|ts)"),
+        ],
+    ),
+    use_javascript_coverage = True,
+)
+
+# Coverage builders set up mainly to test changes in CI builders
 try_.builder(
     name = "linux-code-coverage",
     mirrors = ["ci/linux-code-coverage"],
@@ -736,6 +756,8 @@ try_.builder(
     execution_timeout = 20 * time.hour,
 )
 
+# This builder serves a different purpose than try/linux-js-coverage-rel
+# See the note on linux-js-coverage-rel builder above to understand more.
 try_.builder(
     name = "linux-js-code-coverage",
     mirrors = ["ci/linux-js-code-coverage"],
@@ -749,6 +771,7 @@ try_.builder(
     execution_timeout = 20 * time.hour,
     use_javascript_coverage = True,
 )
+############### Coverage Builders End ##################
 
 # ML experimental builder, modifies RTS itself to use a ml model
 try_.builder(

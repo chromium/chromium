@@ -35,26 +35,18 @@
           "builder": "linux-js-code-coverage",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-js-code-coverage",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux-js-coverage-rel",
-          "group": "tryserver.chromium.linux"
-        }
       ]
     }
   },
   "$build/code_coverage": {
-    "export_coverage_to_zoss": true,
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
     "use_javascript_coverage": true
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -64,6 +56,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.coverage",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.linux",
+  "cq": "path-based",
+  "recipe": "chromium_trybot"
 }
