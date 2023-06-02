@@ -74,6 +74,7 @@ class ASH_EXPORT CaptureLabelView : public views::View,
 
   // views::View:
   void AddedToWidget() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;

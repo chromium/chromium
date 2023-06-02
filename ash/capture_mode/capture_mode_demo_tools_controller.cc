@@ -320,7 +320,6 @@ void CaptureModeDemoToolsController::RefreshKeyComboViewer() {
         views::Widget::ANIMATE_NONE);
     ui::Layer* layer = key_combo_widget_->GetLayer();
     layer->SetFillsBoundsOpaquely(false);
-    layer->SetMasksToBounds(true);
     key_combo_widget_->Show();
   }
 

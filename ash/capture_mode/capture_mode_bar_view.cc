@@ -71,9 +71,7 @@ void CaptureModeBarView::AddedToWidget() {
   parent->StackAtBottom(shadow_->GetLayer());
 }
 
-void CaptureModeBarView::Layout() {
-  views::View::Layout();
-
+void CaptureModeBarView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // The shadow layer is a sibling of this view's layer, and should have the
   // same bounds.
   shadow_->SetContentBounds(layer()->bounds());
