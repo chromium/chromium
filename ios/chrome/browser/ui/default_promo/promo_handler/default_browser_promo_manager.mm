@@ -47,47 +47,30 @@
     return;
   }
 
-  // Show the Default Browser promo UI if the user's past behavior fits
-  // the categorization of potentially interested users or if the user is
-  // signed in. Do not show if it is determined that Chrome is already the
-  // default browser (checked in the if enclosing this comment) or if the user
-  // has already seen the promo UI. If the user was in the experiment group
-  // that showed the Remind Me Later button and tapped on it, then show the
-  // promo again if now is the right time.
-
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-
-  id<DefaultPromoCommands> defaultPromoHandler =
-      HandlerForProtocol(dispatcher, DefaultPromoCommands);
+  // Bypass the all of the triggering criteria if enabled.
+  if (ShouldForceDefaultPromoType()) {
+    [self showPromo:ForceDefaultPromoType()];
+    return;
+  }
 
   BOOL isSignedIn = [self isSignedIn];
 
   // Tailored promos take priority over general promo.
   if (IsTailoredPromoEligibleUser(isSignedIn)) {
-    switch (MostRecentInterestDefaultPromoType(!isSignedIn)) {
-      case DefaultPromoTypeGeneral:
-        NOTREACHED();
-        break;
-      case DefaultPromoTypeStaySafe:
-        [defaultPromoHandler showTailoredPromoStaySafe];
-        break;
-      case DefaultPromoTypeMadeForIOS:
-        [defaultPromoHandler showTailoredPromoMadeForIOS];
-        break;
-      case DefaultPromoTypeAllTabs:
-        [defaultPromoHandler showTailoredPromoAllTabs];
-        break;
-    }
+    // Should only show tailored promos
+    [self showPromo:MostRecentInterestDefaultPromoType(!isSignedIn)];
     return;
   }
 
-  [defaultPromoHandler showDefaultBrowserFullscreenPromo];
+  [self showPromo:DefaultPromoTypeGeneral];
 }
 
 - (void)stop {
   [self.promosUIHandler promoWasDismissed];
   [super stop];
 }
+
+#pragma mark - private
 
 - (BOOL)isSignedIn {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
@@ -96,6 +79,29 @@
   DCHECK(authService);
   DCHECK(authService->initialized());
   return authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+}
+
+- (void)showPromo:(DefaultPromoType)promoType {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<DefaultPromoCommands> defaultPromoHandler =
+      HandlerForProtocol(dispatcher, DefaultPromoCommands);
+
+  switch (promoType) {
+    case DefaultPromoTypeStaySafe:
+      [defaultPromoHandler showTailoredPromoStaySafe];
+      break;
+    case DefaultPromoTypeMadeForIOS:
+      [defaultPromoHandler showTailoredPromoMadeForIOS];
+      break;
+    case DefaultPromoTypeAllTabs:
+      [defaultPromoHandler showTailoredPromoAllTabs];
+      break;
+    case DefaultPromoTypeGeneral:
+      [defaultPromoHandler showDefaultBrowserFullscreenPromo];
+      break;
+    case DefaultPromoTypeVideo:
+      break;
+  }
 }
 
 @end

@@ -254,6 +254,15 @@ const char kDefaultBrowserRefactoringPromoManagerDescription[] =
     "When enabled, the full screen default browser promos will be be included "
     "and managed in the promo manager";
 
+const char kDefaultBrowserPromoForceShowPromoName[] =
+    "Skip default browser promo triggering criteria";
+const char kDefaultBrowserPromoForceShowPromoDescription[] =
+    "When enabled, the user will be able to chose which default browser promo "
+    "will skip the triggering criteria. For this flag to effectively force a "
+    "default browser promo, either enable kPromosManagerUsesFET and "
+    "IPH_iOSPromoDefaultBrowser, or disable kPromosManagerUsesFET and enable "
+    "Force Promo (Default Browser) in the system settings experimental flags.";
+
 const char kDefaultBrowserVideoPromoName[] =
     "Enable default browser video promo";
 const char kDefaultBrowserVideoPromoDescription[] =

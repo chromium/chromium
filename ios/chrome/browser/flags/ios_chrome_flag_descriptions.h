@@ -213,7 +213,13 @@ extern const char kDefaultBrowserIntentsShowSettingsDescription[];
 extern const char kDefaultBrowserRefactoringPromoManagerName[];
 extern const char kDefaultBrowserRefactoringPromoManagerDescription[];
 
-// Title and description for the flag to enable the default browser video promo.
+// Title and description for the flag to enable skipping the default browser
+// promo.
+extern const char kDefaultBrowserPromoForceShowPromoName[];
+extern const char kDefaultBrowserPromoForceShowPromoDescription[];
+
+// Title and description for the flag to enable the flag that skips the
+// triggering criteria default browser promo skip.
 extern const char kDefaultBrowserVideoPromoName[];
 extern const char kDefaultBrowserVideoPromoDescription[];
 

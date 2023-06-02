@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/default_browser/utils.h"
 
+#import "base/command_line.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -54,6 +56,11 @@ NSString* const kLastSignificantUserEventMadeForIOS =
 // an all tabs event of interest for Default Browser Promo modals.
 NSString* const kLastSignificantUserEventAllTabs =
     @"lastSignificantUserEventAllTabs";
+
+// Key in storage containing an array of dates. Each date correspond to
+// a video event of interest for Default Browser Promo modals.
+NSString* const kLastSignificantUserEventVideo =
+    @"lastSignificantUserEventVideo";
 
 // Key in storage containing an NSDate indicating the last time a user
 // interacted with ANY promo. The string value is kept from when the promos
@@ -111,6 +118,9 @@ NSString* const kTimestampLastValidURLPasted = @"TimestampLastValidURLPasted";
 // app via first-party intent.
 NSString* const kTimestampAppLaunchOnColdStart =
     @"TimestampAppLaunchedOnColdStart";
+
+const char kDefaultBrowserPromoForceShowPromo[] =
+    "default-browser-promo-force-show-promo";
 
 // Maximum number of past event timestamps to record.
 const size_t kMaxPastTimestampsToRecord = 10;
@@ -225,6 +235,8 @@ NSString* StorageKeyForDefaultPromoType(DefaultPromoType type) {
       return kLastSignificantUserEventAllTabs;
     case DefaultPromoTypeStaySafe:
       return kLastSignificantUserEventStaySafe;
+    case DefaultPromoTypeVideo:
+      return kLastSignificantUserEventVideo;
   }
   NOTREACHED();
   return nil;
@@ -427,6 +439,32 @@ bool IsDefaultBrowserVideoPromoEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserVideoPromo);
 }
 
+bool ShouldForceDefaultPromoType() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kDefaultBrowserPromoForceShowPromo);
+}
+
+DefaultPromoType ForceDefaultPromoType() {
+  DCHECK(ShouldForceDefaultPromoType());
+  std::string type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kDefaultBrowserPromoForceShowPromo);
+  int default_promo_type = 0;
+  if (base::StringToInt(type, &default_promo_type)) {
+    // return static_cast<DefaultPromoType>(default_promo_type);
+    switch (default_promo_type) {
+      case DefaultPromoTypeGeneral:
+      case DefaultPromoTypeStaySafe:
+      case DefaultPromoTypeMadeForIOS:
+      case DefaultPromoTypeAllTabs:
+      case DefaultPromoTypeVideo:
+        return static_cast<DefaultPromoType>(default_promo_type);
+    }
+  }
+
+  return DefaultPromoType::DefaultPromoTypeGeneral;
+}
+
 bool IsDefaultBrowserVideoPromoFullscreenEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kDefaultBrowserVideoPromo, "default_browser_video_promo_halfscreen",
@@ -620,6 +658,9 @@ bool HasAppLaunchedOnColdStartAndRecordsLaunch() {
 }
 
 bool ShouldRegisterPromoWithPromoManager(bool is_signed_in) {
+  if (ShouldForceDefaultPromoType()) {
+    return YES;
+  }
   // Consider showing the default browser promo if (1) launch is not after a
   // crash, (2) chrome is not likely set as default browser, (3) the user has
   // not seen a default browser promo too recently, (4) the user is eligible

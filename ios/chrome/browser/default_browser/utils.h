@@ -22,7 +22,8 @@ typedef NS_ENUM(NSUInteger, DefaultPromoType) {
   DefaultPromoTypeGeneral = 0,
   DefaultPromoTypeStaySafe = 1,
   DefaultPromoTypeMadeForIOS = 2,
-  DefaultPromoTypeAllTabs = 3
+  DefaultPromoTypeAllTabs = 3,
+  DefaultPromoTypeVideo = 4,
 };
 
 namespace {
@@ -98,6 +99,14 @@ bool IsDefaultBrowserVideoPromoEnabled();
 
 // Returns true if the default browser video promo full screen enabled.
 bool IsDefaultBrowserVideoPromoFullscreenEnabled();
+
+// Returns true if the default browser promo triggering criteria should be
+// skipped.
+bool ShouldForceDefaultPromoType();
+
+// Returns the promo type (DefaultPromoType) of the default browser promo after
+// skipping the triggering criteria.
+DefaultPromoType ForceDefaultPromoType();
 
 // Returns true if the user is in the CTA experiment in the open links group.
 bool IsInCTAOpenLinksGroup();

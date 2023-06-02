@@ -80,6 +80,8 @@
       case DefaultPromoTypeAllTabs:
         [defaultPromoHandler showTailoredPromoAllTabs];
         break;
+      case DefaultPromoTypeVideo:
+        break;
     }
 
     appState.shouldShowDefaultBrowserPromo = NO;
