@@ -50,11 +50,12 @@ class TestWallpaperImageDownloader : public WallpaperImageDownloader {
  private:
   // Downloading from the internet will create a different ImageSkia each time.
   // To simulate this same behavior, which WallpaperControllerImpl relies upon,
-  // use a RepeatingClosure to generate a new image for each download.
+  // use a RepeatingClosure to generate a new image for each download. Returns a
+  // high resolution image to ensure image resizing flow triggers.
   ImageGenerator image_generator_ =
       base::BindRepeating(gfx::test::CreateImageSkia,
-                          /*width=*/10,
-                          /*height=*/20);
+                          /*width=*/3000,
+                          /*height=*/3000);
 };
 
 }  // namespace ash
