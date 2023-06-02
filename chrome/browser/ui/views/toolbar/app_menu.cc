@@ -1254,6 +1254,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         item->SetTitle(l10n_util::GetStringUTF16(IDS_EDIT2));
         item->AddChildView(
             std::make_unique<CutCopyPasteView>(this, submodel, 0, 1, 2));
+        item->set_children_use_full_width(true);
         break;
       }
 
@@ -1264,6 +1265,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
         DCHECK_EQ(IDC_FULLSCREEN, submodel->GetCommandIdAt(2));
         item->SetTitle(l10n_util::GetStringUTF16(IDS_ZOOM_MENU2));
         item->AddChildView(std::make_unique<ZoomView>(this, submodel, 0, 1, 2));
+        item->set_children_use_full_width(true);
         break;
       }
 
@@ -1321,8 +1323,6 @@ MenuItemView* AppMenu::AddMenuItem(MenuItemView* parent,
       model, model_index, parent, menu_index, command_id);
 
   if (menu_item) {
-    // Flush all buttons to the right side of the menu for the new menu type.
-    menu_item->set_use_right_margin(false);
     menu_item->SetVisible(model->IsVisibleAt(model_index));
 
     if (menu_type == MenuModel::TYPE_COMMAND && model->HasIcons()) {
