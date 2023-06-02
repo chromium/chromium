@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -28,6 +29,11 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
         ImageView sheetHeaderImage = mContent.findViewById(R.id.touch_to_fill_sheet_header_image);
         sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
                 context, PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
+        // TODO (crbug.com/1421753): Use real user account here instead of the fake one.
+        TextView sheetSubtitle = mContent.findViewById(R.id.touch_to_fill_sheet_subtitle);
+        sheetSubtitle.setText(
+                String.format(context.getString(R.string.password_generation_bottom_sheet_subtitle),
+                        "elisa.becket@gmail.com"));
     }
 
     @Override
