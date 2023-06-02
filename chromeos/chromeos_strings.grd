@@ -2747,6 +2747,36 @@
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER_ALT2" desc="Text for search result item which, when clicked, navigates the user to wallpaper settings. Alternate phrase for: 'Change wallpaper', 'Background'">
           Desktop
         </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> exclusive wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT1" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          Dawn to dark wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT2" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          Cloud flow wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT3" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          Earth flow wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT4" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          Sunrise wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT5" desc="Text for search result item which, when clicked, navigates the user to time of day wallpaper settings. Alternate phrase for: 'Time of day wallpaper'">
+          Sunset wallpaper
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY" desc="Text for search result item which, when clicked, navigates the user to time of day ambient mode settings, which allow the user to set special video backgrounds to be displayed when the device is idle. Alternate phrase for: 'Time of day screen saver'">
+          <ph name="PRODUCT_NAME">$1<ex>Chromebook</ex></ph> exclusive screen saver
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT1" desc="Text for search result item which, when clicked, navigates the user to time of day ambient mode settings, which allow the user to set special video backgrounds to be displayed when the device is idle. Alternate phrase for: 'Time of day screen saver'">
+          Dawn to dark screen saver
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT2" desc="Text for search result item which, when clicked, navigates the user to time of day ambient mode settings, which allow the user to set special video backgrounds to be displayed when the device is idle. Alternate phrase for: 'Time of day screen saver'">
+          Cloud flow screen saver
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT3" desc="Text for search result item which, when clicked, navigates the user to time of day ambient mode settings, which allow the user to set special video backgrounds to be displayed when the device is idle. Alternate phrase for: 'Time of day screen saver'">
+          Earth flow screen saver
+        </message>
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE" desc="Text for search result item which, when clicked, navigates the user to ambient mode settings, which allow the user to set backgrounds to be displayed when the device is idle.">
           Screen saver
         </message>

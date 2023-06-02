@@ -6,15 +6,18 @@
 
 #include <iterator>
 #include <map>
+#include <string>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/search/search.mojom-shared.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
@@ -22,7 +25,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -39,9 +45,7 @@ bool IsAmbientModeAllowed() {
 }
 
 std::string SearchConceptToId(const SearchConcept& search_concept) {
-  return base::NumberToString(
-      static_cast<std::underlying_type_t<mojom::SearchConceptId>>(
-          search_concept.id));
+  return base::NumberToString(base::to_underlying(search_concept.id));
 }
 
 std::vector<int> GetMessageIds(const SearchConcept& search_concept) {
@@ -62,8 +66,9 @@ std::vector<local_search_service::Content> SearchConceptToContentVector(
   std::vector<local_search_service::Content> content_vector;
 
   for (auto message_id : GetMessageIds(search_concept)) {
-    content_vector.emplace_back(base::NumberToString(message_id),
-                                l10n_util::GetStringUTF16(message_id));
+    content_vector.emplace_back(
+        base::NumberToString(message_id),
+        SearchTagRegistry::MessageIdToString(message_id));
   }
 
   return content_vector;
@@ -97,9 +102,34 @@ const SearchConcept& GetWallpaperSearchConcept() {
   return *search_concept;
 }
 
+const SearchConcept& GetTimeOfDayWallpaperSearchConcept() {
+  DCHECK(::ash::features::IsTimeOfDayWallpaperEnabled());
+  static const base::NoDestructor<const SearchConcept> search_concept({
+      .id = mojom::SearchConceptId::kTimeOfDayWallpaper,
+      .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER,
+      .alternate_message_ids =
+          {
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT1,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT2,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT3,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT4,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT5,
+          },
+      .relative_url =
+          base::StrCat({kWallpaperSubpageRelativeUrl, "/collection?id=",
+                        wallpaper_constants::kTimeOfDayWallpaperCollectionId}),
+  });
+  return *search_concept;
+}
+
 SearchTagRegistry::SearchConceptUpdates GetWallpaperEnterpriseUpdates(
     bool is_enterprise_managed) {
-  return {{&GetWallpaperSearchConcept(), !is_enterprise_managed}};
+  SearchTagRegistry::SearchConceptUpdates updates{
+      {&GetWallpaperSearchConcept(), !is_enterprise_managed}};
+  if (::ash::features::IsTimeOfDayWallpaperEnabled()) {
+    updates[&GetTimeOfDayWallpaperSearchConcept()] = !is_enterprise_managed;
+  }
+  return updates;
 }
 
 const SearchConcept& GetUserImageSearchConcept() {
@@ -130,6 +160,23 @@ const SearchConcept& GetAmbientSearchConcept() {
       .id = mojom::SearchConceptId::kAmbientMode,
       .message_id = IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE,
       .alternate_message_ids = {},
+      .relative_url = kAmbientSubpageRelativeUrl,
+  });
+  return *search_concept;
+}
+
+const SearchConcept& GetAmbientTimeOfDaySearchConcept() {
+  DCHECK(::ash::features::IsTimeOfDayScreenSaverEnabled());
+  static const base::NoDestructor<const SearchConcept> search_concept({
+      .id = mojom::SearchConceptId::kAmbientModeTimeOfDay,
+      .message_id =
+          IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY,
+      .alternate_message_ids =
+          {
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT1,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT2,
+              IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT3,
+          },
       .relative_url = kAmbientSubpageRelativeUrl,
   });
   return *search_concept;
@@ -317,6 +364,20 @@ const SearchConcept& GetKeyboardBacklightSearchConcept() {
 
 }  // namespace
 
+// static
+std::u16string SearchTagRegistry::MessageIdToString(int message_id) {
+  switch (message_id) {
+    case IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY:
+    case IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER:
+      return l10n_util::GetStringFUTF16(
+          message_id,
+          base::UTF8ToUTF16(
+              AmbientBackendController::Get()->GetTimeOfDayProductName()));
+    default:
+      return l10n_util::GetStringUTF16(message_id);
+  }
+}
+
 SearchTagRegistry::SearchTagRegistry(
     local_search_service::LocalSearchServiceProxy& local_search_service_proxy,
     PrefService* pref_service,
@@ -337,6 +398,7 @@ SearchTagRegistry::SearchTagRegistry(
 
   updates.merge(GetUserImageEnterpriseUpdates(
       enterprise_policy_delegate_->IsUserImageEnterpriseManaged()));
+
   updates.merge(GetWallpaperEnterpriseUpdates(
       enterprise_policy_delegate_->IsWallpaperEnterpriseManaged()));
 
@@ -357,6 +419,9 @@ SearchTagRegistry::SearchTagRegistry(
 
   if (IsAmbientModeAllowed()) {
     updates[&GetAmbientSearchConcept()] = true;
+    if (::ash::features::IsTimeOfDayScreenSaverEnabled()) {
+      updates[&GetAmbientTimeOfDaySearchConcept()] = true;
+    }
     updates.merge(GetAmbientPrefChangedUpdates(
         pref_service_->GetBoolean(::ash::ambient::prefs::kAmbientModeEnabled)));
   }
@@ -444,6 +509,7 @@ void SearchTagRegistry::OnIndexUpdateComplete(uint32_t num_deleted) {
 }
 
 void SearchTagRegistry::OnAmbientPrefChanged() {
+  DCHECK(IsAmbientModeAllowed());
   bool ambient_on =
       pref_service_->GetBoolean(::ash::ambient::prefs::kAmbientModeEnabled);
   UpdateSearchConcepts(GetAmbientPrefChangedUpdates(ambient_on));

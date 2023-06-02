@@ -82737,6 +82737,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 <enum name="PersonalizationSearchConceptId">
   <int value="0" label="kPersonalization"/>
   <int value="100" label="kChangeWallpaper"/>
+  <int value="101" label="kTimeOfDayWallpaper"/>
   <int value="200" label="kChangeDeviceAccountImage"/>
   <int value="300" label="kAmbientMode"/>
   <int value="301" label="kAmbientModeChooseSource"/>
@@ -82744,6 +82745,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="303" label="kAmbientModeGooglePhotos"/>
   <int value="304" label="kAmbientModeArtGallery"/>
   <int value="305" label="kAmbientModeTurnOn"/>
+  <int value="306" label="kAmbientModeTimeOfDay"/>
   <int value="400" label="kDarkMode"/>
   <int value="401" label="kDarkModeSchedule"/>
   <int value="402" label="kDarkModeTurnOff"/>

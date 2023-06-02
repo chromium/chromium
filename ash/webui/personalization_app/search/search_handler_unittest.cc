@@ -4,11 +4,13 @@
 
 #include "ash/webui/personalization_app/search/search_handler.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/personalization_app/enterprise_policy_delegate.h"
@@ -20,9 +22,12 @@
 #include "ash/webui/personalization_app/search/search_concept.h"
 #include "ash/webui/personalization_app/search/search_tag_registry.h"
 #include "base/functional/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom-test-utils.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
@@ -40,6 +45,22 @@ namespace {
 
 inline constexpr int kMaxNumResults = 3;
 
+constexpr std::array<int, 6> kTimeOfDayWallpaperMessageIds = {
+    IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER,
+    IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT1,
+    IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT2,
+    IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT3,
+    IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT4,
+    IDS_PERSONALIZATION_APP_SEARCH_RESULT_TIME_OF_DAY_WALLPAPER_ALT5,
+};
+
+constexpr std::array<int, 4> kAmbientModeTimeOfDayMessageIds = {
+    IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY,
+    IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT1,
+    IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT2,
+    IDS_PERSONALIZATION_APP_SEARCH_RESULT_AMBIENT_MODE_TIME_OF_DAY_ALT3,
+};
+
 bool HasSearchResult(const std::vector<mojom::SearchResultPtr>& search_results,
                      const std::u16string& text) {
   for (const auto& result : search_results) {
@@ -52,9 +73,7 @@ bool HasSearchResult(const std::vector<mojom::SearchResultPtr>& search_results,
 
 std::string SearchConceptIdToString(
     mojom::SearchConceptId search_result_concept) {
-  return base::NumberToString(
-      static_cast<std::underlying_type_t<mojom::SearchConceptId>>(
-          search_result_concept));
+  return base::NumberToString(base::to_underlying(search_result_concept));
 }
 
 class TestSearchResultsObserver : public mojom::SearchResultsObserver {
@@ -163,6 +182,11 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
     test_pref_service_->registry()->RegisterBooleanPref(
         ::ash::prefs::kDarkModeEnabled, false);
 
+    InitSearchHandler();
+  }
+
+  void InitSearchHandler() {
+    search_handler_remote_.reset();
     search_handler_ = std::make_unique<SearchHandler>(
         *local_search_service_proxy_, test_pref_service_.get(),
         std::make_unique<TestEnterprisePolicyDelegate>());
@@ -194,7 +218,7 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
     return search_handler_->search_tag_registry_.get();
   }
 
-  TestEnterprisePolicyDelegate* test_search_delegate() {
+  TestEnterprisePolicyDelegate* test_enterprise_policy_delegate() {
     return static_cast<TestEnterprisePolicyDelegate*>(
         search_tag_registry()->enterprise_policy_delegate_.get());
   }
@@ -209,7 +233,7 @@ class PersonalizationAppSearchHandlerTest : public AshTestBase {
 
   std::vector<mojom::SearchResultPtr> RunSearch(int message_id) {
     std::vector<mojom::SearchResultPtr> search_results;
-    std::u16string query = l10n_util::GetStringUTF16(message_id);
+    std::u16string query = SearchTagRegistry::MessageIdToString(message_id);
     // Search results match better if one character is subtracted.
     query.pop_back();
     mojom::SearchHandlerAsyncWaiter(search_handler_remote()->get())
@@ -316,7 +340,7 @@ TEST_F(PersonalizationAppSearchHandlerTest, RemovesAvatarForEnterprise) {
   TestSearchResultsObserver test_observer;
   search_handler_remote()->get()->AddObserver(test_observer.GetRemote());
 
-  test_search_delegate()->SetIsUserImageEnterpriseManaged(true);
+  test_enterprise_policy_delegate()->SetIsUserImageEnterpriseManaged(true);
 
   test_observer.WaitForSearchResultsChanged();
 
@@ -332,7 +356,7 @@ TEST_F(PersonalizationAppSearchHandlerTest, RemovesWallpaperForEnterprise) {
   TestSearchResultsObserver test_observer;
   search_handler_remote()->get()->AddObserver(test_observer.GetRemote());
 
-  test_search_delegate()->SetIsWallpaperImageEnterpriseManaged(true);
+  test_enterprise_policy_delegate()->SetIsWallpaperImageEnterpriseManaged(true);
 
   test_observer.WaitForSearchResultsChanged();
 
@@ -461,6 +485,139 @@ TEST_F(PersonalizationAppSearchHandlerTest, SortsAndTruncatesResults) {
                 IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE),
             results.at(1)->text);
   EXPECT_EQ(0.5, results.at(1)->relevance_score);
+}
+
+TEST_F(PersonalizationAppSearchHandlerTest, NoTimeOfDayWallpaperResults) {
+  for (const auto message_id : kTimeOfDayWallpaperMessageIds) {
+    std::vector<mojom::SearchResultPtr> time_of_day_search_results =
+        RunSearch(message_id);
+
+    auto time_of_day_result = base::ranges::find_if(
+        time_of_day_search_results, [](const auto& result) {
+          return result->search_concept_id ==
+                 mojom::SearchConceptId::kTimeOfDayWallpaper;
+        });
+
+    EXPECT_EQ(time_of_day_search_results.end(), time_of_day_result);
+  }
+}
+
+TEST_F(PersonalizationAppSearchHandlerTest, NoAmbientModeTimeOfDayResults) {
+  for (const auto message_id : kAmbientModeTimeOfDayMessageIds) {
+    std::vector<mojom::SearchResultPtr> time_of_day_search_results =
+        RunSearch(message_id);
+
+    auto time_of_day_result = base::ranges::find_if(
+        time_of_day_search_results, [](const auto& result) {
+          return result->search_concept_id ==
+                 mojom::SearchConceptId::kAmbientModeTimeOfDay;
+        });
+
+    EXPECT_EQ(time_of_day_search_results.end(), time_of_day_result);
+  }
+}
+
+class PersonalizationAppSearchHandlerTimeOfDayTest
+    : public PersonalizationAppSearchHandlerTest {
+ public:
+  PersonalizationAppSearchHandlerTimeOfDayTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {::ash::features::kTimeOfDayWallpaper,
+         ::ash::features::kTimeOfDayScreenSaver},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest, TimeOfDayWallpaperSearch) {
+  for (const auto message_id : kTimeOfDayWallpaperMessageIds) {
+    std::vector<mojom::SearchResultPtr> time_of_day_search_results =
+        RunSearch(message_id);
+
+    auto time_of_day_result = base::ranges::find_if(
+        time_of_day_search_results, [](const auto& result) {
+          return result->search_concept_id ==
+                 mojom::SearchConceptId::kTimeOfDayWallpaper;
+        });
+
+    EXPECT_NE(time_of_day_search_results.end(), time_of_day_result);
+    EXPECT_EQ("wallpaper/collection?id=_time_of_day_chromebook_collection",
+              time_of_day_result->get()->relative_url);
+  }
+}
+
+TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest,
+       AmbientModeTimeOfDaySearch) {
+  for (const auto message_id : kAmbientModeTimeOfDayMessageIds) {
+    std::vector<mojom::SearchResultPtr> time_of_day_search_results =
+        RunSearch(message_id);
+
+    auto time_of_day_result = base::ranges::find_if(
+        time_of_day_search_results, [](const auto& result) {
+          return result->search_concept_id ==
+                 mojom::SearchConceptId::kAmbientModeTimeOfDay;
+        });
+
+    EXPECT_NE(time_of_day_search_results.end(), time_of_day_result);
+    EXPECT_EQ(kAmbientSubpageRelativeUrl,
+              time_of_day_result->get()->relative_url);
+  }
+}
+
+TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest,
+       TimeOfDayWallpaperSearchPolicyControlled) {
+  test_enterprise_policy_delegate()->SetIsWallpaperImageEnterpriseManaged(true);
+
+  for (const auto message_id : kTimeOfDayWallpaperMessageIds) {
+    std::vector<mojom::SearchResultPtr> time_of_day_search_results =
+        RunSearch(message_id);
+
+    auto time_of_day_result = base::ranges::find_if(
+        time_of_day_search_results, [](const auto& result) {
+          return result->search_concept_id ==
+                 mojom::SearchConceptId::kTimeOfDayWallpaper;
+        });
+
+    EXPECT_EQ(time_of_day_search_results.end(), time_of_day_result);
+  }
+}
+
+TEST_F(PersonalizationAppSearchHandlerTimeOfDayTest,
+       TimeOfDayScreenSaverDisallowed) {
+  // Search tag registry does not live update when ambient mode allowed is set
+  // to false. This cannot happen during a session for a given account, so no
+  // need for an observer method. Log in as a non-eligible account and clear and
+  // recreate the search handler to receive updates.
+  SimulateUserLogin("asdf@example.com");
+  ClearSearchTagRegistry();
+  InitSearchHandler();
+  {
+    // Search another message id that should be present to confirm that search
+    // is still working.
+    std::vector<mojom::SearchResultPtr> other_search_results =
+        RunSearch(IDS_PERSONALIZATION_APP_SEARCH_RESULT_CHANGE_WALLPAPER);
+    auto desired_result =
+        base::ranges::find_if(other_search_results, [](const auto& result) {
+          return result->search_concept_id ==
+                 mojom::SearchConceptId::kChangeWallpaper;
+        });
+    ASSERT_NE(other_search_results.end(), desired_result);
+  }
+
+  for (const auto message_id : kAmbientModeTimeOfDayMessageIds) {
+    std::vector<mojom::SearchResultPtr> time_of_day_search_results =
+        RunSearch(message_id);
+
+    auto time_of_day_result = base::ranges::find_if(
+        time_of_day_search_results, [](const auto& result) {
+          return result->search_concept_id ==
+                 mojom::SearchConceptId::kAmbientModeTimeOfDay;
+        });
+
+    EXPECT_EQ(time_of_day_search_results.end(), time_of_day_result);
+  }
 }
 
 }  // namespace ash::personalization_app

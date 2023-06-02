@@ -12,6 +12,7 @@ import "mojo/public/mojom/base/string16.mojom";
 enum SearchConceptId {
     kPersonalization = 0,
     kChangeWallpaper = 100,
+    kTimeOfDayWallpaper = 101,
     kChangeDeviceAccountImage = 200,
     kAmbientMode = 300,
     kAmbientModeChooseSource = 301,
@@ -19,6 +20,7 @@ enum SearchConceptId {
     kAmbientModeGooglePhotos = 303,
     kAmbientModeArtGallery = 304,
     kAmbientModeTurnOn = 305,
+    kAmbientModeTimeOfDay = 306,
     kDarkMode = 400,
     kDarkModeSchedule = 401,
     kDarkModeTurnOff = 402,
