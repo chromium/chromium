@@ -411,6 +411,17 @@ void WillSendFedCmRequest(RenderFrameHost* render_frame_host,
 void WillShowFedCmDialog(RenderFrameHost* render_frame_host, bool* intercept);
 void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host);
 
+// Handles dev tools integration for fenced frame reporting beacons. Used in
+// `FencedFrameReporter`.
+void OnFencedFrameReportRequestSent(int initiator_frame_tree_node_id,
+                                    const std::string& devtools_request_id,
+                                    network::ResourceRequest& request);
+void OnFencedFrameReportResponseReceived(
+    int initiator_frame_tree_node_id,
+    const std::string& devtools_request_id,
+    const GURL& final_url,
+    scoped_refptr<net::HttpResponseHeaders> headers);
+
 }  // namespace devtools_instrumentation
 
 }  // namespace content

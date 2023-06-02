@@ -1940,6 +1940,46 @@ void OnFedCmAccountsDialogShown(RenderFrameHost* render_frame_host) {
   DispatchToAgents(ftn, &protocol::FedCmHandler::OnDialogShown);
 }
 
+void OnFencedFrameReportRequestSent(int initiator_frame_tree_node_id,
+                                    const std::string& devtools_request_id,
+                                    network::ResourceRequest& request) {
+  const net::HttpRequestHeaders& headers = request.headers;
+  network::mojom::URLRequestDevToolsInfoPtr request_info =
+      network::ExtractDevToolsInfo(request);
+
+  DispatchToAgents(initiator_frame_tree_node_id,
+                   &protocol::NetworkHandler::RequestSent,
+                   /*request_id=*/devtools_request_id,
+                   /*loader_id=*/devtools_request_id, headers, *request_info,
+                   protocol::Network::Initiator::TypeEnum::Other,
+                   /*initiator_url=*/absl::nullopt,
+                   /*initiator_devtools_request_id=*/devtools_request_id,
+                   base::TimeTicks::Now());
+}
+
+void OnFencedFrameReportResponseReceived(
+    int initiator_frame_tree_node_id,
+    const std::string& devtools_request_id,
+    const GURL& final_url,
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  network::mojom::URLResponseHeadDevToolsInfoPtr response_info =
+      network::mojom::URLResponseHeadDevToolsInfo::New();
+  response_info->headers = headers;
+
+  DispatchToAgents(initiator_frame_tree_node_id,
+                   &protocol::NetworkHandler::ResponseReceived,
+                   /*request_id=*/devtools_request_id,
+                   /*loader_id=*/devtools_request_id, final_url,
+                   protocol::Network::ResourceTypeEnum::Other, *response_info,
+                   /*frame_id=*/protocol::Maybe<std::string>());
+
+  DispatchToAgents(initiator_frame_tree_node_id,
+                   &protocol::NetworkHandler::LoadingComplete,
+                   /*request_id=*/devtools_request_id,
+                   protocol::Network::Initiator::TypeEnum::Other,
+                   network::URLLoaderCompletionStatus(net::OK));
+}
+
 }  // namespace devtools_instrumentation
 
 }  // namespace content
