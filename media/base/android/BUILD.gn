@@ -148,6 +148,7 @@ if (is_android) {
     sources = [
       "media_codec_bridge.h",
       "media_codec_direction.h",
+      "media_drm_bridge.h",
     ]
   }
 

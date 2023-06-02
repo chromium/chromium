@@ -14978,13 +14978,28 @@ Called by update_bad_message_reasons.py.-->
 <enum name="CdmSystemCode">
 <!-- System Code is CDM specific. Use this as a placeholder to treat sparse
 histogram as enum. Values from 1000000 are reserved/reported by Chromium and are
-not CDM specific. See media/base/cdm_promise.h. -->
+not CDM specific. See media/base/cdm_promise.h and
+media/base/android/media_drm_bridge.h. -->
 
   <int value="0" label="Unknown"/>
   <int value="1000000" label="kOk"/>
   <int value="1000001" label="kFailure"/>
   <int value="1000002" label="kAborted"/>
   <int value="1000003" label="kConnectionError"/>
+  <int value="1100000" label="SET_SERVER_CERTIFICATE_FAILED"/>
+  <int value="1100001" label="NO_MEDIA_DRM"/>
+  <int value="1100002" label="INVALID_SESSION_ID"/>
+  <int value="1100003" label="NOT_PROVISIONED"/>
+  <int value="1100004" label="CREATE_SESSION_FAILED"/>
+  <int value="1100005" label="OPEN_SESSION_FAILED"/>
+  <int value="1100006" label="UPDATE_FAILED"/>
+  <int value="1100007" label="NOT_PERSISTENT_LICENSE"/>
+  <int value="1100008" label="SET_KEY_TYPE_RELEASE_FAILED"/>
+  <int value="1100009" label="GET_KEY_REQUEST_FAILED"/>
+  <int value="1100010" label="KEY_UPDATE_FAILED"/>
+  <int value="1100011" label="GET_KEY_RELEASE_REQUEST_FAILED"/>
+  <int value="1100012" label="DENIED_BY_SERVER"/>
+  <int value="1100013" label="ILLEGAL_STATE"/>
 </enum>
 
 <enum name="CDPCommands">

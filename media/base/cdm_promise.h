@@ -48,7 +48,9 @@ class MEDIA_EXPORT CdmPromise {
   };
 
   // These values are reported to UMA. Never change existing values. Only add
-  // new values at the bottom of the list.
+  // new values at the bottom of the list. Note that values less than 1000000
+  // are reserved for errors reported by the CDM and from 1100000 are specified
+  // in MediaDrmBridge::MediaDrmSystemCode.
   // TODO(xhwang): Make SystemCode an enum class and pass |system_code| as
   // SystemCode everywhere.
   enum SystemCode : uint32_t {
