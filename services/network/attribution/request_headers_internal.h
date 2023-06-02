@@ -14,9 +14,9 @@
 namespace network {
 
 // Options controlling greasing during serialization of the
-// Attribution-Reporting-Eligible header, which contains a structured
-// dictionary.
-struct AttributionReportingEligibleGreaseOptions {
+// Attribution-Reporting-Eligible and Attribution-Reportnig-Support headers,
+// which contain structured dictionaries.
+struct AttributionReportingHeaderGreaseOptions {
   // Where to apply a grease.
   enum class GreaseContext : uint8_t {
     // The grease is not applied.
@@ -29,7 +29,9 @@ struct AttributionReportingEligibleGreaseOptions {
     kParamName = 3,
   };
 
-  static AttributionReportingEligibleGreaseOptions FromBits(uint64_t bits);
+  // Note: This function needs exactly 8 bits. If the size of this structure changes,
+  // `uint8_t` should be changed to a larger type.
+  static AttributionReportingHeaderGreaseOptions FromBits(uint8_t bits);
 
   // Whether to reverse the list of dictionary keys.
   bool reverse = false;
@@ -49,11 +51,13 @@ struct AttributionReportingEligibleGreaseOptions {
 // Must not be called with `mojom::AttributionReportingEligibility::kUnset`.
 std::string SerializeAttributionReportingEligibleHeader(
     mojom::AttributionReportingEligibility,
-    const AttributionReportingEligibleGreaseOptions&);
+    const AttributionReportingHeaderGreaseOptions&);
 
 // Returns the value to be set for the `Attribution-Reporting-Support` request
 // header.
-std::string GetAttributionSupportHeader(mojom::AttributionSupport);
+std::string GetAttributionSupportHeader(
+    mojom::AttributionSupport,
+    const AttributionReportingHeaderGreaseOptions&);
 
 }  // namespace network
 

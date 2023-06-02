@@ -294,9 +294,12 @@ void SetAttributionReportingHeaders(net::URLRequest& url_request,
     return;
   }
 
+  uint64_t grease_bits = base::RandUint64();
+
   std::string eligible_header = SerializeAttributionReportingEligibleHeader(
       request.attribution_reporting_eligibility,
-      AttributionReportingEligibleGreaseOptions::FromBits(base::RandUint64()));
+      AttributionReportingHeaderGreaseOptions::FromBits(grease_bits & 0xff));
+  grease_bits >>= 8;
 
   url_request.SetExtraRequestHeaderByName("Attribution-Reporting-Eligible",
                                           std::move(eligible_header),
@@ -312,8 +315,12 @@ void SetAttributionReportingHeaders(net::URLRequest& url_request,
           features::kAttributionReportingCrossAppWeb)) {
     url_request.SetExtraRequestHeaderByName(
         "Attribution-Reporting-Support",
-        GetAttributionSupportHeader(request.attribution_reporting_support),
+        GetAttributionSupportHeader(
+            request.attribution_reporting_support,
+            AttributionReportingHeaderGreaseOptions::FromBits(grease_bits &
+                                                              0xff)),
         /*overwrite=*/true);
+    grease_bits >>= 8;
   }
 }
 
