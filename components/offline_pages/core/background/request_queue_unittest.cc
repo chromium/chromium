@@ -571,9 +571,8 @@ TEST_F(RequestQueueTest, CleanStaleRequests) {
   OfflinerPolicy policy;
   RequestNotifierStub notifier;
   RequestCoordinatorEventLogger event_logger;
-  std::unique_ptr<CleanupTaskFactory> cleanup_factory(
-      new CleanupTaskFactory(&policy, &notifier, &event_logger));
-  queue()->SetCleanupFactory(std::move(cleanup_factory));
+  queue()->SetCleanupFactory(
+      std::make_unique<CleanupTaskFactory>(&policy, &notifier, &event_logger));
 
   // Do a pick and clean operation, which will remove stale entries.
   DeviceConditions conditions;
@@ -594,6 +593,7 @@ TEST_F(RequestQueueTest, CleanStaleRequests) {
   this->PumpLoop();
   ASSERT_EQ(GetRequestsResult::SUCCESS, this->last_get_requests_result());
   ASSERT_TRUE(this->last_requests().empty());
+  queue()->SetCleanupFactory(nullptr);
 }
 
 }  // namespace offline_pages
