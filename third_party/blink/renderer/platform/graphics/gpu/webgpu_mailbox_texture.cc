@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "media/base/video_frame.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
@@ -190,10 +191,10 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
 
   // This may fail because gl_backing resource cannot produce dawn
   // representation.
-  webgpu->AssociateMailbox(wire_device_id_, wire_device_generation_,
-                           wire_texture_id_, wire_texture_generation_,
-                           desc.usage, desc.viewFormats, desc.viewFormatCount,
-                           mailbox_flags, mailbox);
+  webgpu->AssociateMailbox(
+      wire_device_id_, wire_device_generation_, wire_texture_id_,
+      wire_texture_generation_, desc.usage, desc.viewFormats,
+      base::checked_cast<GLuint>(desc.viewFormatCount), mailbox_flags, mailbox);
 }
 
 void WebGPUMailboxTexture::SetAlphaClearer(
