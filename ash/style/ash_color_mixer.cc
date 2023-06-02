@@ -508,6 +508,67 @@ void ReverseMapSysColors(ui::ColorMixer& mixer, bool dark_mode) {
   mixer[kColorAshTileSmallCircle] =
       dark_mode ? ui::ColorTransform(cros_tokens::kCrosSysHighlightShape)
                 : ui::SetAlpha(gfx::kGoogleBlue600, 31);  // 12% opacity
+
+  // Remap illo tokens to GM2 equivilants so GM3 assets will render reasonably
+  // if the jelly flag is flipped off for launch.
+  mixer[cros_tokens::kCrosSysIlloColor1] = {cros_tokens::kIllustrationColor1};
+  mixer[cros_tokens::kCrosSysIlloColor11] = {
+      cros_tokens::kIllustrationColor1Shade1};
+  mixer[cros_tokens::kCrosSysIlloColor12] = {
+      cros_tokens::kIllustrationColor1Shade2};
+  mixer[cros_tokens::kCrosSysIlloColor2] = {cros_tokens::kIllustrationColor2};
+  mixer[cros_tokens::kCrosSysIlloColor3] = {cros_tokens::kIllustrationColor3};
+  mixer[cros_tokens::kCrosSysIlloColor4] = {cros_tokens::kIllustrationColor4};
+  mixer[cros_tokens::kCrosSysIlloColor5] = {cros_tokens::kIllustrationColor5};
+  mixer[cros_tokens::kCrosSysIlloColor6] = {cros_tokens::kIllustrationColor6};
+  mixer[cros_tokens::kCrosSysIlloBase] = {cros_tokens::kIllustrationBaseColor};
+  mixer[cros_tokens::kCrosSysIlloSecondary] = {
+      cros_tokens::kIllustrationSecondaryColor};
+  // Card colors are new in GM3 and have no equivalent GM2 token. As such as map
+  // them to hex codes directly as specified in go/cros-tokens.
+  mixer[cros_tokens::kCrosSysIlloCardColor1] =
+      dark_mode ? ui::ColorTransform(SkColorSetRGB(0x42, 0x4d, 0x63))
+                : SkColorSetRGB(0xff, 0xca, 0xd1);
+  mixer[cros_tokens::kCrosSysIlloCardOnColor1] =
+      dark_mode ? ui::ColorTransform(SkColorSetRGB(0xf6, 0xae, 0xa9))
+                : SkColorSetRGB(0xa5, 0x0e, 0x0e);
+  mixer[cros_tokens::kCrosSysIlloCardColor2] =
+      dark_mode ? ui::ColorTransform(SkColorSetRGB(0x62, 0x5a, 0x47))
+                : SkColorSetRGB(0xfb, 0xe0, 0x97);
+  mixer[cros_tokens::kCrosSysIlloCardOnColor2] =
+      dark_mode ? ui::ColorTransform(SkColorSetRGB(0xfd, 0xe2, 0x93))
+                : SkColorSetRGB(0x9b, 0x61, 0x00);
+  mixer[cros_tokens::kCrosSysIlloCardColor3] =
+      dark_mode ? ui::ColorTransform(SkColorSetRGB(0x4d, 0x63, 0x52))
+                : SkColorSetRGB(0xc6, 0xeb, 0xcb);
+  mixer[cros_tokens::kCrosSysIlloCardOnColor3] =
+      dark_mode ? ui::ColorTransform(SkColorSetRGB(0xa8, 0xda, 0xb5))
+                : SkColorSetRGB(0x0d, 0x65, 0x2d);
+  mixer[cros_tokens::kCrosSysIlloCardColor4] =
+      dark_mode ? ui::ColorTransform(SkColorSetRGB(0x42, 0x4d, 0x63))
+                : SkColorSetRGB(0xd0, 0xe1, 0xfa);
+  mixer[cros_tokens::kCrosSysIlloCardOnColor4] =
+      dark_mode ? ui::ColorTransform(SkColorSetRGB(0xae, 0xcb, 0xfa))
+                : SkColorSetRGB(0x18, 0x5a, 0xbc);
+  mixer[cros_tokens::kCrosSysIlloCardColor5] =
+      dark_mode ? ui::ColorTransform(SkColorSetRGB(0x51, 0x40, 0x64))
+                : SkColorSetRGB(0xf6, 0xe9, 0xf8);
+  mixer[cros_tokens::kCrosSysIlloCardOnColor5] =
+      dark_mode ? ui::ColorTransform(SkColorSetRGB(0xd7, 0xae, 0xfb))
+                : SkColorSetRGB(0x75, 0x09, 0x9b);
+  // Some GM2 assets are "elevated" meaning they have slightly different
+  // colors to improve contrast on their elevated surfaces in dark mode. To
+  // handle this we create "elevated" sys tokens that are the same as their
+  // unelevated counterparts when the jelly flag is on but resolve to higher
+  // contrast GM2 colors when jelly is off and dark mode is on.
+  mixer[cros_tokens::kCrosSysIlloElevatedColor11] = {
+      cros_tokens::kIllustrationElevationColor1Shade1};
+  mixer[cros_tokens::kCrosSysIlloElevatedColor12] = {
+      cros_tokens::kIllustrationElevationColor1Shade2};
+  mixer[cros_tokens::kCrosSysIlloElevatedBase] = {
+      cros_tokens::kIllustrationElevationBaseColor};
+  mixer[cros_tokens::kCrosSysIlloElevatedSecondary] = {
+      cros_tokens::kIllustrationElevationSecondaryColor};
 }
 
 }  // namespace

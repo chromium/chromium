@@ -69,7 +69,8 @@
 
   ::slotted([slot=header-image]) {
     /* As this surface is a dialog, replace the color palette with its elevated
-     * variant. */
+     * variant. We also do this for GM3 assets so that they correctly map back
+     * to GM2 tokens when the jelly flag is off. */
     --cros-illustration-color-1-shade-1: var(
       --cros-illustration-elevation-color-1-shade-1);
     --cros-illustration-color-1-shade-2: var(
@@ -78,6 +79,11 @@
       --cros-illustration-elevation-base-color);
     --cros-illustration-secondary-color: var(
       --cros-illustration-elevation-secondary-color);
+    --cros-sys-illo-color1-1: var(--cros-sys-illo-elevated-color-1-1);
+    --cros-sys-illo-color1-2: var(--cros-sys-illo-elevated-color-1-2);
+    --cros-sys-illo-base: var(--cros-sys-illo-elevated-base);
+    --cros-sys-illo-secondary: var(--cros-sys-illo-elevated-secondary);
+
 
     height: 100%;
     width: 100%;

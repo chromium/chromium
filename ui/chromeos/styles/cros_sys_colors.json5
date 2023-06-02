@@ -549,6 +549,22 @@
       generate_per_mode: true,
     },
 
+    /*
+     * Some GM2 assets are "elevated" meaning they have slightly different
+     * colors to improve contrast on their elevated surfaces in dark mode.
+     * Updating these assets to GM3 poses a issue as they need to render with
+     * elevated colors when the kJelly flag is OFF but with sys illo tokens when
+     * the jelly flag is ON. To support this we map sys illo references for
+     * assets on elevated surfaces to the following elevated sys token set.
+     * These colors are identical to their non elevated counterparts when the 
+     * jelly flag is ON but when the flag is off they get remapped to the
+     * correct GM2 eleavted token.
+     */
+    'illo.elevated.color1.1': '$cros.sys.illo.color1.1',
+    'illo.elevated.color1.2': '$cros.sys.illo.color1.2',
+    'illo.elevated.base': '$cros.sys.illo.base',
+    'illo.elevated.secondary': '$cros.sys.illo.secondary',
+
     /* Icon colors. */
     'file-ms-excel': '#16a765',
     'file-ms-word': '#4986e7',
