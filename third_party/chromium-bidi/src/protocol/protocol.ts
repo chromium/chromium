@@ -24,18 +24,20 @@
 
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-export interface EventResponse<MethodType, ParamsType> {
+interface EventResponse<MethodType, ParamsType> {
   method: MethodType;
   params: ParamsType;
 }
 
-export type BiDiCommand =
+type BiDiCommand =
+  // keep-sorted start
   | BrowsingContext.Command
   | CDP.Command
+  | Input.Command
   | Network.Command
   | Script.Command
-  | Session.Command
-  | Input.Command;
+  | Session.Command;
+// keep-sorted end
 
 export namespace Message {
   export type OutgoingMessage =
@@ -47,7 +49,7 @@ export namespace Message {
     id: number;
     method: BiDiCommand['method'];
     params: BiDiCommand['params'];
-    channel?: string;
+    channel?: Script.Channel;
   };
 
   export type CommandRequest = Pick<RawCommandRequest, 'id'> & BiDiCommand;
@@ -1220,7 +1222,7 @@ export namespace CDP {
 export namespace Session {
   export type Command = StatusCommand | SubscribeCommand | UnsubscribeCommand;
 
-  export type Result = StatusResult | SubscribeResult | UnsubscribeResult;
+  export type Result = StatusResult;
 
   export type StatusCommand = {
     method: 'session.status';
@@ -1258,14 +1260,10 @@ export namespace Session {
     contexts?: CommonDataTypes.BrowsingContext[];
   };
 
-  export type SubscribeResult = Message.EmptyResult;
-
   export type UnsubscribeCommand = {
     method: 'session.unsubscribe';
     params: SubscriptionRequest;
   };
-
-  export type UnsubscribeResult = Message.EmptyResult;
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-input */
