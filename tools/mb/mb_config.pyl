@@ -1115,7 +1115,7 @@
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
       'linux-chromeos-rel-rts': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient',
-      'linux-lacros-rel': 'lacros_on_linux_release_trybot_reclient',
+      'linux-lacros-rel': 'lacros_on_linux_release_trybot_reclient_code_coverage',
       'linux-lacros-rel-rts': 'lacros_on_linux_release_trybot_reclient',
     },
 
@@ -2998,6 +2998,10 @@
 
     'lacros_on_linux_release_trybot_reclient': [
       'lacros_on_linux_release_trybot_reclient',
+    ],
+
+    'lacros_on_linux_release_trybot_reclient_code_coverage': [
+      'lacros_on_linux_release_trybot_reclient', 'clang', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'lacros_on_linux_tot_debug': [

@@ -279,8 +279,10 @@ try_.orchestrator_builder(
     ],
     check_for_flakiness = True,
     compilator = "linux-lacros-rel-compilator",
+    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     tryjob = try_.job(),
+    use_clang_coverage = True,
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
