@@ -49,7 +49,9 @@ const HostResolverInternalResult* HostResolverCache::Lookup(
   for (const EntryMap::const_iterator& candidate : candidates) {
     DCHECK(candidate->second.result->timed_expiration().has_value());
 
-    if (candidate->second.result->expiration().has_value()) {
+    if (candidate->second.staleness_generation != staleness_generation_) {
+      continue;
+    } else if (candidate->second.result->expiration().has_value()) {
       if (candidate->second.result->expiration() <= now_ticks) {
         continue;
       }
@@ -86,15 +88,24 @@ void HostResolverCache::Set(
   }
 
   std::string domain_name = result->domain_name();
-  entries_.emplace(Key(std::move(domain_name), network_anonymization_key),
-                   Entry(std::move(result), source, secure));
+  entries_.emplace(
+      Key(std::move(domain_name), network_anonymization_key),
+      Entry(std::move(result), source, secure, staleness_generation_));
+}
+
+void HostResolverCache::MakeAllResultsStale() {
+  ++staleness_generation_;
 }
 
 HostResolverCache::Entry::Entry(
     std::unique_ptr<HostResolverInternalResult> result,
     HostResolverSource source,
-    bool secure)
-    : result(std::move(result)), source(source), secure(secure) {}
+    bool secure,
+    int staleness_generation)
+    : result(std::move(result)),
+      source(source),
+      secure(secure),
+      staleness_generation(staleness_generation) {}
 
 HostResolverCache::Entry::~Entry() = default;
 

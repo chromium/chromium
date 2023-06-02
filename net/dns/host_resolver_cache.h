@@ -66,6 +66,11 @@ class NET_EXPORT HostResolverCache final {
            HostResolverSource source,
            bool secure);
 
+  // Makes all cached results considered stale. Typically used for network
+  // change to ensure cached results are only considered active for the current
+  // network.
+  void MakeAllResultsStale();
+
  private:
   struct Key {
     std::string domain_name;
@@ -100,7 +105,8 @@ class NET_EXPORT HostResolverCache final {
   struct Entry {
     Entry(std::unique_ptr<HostResolverInternalResult> result,
           HostResolverSource source,
-          bool secure);
+          bool secure,
+          int staleness_generation);
     ~Entry();
 
     Entry(Entry&&);
@@ -109,6 +115,11 @@ class NET_EXPORT HostResolverCache final {
     std::unique_ptr<HostResolverInternalResult> result;
     HostResolverSource source;
     bool secure;
+
+    // The `HostResolverCache::staleness_generation_` value at the time this
+    // entry was created. Entry is stale if this does not match the current
+    // value.
+    int staleness_generation;
   };
 
   using EntryMap = std::multimap<Key, Entry, KeyComparator>;
@@ -122,6 +133,9 @@ class NET_EXPORT HostResolverCache final {
       absl::optional<bool> secure) const;
 
   EntryMap entries_;
+
+  // Number of times MakeAllEntriesStale() has been called.
+  int staleness_generation_ = 0;
 
   raw_ref<const base::Clock> clock_;
   raw_ref<const base::TickClock> tick_clock_;
