@@ -366,7 +366,7 @@
               "wpt_internal/compute-pressure"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=ComputePressure"],
-    "expires": "Jul 1, 2023"
+    "expires": "Feb 1, 2024"
   },
   {
     "prefix": "highdpi-threaded",
