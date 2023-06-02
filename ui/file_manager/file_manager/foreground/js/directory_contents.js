@@ -412,6 +412,7 @@ export class SearchV2ContentScanner extends ContentScanner {
           });
     });
     return new Promise((resolve, reject) => {
+      metrics.startInterval('Search.DocumentsProvider.Latency');
       const collectedEntries = [];
       let workLeft = 1;
       util.readEntriesRecursively(
@@ -441,6 +442,8 @@ export class SearchV2ContentScanner extends ContentScanner {
                     collectedEntries.push(...modified.filter(e => e !== null));
                     workLeft -= modified.length;
                     if (workLeft <= 0) {
+                      metrics.recordInterval(
+                          'Search.DocumentsProvider.Latency');
                       resolve(collectedEntries);
                     }
                   });
@@ -449,6 +452,7 @@ export class SearchV2ContentScanner extends ContentScanner {
           // All entries read callback.
           () => {
             if (--workLeft <= 0) {
+              metrics.recordInterval('Search.DocumentsProvider.Latency');
               resolve(collectedEntries);
             }
           },

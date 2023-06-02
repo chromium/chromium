@@ -1135,6 +1135,7 @@ chromium-metrics-reviews@google.com.
     ChromeOS File Browser: The time it took to complete user search request.
   </summary>
   <token key="Source">
+    <variant name="DocumentsProvider"/>
     <variant name="Drive"/>
     <variant name="Local"/>
     <variant name="Removable"/>
