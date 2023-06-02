@@ -24,6 +24,9 @@ interface PageHandler {
 
   // Emits a OneDrive unmount request and returns whether the request succeeded.
   DisconnectFromOneDrive() => (bool success);
+
+  // Opens Files app on OneDrive folder location.
+  OpenOneDriveFolder() => (bool success);
 };
 
 // Interface for the OneDrive settings. Implemented in Javascript and

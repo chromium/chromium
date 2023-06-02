@@ -26,5 +26,6 @@ export class OneDriveTestBrowserProxy implements OneDriveBrowserProxy {
     this.handler.setResultFor('getUserEmailAddress', {email: options.email});
     this.handler.setResultFor('connectToOneDrive', {success: true});
     this.handler.setResultFor('disconnectFromOneDrive', {success: true});
+    this.handler.setResultFor('openOneDriveFolder', {success: true});
   }
 }

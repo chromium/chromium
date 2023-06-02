@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/webui/settings/ash/files_page/one_drive_page_handler.h"
 
+#include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/one_drive_handler.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,6 +39,13 @@ void OnRequestODFSMountResult(
     OneDrivePageHandler::ConnectToOneDriveCallback callback,
     base::File::Error result) {
   std::move(callback).Run(result == base::File::Error::FILE_OK);
+}
+
+void OnShowItemInFolder(
+    OneDrivePageHandler::OpenOneDriveFolderCallback callback,
+    platform_util::OpenOperationResult result) {
+  std::move(callback).Run(result ==
+                          platform_util::OpenOperationResult::OPEN_SUCCEEDED);
 }
 }  // namespace
 
@@ -94,7 +103,7 @@ void OneDrivePageHandler::ConnectToOneDrive(
     ConnectToOneDriveCallback callback) {
   file_system_provider::Service* service =
       file_system_provider::Service::Get(profile_);
-  DCHECK(service);
+  CHECK(service);
   file_system_provider::ProviderId provider_id =
       file_system_provider::ProviderId::CreateFromExtensionId(
           file_manager::file_tasks::GetODFSExtensionId(profile_));
@@ -114,7 +123,7 @@ void OneDrivePageHandler::DisconnectFromOneDrive(
     DisconnectFromOneDriveCallback callback) {
   file_system_provider::Service* service =
       file_system_provider::Service::Get(profile_);
-  DCHECK(service);
+  CHECK(service);
   file_system_provider::ProviderId provider_id =
       file_system_provider::ProviderId::CreateFromExtensionId(
           file_manager::file_tasks::GetODFSExtensionId(profile_));
@@ -129,6 +138,27 @@ void OneDrivePageHandler::DisconnectFromOneDrive(
   std::move(callback).Run(
       service->RequestUnmount(odfs_file_system_infos[0].provider_id(),
                               odfs_file_system_infos[0].file_system_id()));
+}
+
+void OneDrivePageHandler::OpenOneDriveFolder(
+    OpenOneDriveFolderCallback callback) {
+  file_system_provider::Service* service =
+      file_system_provider::Service::Get(profile_);
+  CHECK(service);
+  file_system_provider::ProviderId provider_id =
+      file_system_provider::ProviderId::CreateFromExtensionId(
+          file_manager::file_tasks::GetODFSExtensionId(profile_));
+  std::vector<file_system_provider::ProvidedFileSystemInfo>
+      odfs_file_system_infos =
+          service->GetProvidedFileSystemInfoList(provider_id);
+  if (odfs_file_system_infos.size() == 0) {
+    // ODFS is not mounted.
+    std::move(callback).Run(false);
+    return;
+  }
+  file_manager::util::ShowItemInFolder(
+      profile_, odfs_file_system_infos[0].mount_path(),
+      base::BindOnce(&OnShowItemInFolder, std::move(callback)));
 }
 
 void OneDrivePageHandler::OnProvidedFileSystemMount(

@@ -8,7 +8,7 @@ import {SettingsOneDriveSubpageElement} from 'chrome://os-settings/lazy_load.js'
 import {OneDriveBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertAsync} from '../utils.js';
 
@@ -34,22 +34,24 @@ suite('<one-google-drive-subpage>', function() {
     flush();
   }
 
-  test(
-      'display user email address and disconnect button when signed in',
-      async () => {
-        const email = 'email@gmail.com';
-        await setupOneDrivePage({email});
-        const signedInAsLabelElement =
-            oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-                '#signedInAsLabel')!;
-        const connectDisconnectButton =
-            oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
-                '#oneDriveConnectDisconnect')!;
-        assertEquals('Signed in as ' + email, signedInAsLabelElement.innerText);
-        assertEquals('Disconnect', connectDisconnectButton.textContent!.trim());
-      });
+  test('Signed in page content', async () => {
+    const email = 'email@gmail.com';
+    await setupOneDrivePage({email});
+    const signedInAsLabelElement =
+        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#signedInAsLabel')!;
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    const openOneDriveFolderButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#openOneDriveFolder')!;
+    assertEquals('Signed in as ' + email, signedInAsLabelElement.innerText);
+    assertEquals('Disconnect', connectDisconnectButton.textContent!.trim());
+    assertTrue(!!openOneDriveFolderButton);
+  });
 
-  test('display disconnected and connect button when signed out', async () => {
+  test('Signed out page content', async () => {
     await setupOneDrivePage({
       email: null,
     });
@@ -59,9 +61,13 @@ suite('<one-google-drive-subpage>', function() {
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
+    const openOneDriveFolderButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#openOneDriveFolder')!;
     assertEquals('Disconnected', signedInAsLabelElement.innerText);
     assertEquals(
         'Connect account', connectDisconnectButton.textContent!.trim());
+    assertFalse(!!openOneDriveFolderButton);
   });
 
   test('Update page to signed in state on OneDrive mount', async () => {
@@ -139,5 +145,17 @@ suite('<one-google-drive-subpage>', function() {
         0, testOneDriveProxy.handler.getCallCount('connectToOneDrive'));
     assertEquals(
         1, testOneDriveProxy.handler.getCallCount('disconnectFromOneDrive'));
+  });
+
+  test('Open OneDrive folder', async () => {
+    const email = 'email@gmail.com';
+    await setupOneDrivePage({email});
+    const openOneDriveFolderButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#openOneDriveFolder')!;
+
+    openOneDriveFolderButton.click();
+    assertEquals(
+        1, testOneDriveProxy.handler.getCallCount('openOneDriveFolder'));
   });
 });

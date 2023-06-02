@@ -9,7 +9,8 @@
   </cr-button>
 </div>
 <template is="dom-if" if="[[connected_]]">
-  <cr-link-row class="hr"
+  <cr-link-row id="openOneDriveFolder"
+      class="hr"
       on-click="onOpenOneDriveFolderClick_"
       label="$i18n{openOneDriveFolder}"
       external>
