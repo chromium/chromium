@@ -25,7 +25,7 @@ import {
 } from '../../../protocol/protocol.js';
 import {LoggerFn, LogType} from '../../../utils/log.js';
 import {Deferred} from '../../../utils/deferred.js';
-import {IEventManager} from '../events/EventManager.js';
+import type {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
 

@@ -23,7 +23,7 @@
 import Protocol from 'devtools-protocol';
 
 import {Deferred} from '../../../utils/deferred.js';
-import {IEventManager} from '../events/EventManager.js';
+import type {IEventManager} from '../events/EventManager.js';
 import {Network} from '../../../protocol/protocol.js';
 
 export class NetworkRequest {

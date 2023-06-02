@@ -19,34 +19,25 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import {EventEmitter} from '../utils/EventEmitter.js';
 
-import {CdpConnection, CloseError} from './cdpConnection.js';
+import type {CdpConnection} from './cdpConnection.js';
 
-type CdpEvents = {
+export type CdpEvents = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
 };
 
-export class CdpClient extends EventEmitter<CdpEvents> {
-  #cdpConnection: CdpConnection;
-  #sessionId: string | null;
+/** A error that will be thrown if/when the connection is closed. */
+export class CloseError extends Error {}
 
-  constructor(cdpConnection: CdpConnection, sessionId: string | null) {
-    super();
-    this.#cdpConnection = cdpConnection;
-    this.#sessionId = sessionId;
-  }
-
+export interface ICdpClient extends EventEmitter<CdpEvents> {
   /**
-   * Creates a new CDP client object that communicates with the browser using a
-   * given transport mechanism.
-   * @param transport A transport object that will be used to send and receive raw CDP messages.
-   * @return A connected CDP client object.
+   * Provides an unique way to detect if an error was caused by the closure of a
+   * Target or Session.
+   *
+   * @example During the creation of a subframe we navigate the main frame.
+   * The subframe Target is closed while initialized commands are in-flight.
+   * In this case we want to swallow the thrown error.
    */
-  static create(
-    cdpConnection: CdpConnection,
-    sessionId: string | null
-  ): CdpClient {
-    return new CdpClient(cdpConnection, sessionId);
-  }
+  isCloseError(error: unknown): boolean;
 
   /**
    * Returns a command promise, which will be resolved with the command result
@@ -57,9 +48,25 @@ export class CdpClient extends EventEmitter<CdpEvents> {
   sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
     method: CdpMethod,
     ...params: ProtocolMapping.Commands[CdpMethod]['paramsType']
+  ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']>;
+}
+
+/** Represents a high-level CDP connection to the browser. */
+export class CdpClient extends EventEmitter<CdpEvents> implements ICdpClient {
+  #cdpConnection: CdpConnection;
+  #sessionId?: string;
+
+  constructor(cdpConnection: CdpConnection, sessionId?: string) {
+    super();
+    this.#cdpConnection = cdpConnection;
+    this.#sessionId = sessionId;
+  }
+
+  sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
+    method: CdpMethod,
+    ...params: ProtocolMapping.Commands[CdpMethod]['paramsType']
   ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']> {
-    const param = params[0];
-    return this.#cdpConnection.sendCommand(method, param, this.#sessionId);
+    return this.#cdpConnection.sendCommand(method, params[0], this.#sessionId);
   }
 
   isCloseError(error: unknown): boolean {

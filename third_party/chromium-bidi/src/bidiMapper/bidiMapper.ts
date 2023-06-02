@@ -18,9 +18,14 @@
 /**
  * @fileoverview The entry point to the BiDi Mapper namespace.
  * Other modules should only access exports defined in this file.
- * XXX: eslint rule for this.
+ * XXX: Add ESlint rule for this (https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-restricted-paths.md)
  */
-export {CdpConnection, CdpClient} from './CdpConnection.js';
 export {BidiServer} from './BidiServer.js';
-export {BidiTransport} from './BidiTransport.js';
-export {EventEmitter} from '../utils/EventEmitter.js';
+export type {
+  ICdpConnection,
+  ICdpConnection as CdpConnection,
+} from '../cdp/cdpConnection.js';
+export type {ICdpClient, ICdpClient as CdpClient} from '../cdp/cdpClient.js';
+export type {BidiTransport} from './BidiTransport.js';
+export {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
+export type {BidiParser} from './CommandProcessor.js';

@@ -24,14 +24,15 @@ import {
   Script,
 } from '../../../protocol/protocol.js';
 import {LogType, LoggerFn} from '../../../utils/log.js';
-import {CdpClient, CdpConnection} from '../../CdpConnection.js';
-import {IEventManager} from '../events/EventManager.js';
+import type {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
 import {ActionOption} from '../input/ActionOption.js';
 import {InputStateManager} from '../input/InputStateManager.js';
 import {ActionDispatcher} from '../input/ActionDispatcher.js';
 import {InputState} from '../input/InputState.js';
+import type {ICdpConnection} from '../../../cdp/cdpConnection.js';
+import type {ICdpClient} from '../../../cdp/cdpClient.js';
 
 import {
   BidiPreloadScript,
@@ -44,7 +45,7 @@ import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #cdpConnection: CdpConnection;
+  readonly #cdpConnection: ICdpConnection;
   readonly #eventManager: IEventManager;
   readonly #logger?: LoggerFn;
   readonly #realmStorage: RealmStorage;
@@ -54,7 +55,7 @@ export class BrowsingContextProcessor {
 
   constructor(
     realmStorage: RealmStorage,
-    cdpConnection: CdpConnection,
+    cdpConnection: ICdpConnection,
     selfTargetId: string,
     eventManager: IEventManager,
     browsingContextStorage: BrowsingContextStorage,
@@ -75,7 +76,7 @@ export class BrowsingContextProcessor {
    * This method is called for each CDP session, since this class is responsible
    * for creating and destroying all targets and browsing contexts.
    */
-  #setEventListeners(cdpClient: CdpClient) {
+  #setEventListeners(cdpClient: ICdpClient) {
     cdpClient.on('Target.attachedToTarget', (params) => {
       this.#handleAttachedToTargetEvent(params, cdpClient);
     });
@@ -124,7 +125,7 @@ export class BrowsingContextProcessor {
 
   #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent,
-    parentSessionCdpClient: CdpClient
+    parentSessionCdpClient: ICdpClient
   ) {
     const {sessionId, targetInfo} = params;
 

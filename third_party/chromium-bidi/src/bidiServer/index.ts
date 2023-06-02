@@ -29,7 +29,7 @@ import {
   ChromeReleaseChannel,
 } from '@puppeteer/browsers';
 
-import {ITransport} from '../utils/transport.js';
+import type {ITransport} from '../utils/transport.js';
 
 import {BidiServerRunner} from './bidiServerRunner.js';
 import {MapperServer} from './mapperServer.js';

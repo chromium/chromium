@@ -26,13 +26,15 @@ import {
   Script,
   Session,
 } from '../protocol/protocol';
-import {BidiParser} from '../bidiMapper/CommandProcessor.js';
-import {BidiServer} from '../bidiMapper/BidiServer.js';
-import {BidiTransport} from '../bidiMapper/bidiMapper.js';
-import {CdpConnection} from '../cdp/index.js';
-import {ITransport} from '../utils/transport.js';
+import {
+  BidiParser,
+  BidiServer,
+  BidiTransport,
+  OutgoingBidiMessage,
+} from '../bidiMapper/bidiMapper.js';
+import {CdpConnection} from '../cdp/cdpConnection.js';
+import type {ITransport} from '../utils/transport.js';
 import {LogType} from '../utils/log.js';
-import {OutgoingBidiMessage} from '../bidiMapper/OutgoingBidiMessage.js';
 
 import {generatePage, log} from './mapperTabPage.js';
 

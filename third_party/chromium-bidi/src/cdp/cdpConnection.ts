@@ -16,26 +16,30 @@
  */
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import {ITransport} from '../utils/transport.js';
+import type {ITransport} from '../utils/transport.js';
 
-import {CdpClient} from './cdpClient.js';
+import {CloseError, CdpClient, ICdpClient} from './cdpClient.js';
 import {CdpMessage} from './cdpMessage.js';
 
 interface CdpCallbacks {
-  resolve: (messageObj: object) => void;
-  reject: (errorObj: object) => void;
+  resolve: (result: CdpMessage<any>['result']) => void;
+  reject: (error: object) => void;
   error: Error;
 }
 
-/** A error that will be thrown if/when the connection is closed. */
-export class CloseError extends Error {}
+export interface ICdpConnection {
+  browserClient(): ICdpClient;
+  getCdpClient(sessionId: string): ICdpClient;
+}
 
 /**
  * Represents a high-level CDP connection to the browser backend.
  * Manages a CdpClient instance for each active CDP session.
  */
-export class CdpConnection {
+export class CdpConnection implements ICdpConnection {
   readonly #transport: ITransport;
+
+  /** The CdpClient object attached to the root browser session. */
   readonly #browserCdpClient: CdpClient;
   /** Map from session ID to CdpClient. */
   readonly #sessionCdpClients = new Map<string, CdpClient>();
@@ -50,12 +54,10 @@ export class CdpConnection {
     this.#transport = transport;
     this.#logger = logger;
     this.#transport.setOnMessage(this.#onMessage);
-    this.#browserCdpClient = CdpClient.create(this, null);
+    this.#browserCdpClient = new CdpClient(this, undefined);
   }
 
-  /**
-   * Closes the connection to the browser.
-   */
+  /** Closes the connection to the browser. */
   close() {
     this.#transport.close();
     for (const [, {reject, error}] of this.#commandCallbacks) {
@@ -65,17 +67,14 @@ export class CdpConnection {
     this.#sessionCdpClients.clear();
   }
 
-  /**
-   * @return The CdpClient object attached to the root browser session.
-   */
+  /** The CdpClient object attached to the root browser session. */
   browserClient(): CdpClient {
     return this.#browserCdpClient;
   }
 
   /**
-   * Gets a CdpClient instance by sessionId.
-   * @param sessionId The sessionId of the CdpClient to retrieve.
-   * @return The CdpClient object attached to the given session, or null if the session is not attached.
+   * Gets a CdpClient instance attached to the given session ID,
+   * or null if the session is not attached.
    */
   getCdpClient(sessionId: string): CdpClient {
     const cdpClient = this.#sessionCdpClients.get(sessionId);
@@ -87,8 +86,8 @@ export class CdpConnection {
 
   sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(
     method: CdpMethod,
-    params: ProtocolMapping.Commands[CdpMethod]['paramsType'][0] | undefined,
-    sessionId: string | null
+    params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0],
+    sessionId?: string
   ): Promise<object> {
     return new Promise((resolve, reject) => {
       const id = this.#nextId++;
@@ -101,57 +100,54 @@ export class CdpConnection {
           } call rejected because the connection has been closed.`
         ),
       });
-      const messageObj: CdpMessage<CdpMethod> = {id, method, params};
+      const cdpMessage: CdpMessage<CdpMethod> = {id, method, params};
       if (sessionId) {
-        messageObj.sessionId = sessionId;
+        cdpMessage.sessionId = sessionId;
       }
 
-      const messageStr = JSON.stringify(messageObj);
-      const messagePretty = JSON.stringify(messageObj, null, 2);
-      void this.#transport.sendMessage(messageStr)?.catch((error) => {
+      const cdpMessageStr = JSON.stringify(cdpMessage);
+      void this.#transport.sendMessage(cdpMessageStr)?.catch((error) => {
         this.#logger?.('error', error);
         this.#transport.close();
       });
-      this.#logger?.('sent ▸', messagePretty);
+      this.#logger?.('sent ▸', JSON.stringify(cdpMessage, null, 2));
     });
   }
 
   #onMessage = (message: string) => {
-    const parsed = JSON.parse(message);
-    const messagePretty = JSON.stringify(parsed, null, 2);
+    const messageParsed: CdpMessage<any> = JSON.parse(message);
+    const messagePretty = JSON.stringify(messageParsed, null, 2);
     this.#logger?.('received ◂', messagePretty);
 
     // Update client map if a session is attached or detached.
     // Listen for these events on every session.
-    if (parsed.method === 'Target.attachedToTarget') {
-      const {sessionId} = parsed.params;
-      this.#sessionCdpClients.set(sessionId, CdpClient.create(this, sessionId));
-    } else if (parsed.method === 'Target.detachedFromTarget') {
-      const {sessionId} = parsed.params;
+    if (messageParsed.method === 'Target.attachedToTarget') {
+      const {sessionId} = messageParsed.params;
+      this.#sessionCdpClients.set(sessionId, new CdpClient(this, sessionId));
+    } else if (messageParsed.method === 'Target.detachedFromTarget') {
+      const {sessionId} = messageParsed.params;
       const client = this.#sessionCdpClients.get(sessionId);
       if (client) {
         this.#sessionCdpClients.delete(sessionId);
       }
     }
 
-    if (parsed.id !== undefined) {
+    if (messageParsed.id !== undefined) {
       // Handle command response.
-      const callbacks = this.#commandCallbacks.get(parsed.id);
-      this.#commandCallbacks.delete(parsed.id);
+      const callbacks = this.#commandCallbacks.get(messageParsed.id);
+      this.#commandCallbacks.delete(messageParsed.id);
       if (callbacks) {
-        if (parsed.result) {
-          callbacks.resolve(parsed.result);
-        } else if (parsed.error) {
-          callbacks.reject(parsed.error);
+        if (messageParsed.result) {
+          callbacks.resolve(messageParsed.result);
+        } else if (messageParsed.error) {
+          callbacks.reject(messageParsed.error);
         }
       }
-    } else if (parsed.method) {
-      const client = parsed.sessionId
-        ? this.#sessionCdpClients.get(parsed.sessionId)
+    } else if (messageParsed.method) {
+      const client = messageParsed.sessionId
+        ? this.#sessionCdpClients.get(messageParsed.sessionId)
         : this.#browserCdpClient;
-      if (client) {
-        client.emit(parsed.method, parsed.params || {});
-      }
+      client?.emit(messageParsed.method, messageParsed.params || {});
     }
   };
 }

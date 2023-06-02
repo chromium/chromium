@@ -19,11 +19,11 @@ import {EventEmitter} from '../utils/EventEmitter.js';
 import {LogType, LoggerFn} from '../utils/log.js';
 import type {Message} from '../protocol/protocol.js';
 import {ProcessingQueue} from '../utils/processingQueue.js';
+import type {ICdpConnection} from '../cdp/cdpConnection.js';
 
 import {BidiParser, CommandProcessor} from './CommandProcessor.js';
 import {BidiTransport} from './BidiTransport.js';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
-import {CdpConnection} from './CdpConnection.js';
 import {EventManager} from './domains/events/EventManager.js';
 import {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
 import {RealmStorage} from './domains/script/realmStorage.js';
@@ -58,7 +58,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
 
   private constructor(
     bidiTransport: BidiTransport,
-    cdpConnection: CdpConnection,
+    cdpConnection: ICdpConnection,
     selfTargetId: string,
     parser?: BidiParser,
     logger?: LoggerFn
@@ -92,7 +92,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
 
   static async createAndStart(
     bidiTransport: BidiTransport,
-    cdpConnection: CdpConnection,
+    cdpConnection: ICdpConnection,
     selfTargetId: string,
     parser?: BidiParser,
     logger?: LoggerFn

@@ -24,8 +24,8 @@ export interface CdpError {
 export interface CdpMessage<CdpMethod extends keyof ProtocolMapping.Commands> {
   sessionId?: string;
   id?: number;
-  result?: object;
   error?: CdpError;
   method?: CdpMethod;
   params?: ProtocolMapping.Commands[CdpMethod]['paramsType'][0];
+  result?: ProtocolMapping.Commands[CdpMethod]['returnType'];
 }

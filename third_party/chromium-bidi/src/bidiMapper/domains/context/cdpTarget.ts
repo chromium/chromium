@@ -17,10 +17,10 @@
  */
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import {CdpClient} from '../../CdpConnection.js';
+import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {LogManager} from '../log/logManager.js';
 import {RealmStorage} from '../script/realmStorage.js';
-import {IEventManager} from '../events/EventManager.js';
+import type {IEventManager} from '../events/EventManager.js';
 import {CDP, Script} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
@@ -32,7 +32,7 @@ import {BrowsingContextStorage} from './browsingContextStorage';
 export class CdpTarget {
   readonly #targetId: string;
   readonly #parentTargetId: string | null;
-  readonly #cdpClient: CdpClient;
+  readonly #cdpClient: ICdpClient;
   readonly #cdpSessionId: string;
   readonly #eventManager: IEventManager;
   readonly #preloadScriptStorage: PreloadScriptStorage;
@@ -45,7 +45,7 @@ export class CdpTarget {
   static create(
     targetId: string,
     parentTargetId: string | null,
-    cdpClient: CdpClient,
+    cdpClient: ICdpClient,
     cdpSessionId: string,
     realmStorage: RealmStorage,
     eventManager: IEventManager,
@@ -78,7 +78,7 @@ export class CdpTarget {
   private constructor(
     targetId: string,
     parentTargetId: string | null,
-    cdpClient: CdpClient,
+    cdpClient: ICdpClient,
     cdpSessionId: string,
     eventManager: IEventManager,
     preloadScriptStorage: PreloadScriptStorage,
@@ -107,7 +107,7 @@ export class CdpTarget {
     return this.#targetId;
   }
 
-  get cdpClient(): CdpClient {
+  get cdpClient(): ICdpClient {
     return this.#cdpClient;
   }
 

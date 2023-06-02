@@ -17,7 +17,7 @@
 
 import * as sinon from 'sinon';
 
-import {ITransport} from './transport.js';
+import type {ITransport} from './transport.js';
 
 type TypedSpy<T extends (...args: any[]) => unknown> = sinon.SinonSpy<
   Parameters<T>,

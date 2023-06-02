@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import {CommonDataTypes, Log, Script} from '../../../protocol/protocol.js';
-import {IEventManager} from '../events/EventManager.js';
+import type {IEventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
 import {CdpTarget} from '../context/cdpTarget.js';

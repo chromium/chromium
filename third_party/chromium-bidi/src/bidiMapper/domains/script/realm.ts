@@ -19,8 +19,8 @@ import {Protocol} from 'devtools-protocol';
 
 import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
-import {CdpClient} from '../../CdpConnection.js';
-import {IEventManager} from '../events/EventManager.js';
+import type {IEventManager} from '../events/EventManager.js';
+import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {LogType, LoggerFn} from '../../../utils/log.js';
 
 import {SHARED_ID_DIVIDER, ScriptEvaluator} from './scriptEvaluator.js';
@@ -36,7 +36,7 @@ export class Realm {
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #origin: string;
   readonly #type: RealmType;
-  readonly #cdpClient: CdpClient;
+  readonly #cdpClient: ICdpClient;
   readonly #eventManager: IEventManager;
   readonly #scriptEvaluator: ScriptEvaluator;
 
@@ -55,7 +55,7 @@ export class Realm {
     type: RealmType,
     sandbox: string | undefined,
     cdpSessionId: string,
-    cdpClient: CdpClient,
+    cdpClient: ICdpClient,
     eventManager: IEventManager,
     logger?: LoggerFn
   ) {
@@ -223,7 +223,7 @@ export class Realm {
     return this.#type;
   }
 
-  get cdpClient(): CdpClient {
+  get cdpClient(): ICdpClient {
     return this.#cdpClient;
   }
 

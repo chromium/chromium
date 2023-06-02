@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
-import {IEventManager} from '../events/EventManager.js';
+import type {IEventManager} from '../events/EventManager.js';
 
 import {Realm} from './realm.js';
 

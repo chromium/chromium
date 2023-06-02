@@ -22,8 +22,8 @@
  */
 import Protocol from 'devtools-protocol';
 
-import {CdpClient} from '../../CdpConnection.js';
-import {IEventManager} from '../events/EventManager.js';
+import type {ICdpClient} from '../../../cdp/cdpClient.js';
+import type {IEventManager} from '../events/EventManager.js';
 import {DefaultMap} from '../../../utils/DefaultMap.js';
 import {Network} from '../../../protocol/protocol.js';
 
@@ -46,7 +46,7 @@ export class NetworkProcessor {
   }
 
   static async create(
-    cdpClient: CdpClient,
+    cdpClient: ICdpClient,
     eventManager: IEventManager
   ): Promise<NetworkProcessor> {
     const networkProcessor = new NetworkProcessor(eventManager);
