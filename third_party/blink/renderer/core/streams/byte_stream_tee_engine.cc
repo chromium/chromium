@@ -210,6 +210,7 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
  private:
   void ChunkStepsBody(ScriptState* script_state,
                       v8::Global<v8::Value> value) const {
+    ScriptState::Scope scope(script_state);
     // 1. Set readAgainForBranch1 to false.
     engine_->read_again_for_branch_[0] = false;
     // 2. Set readAgainForBranch2 to false.

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Blob.stream()
-PASS Blob.stream() empty Blob
-PASS Blob.stream() non-unicode input
-PASS Blob.stream() garbage collection of blob shouldn't break streamconsumption
-FAIL Reading Blob.stream() with BYOB reader promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getReader' on 'ReadableStream': Cannot use a BYOB reader with a non-byte stream"
-Harness: the test ran to completion.
-

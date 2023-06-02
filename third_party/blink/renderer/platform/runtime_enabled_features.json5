@@ -514,6 +514,10 @@
       public: true,
     },
     {
+      name: "ByobFetch",
+      status: "experimental",
+    },
+    {
       name: "CacheStorageCodeCacheHint",
       origin_trial_feature_name: "CacheStorageCodeCacheHint",
       status: "experimental",
