@@ -44,15 +44,13 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
     // NV12 format planes. This is intended to be used internally within the VIZ
     // component to support video capture. When requesting this format, results
     // can only be delivered on the same task runner sequence that runs the
-    // DirectRenderer implementation. For now, NV12 format can be requested only
-    // for system memory.
+    // DirectRenderer implementation.
     NV12_PLANES,
     // An NV12 image associated with a single mailbox via
     // MultiplanarSharedImage. This is intended to be used internally within the
     // VIZ component to support video capture. When requesting this format,
     // results can only be delivered on the same task runner sequence that runs
-    // the DirectRenderer implementation. For now, NV12 format can be requested
-    // only for system memory.
+    // the DirectRenderer implementation.
     NV12_MULTIPLANE,
   };
 
