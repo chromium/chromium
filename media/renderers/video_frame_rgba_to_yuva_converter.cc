@@ -166,11 +166,20 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
           dst_video_frame->mailbox_holder(0);
       ri->WaitSyncTokenCHROMIUM(dst_mailbox_holder.sync_token.GetConstData());
 
-      ri->CopySharedImage(
-          src_mailbox_holder.mailbox, dst_mailbox_holder.mailbox, GL_TEXTURE_2D,
-          0, 0, 0, 0, dst_video_frame->coded_size().width(),
-          dst_video_frame->coded_size().height(), /*unpack_flip_y=*/false,
-          /*unpack_premultiply_alpha=*/false);
+      // Note: the destination video frame can have a coded size that is larger
+      // than that of the source video to account for alignment needs. In this
+      // case, CopySharedImage() will clear out the destination SharedImage and
+      // then copy only the size of the source video texture. This is different
+      // than the legacy codepath above, which stretches to fill the
+      // destination. Cropping seems clearly more correct, but on discovering
+      // this issue we did not want to risk making changes to the legacy
+      // codepath, which will go away once MultiplanarSharedImage fully rolls
+      // out.
+      ri->CopySharedImage(src_mailbox_holder.mailbox,
+                          dst_mailbox_holder.mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,
+                          src_size.width(), src_size.height(),
+                          /*unpack_flip_y=*/false,
+                          /*unpack_premultiply_alpha=*/false);
     }
   } else {
     // Create an accelerated SkImage for the source.
