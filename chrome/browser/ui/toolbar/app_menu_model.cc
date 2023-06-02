@@ -271,11 +271,10 @@ ProfileSubMenuModel::ProfileSubMenuModel(
     // If the profile is being deleted, profile_attributes may be null.
     if (profile_attributes) {
       AccountInfo account_info = GetAccountInfoFromProfile(profile);
-      gfx::Image avatar_image = profiles::GetSizedAvatarIcon(
+      gfx::Image avatar_image =
           account_info.IsEmpty()
               ? profile_attributes->GetAvatarIcon(avatar_icon_size)
-              : account_info.account_image,
-          avatar_icon_size, avatar_icon_size, profiles::SHAPE_CIRCLE);
+              : account_info.account_image;
       // The avatar image can be empty if the account image hasn't been
       // fetched yet, if there is no image, or in tests.
       if (!avatar_image.IsEmpty()) {
