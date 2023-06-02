@@ -87,7 +87,6 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
     }
   }
 
-  media::CheckGlitchInfoAndDelay(glitch_info, delay);
   // Update the audio-delay measurement, inform about the number of skipped
   // frames, and ask client to render audio.  Since |output_bus_| is wrapping
   // the shared memory the Render() call is writing directly into the shared
