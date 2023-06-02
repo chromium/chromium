@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -543,15 +544,27 @@ void BodyStreamBuffer::ProcessData() {
     if (result == BytesConsumer::Result::kShouldWait)
       return;
     DOMUint8Array* array = nullptr;
+    DOMArrayBufferView* byob_view = nullptr;
     if (result == BytesConsumer::Result::kOk) {
-      // TODO(nidhijaju): Follow the algorithm in
-      // https://streams.spec.whatwg.org/#readablestream-enqueue, i.e. don't
-      // create a new array if there is a current BYOB request view.
-      array = DOMUint8Array::CreateOrNull(
-          reinterpret_cast<const unsigned char*>(buffer),
-          base::checked_cast<uint32_t>(available));
+      if (stream_->GetController()->IsByteStreamController()) {
+        auto* byte_controller =
+            To<ReadableByteStreamController>(stream_->GetController());
+        if (ReadableStreamBYOBRequest* request =
+                byte_controller->byobRequest()) {
+          DOMArrayBufferView* view = request->view().Get();
+          available = std::min(view->byteLength(), available);
+          memcpy(view->buffer()->Data(), buffer, available);
+          byob_view = view;
+        }
+      }
+      if (!byob_view) {
+        CHECK(!array);
+        array = DOMUint8Array::CreateOrNull(
+            reinterpret_cast<const unsigned char*>(buffer),
+            base::checked_cast<uint32_t>(available));
+      }
       result = consumer_->EndRead(available);
-      if (!array) {
+      if (!array && !byob_view) {
         RaiseOOMError();
         return;
       }
@@ -559,7 +572,7 @@ void BodyStreamBuffer::ProcessData() {
     switch (result) {
       case BytesConsumer::Result::kOk:
       case BytesConsumer::Result::kDone:
-        if (array) {
+        if (array || byob_view) {
           // Clear |stream_needs_more_| in order to detect a pull call.
           stream_needs_more_ = false;
           if (underlying_byte_source_) {
@@ -569,15 +582,22 @@ void BodyStreamBuffer::ProcessData() {
             ExceptionState exception_state(script_state_->GetIsolate(),
                                            ExceptionState::kUnknownContext, "",
                                            "");
-            ReadableByteStreamController::Enqueue(
-                script_state_, byte_controller, NotShared(array),
-                exception_state);
+            if (byob_view) {
+              ReadableByteStreamController::Respond(
+                  script_state_, byte_controller, available, exception_state);
+            } else {
+              CHECK(array);
+              ReadableByteStreamController::Enqueue(
+                  script_state_, byte_controller, NotShared(array),
+                  exception_state);
+            }
             if (exception_state.HadException()) {
               exception_state.ClearException();
               return;
             }
           } else {
             CHECK(underlying_source_);
+            CHECK(array);
             underlying_source_->Controller()->Enqueue(array);
           }
         }
