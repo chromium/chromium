@@ -91,6 +91,7 @@ NSString* const kCreditCardSymbol = @"creditcard";
 NSString* const kMicrophoneFillSymbol = @"mic.fill";
 NSString* const kMicrophoneSymbol = @"mic";
 NSString* const kMagnifyingglassSymbol = @"magnifyingglass";
+NSString* const kMagnifyingglassCircleSymbol = @"magnifyingglass.circle";
 NSString* const kEllipsisCircleFillSymbol = @"ellipsis.circle.fill";
 NSString* const kEllipsisRectangleSymbol = @"ellipsis.rectangle";
 NSString* const kPinSymbol = @"pin";

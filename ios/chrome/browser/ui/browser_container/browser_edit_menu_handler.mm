@@ -51,7 +51,7 @@
                 action:@selector(linkToText:)
           propertyList:linkToTextId];
 
-  UIMenu* linkToTextMenu = [UIMenu menuWithTitle:title
+  UIMenu* linkToTextMenu = [UIMenu menuWithTitle:@""
                                            image:nil
                                       identifier:linkToTextId
                                          options:UIMenuOptionsDisplayInline

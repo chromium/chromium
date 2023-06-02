@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/web_selection/web_selection_response.h"
 #import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -175,12 +176,14 @@ void LogTrigger(bool incognito, bool search_engine_google) {
 
   NSString* searchWithMenuId = @"chromeAction.searchWith";
   __weak __typeof(self) weakSelf = self;
-  UIAction* action = [UIAction actionWithTitle:searchWithMenuTitle
-                                         image:nil
-                                    identifier:searchWithMenuId
-                                       handler:^(UIAction* a) {
-                                         [weakSelf triggerSearchForText:text];
-                                       }];
+  UIAction* action = [UIAction
+      actionWithTitle:searchWithMenuTitle
+                image:DefaultSymbolWithPointSize(kMagnifyingglassCircleSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:searchWithMenuId
+              handler:^(UIAction* a) {
+                [weakSelf triggerSearchForText:text];
+              }];
   completion(@[ action ]);
 }
 
@@ -216,7 +219,6 @@ void LogTrigger(bool incognito, bool search_engine_google) {
   if (![self canPerformSearch]) {
     return;
   }
-  NSString* searchWithMenuTitle = [self buttonTitle];
   NSString* searchWithMenuId = @"chromeMenu.searchWith";
 
   __weak __typeof(self) weakSelf = self;
@@ -227,7 +229,7 @@ void LogTrigger(bool incognito, bool search_engine_google) {
   UIDeferredMenuElement* deferredMenuElement =
       [UIDeferredMenuElement elementWithProvider:provider];
 
-  UIMenu* searchWithMenu = [UIMenu menuWithTitle:searchWithMenuTitle
+  UIMenu* searchWithMenu = [UIMenu menuWithTitle:@""
                                            image:nil
                                       identifier:searchWithMenuId
                                          options:UIMenuOptionsDisplayInline

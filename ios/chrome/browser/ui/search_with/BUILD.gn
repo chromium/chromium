@@ -15,6 +15,7 @@ source_set("search_with") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/web_selection",
     "//ios/web/public",
   ]

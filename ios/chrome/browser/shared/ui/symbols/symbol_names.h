@@ -99,6 +99,7 @@ extern NSString* const kCreditCardSymbol;
 extern NSString* const kMicrophoneFillSymbol;
 extern NSString* const kMicrophoneSymbol;
 extern NSString* const kMagnifyingglassSymbol;
+extern NSString* const kMagnifyingglassCircleSymbol;
 extern NSString* const kEllipsisCircleFillSymbol;
 extern NSString* const kEllipsisRectangleSymbol;
 extern NSString* const kPinSymbol;
