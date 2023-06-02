@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -374,6 +375,12 @@ bool ShouldRecordUkm(Profile* profile) {
   if (ash::DemoSession::IsDeviceInDemoMode()) {
     return true;
   }
+
+  // Bypass AppKM App Sync check for Kiosk devices to collect app metrics.
+  if (chromeos::IsKioskSession()) {
+    return true;
+  }
+
   switch (syncer::GetUploadToGoogleState(
       SyncServiceFactory::GetForProfile(profile), syncer::ModelType::APPS)) {
     case syncer::UploadState::NOT_ACTIVE:

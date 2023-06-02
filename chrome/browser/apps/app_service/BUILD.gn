@@ -237,6 +237,7 @@ source_set("app_service") {
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/resources",
       "//chromeos/ash/components/login/login_state",
+      "//chromeos/components/kiosk:kiosk",
       "//components/app_restore",
       "//components/arc",
       "//components/arc/common",

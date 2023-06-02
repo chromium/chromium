@@ -17,13 +17,25 @@
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/kiosk/kiosk_utils.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using unified_consent::UrlKeyedDataCollectionConsentHelper;
 
 namespace ukm {
 namespace {
 
 bool CanUploadUkmForType(syncer::SyncService* sync_service,
-                         syncer::ModelType model_type) {
+                         syncer::ModelType model_type,
+                         bool msbb_consent) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Enable uploading of UKM for Kiosk only if MSBB consent is set.
+  if (chromeos::IsKioskSession()) {
+    return msbb_consent;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   switch (GetUploadToGoogleState(sync_service, model_type)) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
@@ -72,17 +84,20 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
   const bool msbb_consent =
       consent_helper->IsEnabled() || metrics::IsMsbbSettingForcedOnForUkm();
 
-  if (msbb_consent)
+  if (msbb_consent) {
     state.SetConsentType(MSBB);
+  }
 
   if (msbb_consent &&
-      CanUploadUkmForType(sync_service, syncer::ModelType::EXTENSIONS)) {
+      CanUploadUkmForType(sync_service, syncer::ModelType::EXTENSIONS,
+                          msbb_consent)) {
     state.SetConsentType(EXTENSIONS);
   }
 
   if ((msbb_consent ||
        base::FeatureList::IsEnabled(kAppMetricsOnlyRelyOnAppSync)) &&
-      CanUploadUkmForType(sync_service, syncer::ModelType::APPS)) {
+      CanUploadUkmForType(sync_service, syncer::ModelType::APPS,
+                          msbb_consent)) {
     state.SetConsentType(APPS);
   }
 

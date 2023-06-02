@@ -20,3 +20,21 @@ static_library("kiosk") {
     deps += [ "//chromeos/startup" ]
   }
 }
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "kiosk_test_utils.cc",
+    "kiosk_test_utils.h",
+  ]
+  deps = [ "//build:chromeos_buildflags" ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/crosapi/mojom" ]
+  }
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/login/login_state:login_state" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
+}
