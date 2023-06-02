@@ -10,8 +10,6 @@ for more details about the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
-USE_PYTHON3 = True
-
 def CheckChange(input_api, output_api):
     import sys
     old_sys_path = sys.path[:]

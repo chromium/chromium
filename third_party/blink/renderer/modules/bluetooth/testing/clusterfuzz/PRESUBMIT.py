@@ -6,13 +6,10 @@
 
 def _RunTests(input_api, output_api):
     """Runs all test files in the directory."""
-    return input_api.canned_checks.RunUnitTests(
-        input_api,
-        output_api, [
-            input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                   'fuzz_integration_test.py')
-        ],
-        skip_shebang_check=True)
+    return input_api.canned_checks.RunUnitTests(input_api, output_api, [
+        input_api.os_path.join(input_api.PresubmitLocalPath(),
+                               'fuzz_integration_test.py')
+    ])
 
 
 def CheckChangeOnUpload(input_api, output_api):

@@ -3,9 +3,6 @@
 # found in the LICENSE file.
 import sys
 
-USE_PYTHON3 = True
-
-
 def _SetupImportPath(input_api):
   webview_data_dir = input_api.PresubmitLocalPath()
   if webview_data_dir not in sys.path:

@@ -8,8 +8,6 @@ import json
 import os
 import re
 
-USE_PYTHON3 = True
-
 AX_MOJOM = 'ui/accessibility/ax_enums.mojom'
 AUTOMATION_IDL = 'extensions/common/api/automation.idl'
 

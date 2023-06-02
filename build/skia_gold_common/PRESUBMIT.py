@@ -28,9 +28,7 @@ def CheckSkiaGoldCommonUnittests(input_api, output_api):
       input_api,
       output_api,
       input_api.PresubmitLocalPath(), [r'^.+_unittest\.py$'],
-      env=_GetSkiaGoldEnv(input_api),
-      run_on_python2=False,
-      skip_shebang_check=True)
+      env=_GetSkiaGoldEnv(input_api))
 
 
 def CheckPylint(input_api, output_api):

@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-USE_PYTHON3 = True
-
-
 def _CheckChangeOnUploadOrCommit(input_api, output_api):
   results = []
   webui_sources = set(
@@ -20,8 +17,7 @@ def RunPresubmitTests(input_api, output_api):
   presubmit_path = input_api.PresubmitLocalPath()
   sources = ['generate_grd_test.py', 'minify_js_test.py', 'bundle_js_test.py']
   tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
-  return input_api.canned_checks.RunUnitTests(
-      input_api, output_api, tests, run_on_python2=False)
+  return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
 
 
 def CheckChangeOnUpload(input_api, output_api):

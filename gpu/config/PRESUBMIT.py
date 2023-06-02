@@ -12,9 +12,6 @@ import difflib
 import os.path
 import io
 
-USE_PYTHON3 = True
-
-
 def _CheckGPUWorkaroundListSorted(input_api, output_api):
     """Check: gpu_workaround_list.txt feature list sorted alphabetically.
     """

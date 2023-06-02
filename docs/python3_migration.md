@@ -127,9 +127,7 @@ that.
 
 ### Presubmit checks
 
-Presubmit checks are run using Python 2 by default. To run them using
-Python3, add the line `USE_PYTHON3 = True` to the PRESUBMIT.py file in
-question (effectively creating a global variable).
+Presubmit checks are run using Python 3 by default now.
 
 [script_test]: https://source.chromium.org/?q=script_test%20file:testing%2Ftest.gni&ss=chromium
 [vpython]: https://chromium.googlesource.com/infra/infra/+/refs/heads/main/doc/users/vpython.md

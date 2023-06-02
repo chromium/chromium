@@ -9,8 +9,6 @@ See https://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API.
 """
 
-USE_PYTHON3 = True
-
 def _CheckForStringViewFromNullableIppApi(input_api, output_api):
   """
   Looks for all affected lines in CL where one constructs either

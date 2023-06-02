@@ -31,10 +31,7 @@ def CommonChecks(input_api, output_api):
   tests.extend(
       input_api.canned_checks.GetUnitTests(input_api,
                                            output_api,
-                                           unit_tests=unit_tests,
-                                           run_on_python2=False,
-                                           run_on_python3=True,
-                                           skip_shebang_check=True))
+                                           unit_tests=unit_tests))
   return input_api.RunTests(tests)
 
 

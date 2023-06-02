@@ -6,9 +6,6 @@
 Gates against using Context#bindService API before upload.
 """
 
-USE_PYTHON3 = True
-
-
 def CheckChangeOnCommit(input_api, output_api):
   results = []
   results.extend(_CheckNoContextBindServiceAdded(input_api, output_api))

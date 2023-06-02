@@ -10,7 +10,6 @@ for more details about the presubmit API built into depot_tools.
 
 import os.path
 
-USE_PYTHON3 = True
 PRESUBMIT_VERSION = '2.0.0'
 
 def CheckChange(input_api, output_api):

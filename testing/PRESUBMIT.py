@@ -8,8 +8,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
-USE_PYTHON3 = True
-
 PRESUBMIT_VERSION = '2.0.0'
 
 
@@ -36,10 +34,7 @@ def CheckTestingUnittests(input_api, output_api):
       input_api,
       output_api,
       '.',
-      [r'^.+_unittest\.py$'],
-      run_on_python2=False,
-      run_on_python3=USE_PYTHON3,
-      skip_shebang_check=True)
+      [r'^.+_unittest\.py$'])
 
 
 def CheckFlakeSuppressorCommonUnittests(input_api, output_api):
@@ -50,10 +45,7 @@ def CheckFlakeSuppressorCommonUnittests(input_api, output_api):
       input_api.os_path.join(input_api.PresubmitLocalPath(),
                              'flake_suppressor_common'),
       [r'^.+_unittest\.py$'],
-      env=_GetTestingEnv(input_api),
-      run_on_python2=False,
-      run_on_python3=USE_PYTHON3,
-      skip_shebang_check=True)
+      env=_GetTestingEnv(input_api))
 
 
 def CheckUnexpectedPassesCommonUnittests(input_api, output_api):
@@ -64,10 +56,7 @@ def CheckUnexpectedPassesCommonUnittests(input_api, output_api):
       input_api.os_path.join(input_api.PresubmitLocalPath(),
                              'unexpected_passes_common'),
       [r'^.+_unittest\.py$'],
-      env=_GetTestingEnv(input_api),
-      run_on_python2=False,
-      run_on_python3=USE_PYTHON3,
-      skip_shebang_check=True)
+      env=_GetTestingEnv(input_api))
 
 
 def CheckPylint(input_api, output_api):

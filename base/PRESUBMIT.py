@@ -8,10 +8,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
-
-USE_PYTHON3 = True
-
-
 def CheckChangeLintsClean(input_api, output_api):
   """Makes sure that the code is cpplint clean."""
   # lint_filters=[] stops the OFF_BY_DEFAULT_LINT_FILTERS from being disabled,

@@ -52,6 +52,4 @@ def CheckPythonTests(input_api, output_api):
           input_api,
           output_api,
           input_api.PresubmitLocalPath(),
-          files_to_check=[r'.+_(?:unit)?test\.py$'],
-          run_on_python2=False,
-          run_on_python3=True))
+          files_to_check=[r'.+_(?:unit)?test\.py$']))

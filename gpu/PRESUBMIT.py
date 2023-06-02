@@ -10,10 +10,6 @@ for more details about the presubmit API built into depot_tools.
 
 import sys
 
-
-USE_PYTHON3 = True
-
-
 def CommonChecks(input_api, output_api):
 
   output = []

@@ -9,9 +9,6 @@ for more details on the presubmit API built into depot_tools.
 
 import os.path
 
-USE_PYTHON3 = True
-
-
 def _IsGLES2CmdBufferFile(affected_file):
   filename = os.path.basename(affected_file.LocalPath())
   if filename in [

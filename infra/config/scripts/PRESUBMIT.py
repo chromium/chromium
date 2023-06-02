@@ -13,10 +13,9 @@ PRESUBMIT_VERSION = '2.0.0'
 def CheckTests(input_api, output_api):
   glob = input_api.os_path.join(
       input_api.PresubmitLocalPath(), 'tests', '*_test.py')
-  tests = input_api.canned_checks.GetUnitTests(input_api,
-                                               output_api,
-                                               input_api.glob(glob),
-                                               run_on_python2=False,
-                                               run_on_python3=True,
-                                               skip_shebang_check=True)
+  tests = input_api.canned_checks.GetUnitTests(
+      input_api,
+      output_api,
+      input_api.glob(glob),
+  )
   return input_api.RunTests(tests)

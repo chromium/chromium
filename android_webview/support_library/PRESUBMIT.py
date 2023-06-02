@@ -6,9 +6,6 @@
 Runs various style checks before upload.
 """
 
-USE_PYTHON3 = True
-
-
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results.extend(_CheckAnnotatedInvocationHandlers(input_api, output_api))

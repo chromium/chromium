@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-USE_PYTHON3 = True
 PRESUBMIT_VERSION = '2.0.0'
 
 TEST_PATTERNS = [r'.+_test.py$']
@@ -20,9 +19,7 @@ def ChecksUnitTests(input_api, output_api):
         input_api,
         output_api,
         'base',
-        files_to_check=TEST_PATTERNS,
-        run_on_python2=False,
-        skip_shebang_check=True)
+        files_to_check=TEST_PATTERNS)
 
 
 def ChecksCommon(input_api, output_api):

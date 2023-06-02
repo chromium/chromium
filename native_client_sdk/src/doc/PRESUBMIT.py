@@ -4,9 +4,6 @@
 
 import subprocess
 
-USE_PYTHON3 = True
-
-
 def _CheckSphinxBuild(input_api, output_api):
   """Check that the docs are buildable without any warnings.
 

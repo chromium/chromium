@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 PRESUBMIT_VERSION = '2.0.0'
-USE_PYTHON3 = True
 
 def CheckTastIsRequested(input_api, output_api):
   """Checks that the user did add the tast trybot to the description

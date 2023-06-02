@@ -14,8 +14,6 @@ import sys
 
 from collections import OrderedDict
 
-USE_PYTHON3 = True
-
 VALID_EXPERIMENT_KEYS = [
     'name', 'forcing_flag', 'params', 'enable_features', 'disable_features',
     'min_os_version', '//0', '//1', '//2', '//3', '//4', '//5', '//6', '//7',
