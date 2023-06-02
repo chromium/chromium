@@ -44,6 +44,7 @@ namespace web_app {
 namespace {
 constexpr base::StringPiece kTestManifest = R"({
       "name": "Simple Isolated App",
+      "version": "1.0.0",
       "id": "/",
       "scope": "/",
       "start_url": "/",
@@ -253,8 +254,8 @@ AppId AddDummyIsolatedAppToRegistry(Profile* profile,
   const AppId app_id = isolated_web_app->app_id();
   isolated_web_app->SetName(name);
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(
-      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()}));
+  isolated_web_app->SetIsolationData(WebApp::IsolationData(
+      InstalledBundle{.path = base::FilePath()}, base::Version("1.0.0")));
 
   ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
   update->CreateApp(std::move(isolated_web_app));

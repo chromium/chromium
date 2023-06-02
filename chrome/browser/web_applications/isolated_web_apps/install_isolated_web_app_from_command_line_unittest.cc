@@ -49,8 +49,8 @@ void DescribeOptionalLocation(::testing::MatchResultListener* result_listener,
                               MaybeIwaLocation arg) {
   if (arg.has_value()) {
     if (arg.value().has_value()) {
-      *result_listener
-          << WebApp::IsolationData(arg.value().value()).AsDebugValue();
+      *result_listener << IsolatedWebAppLocationAsDebugValue(
+          arg.value().value());
     } else {
       *result_listener << "nullopt";
     }

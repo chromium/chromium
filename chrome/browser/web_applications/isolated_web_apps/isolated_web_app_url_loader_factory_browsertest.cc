@@ -230,7 +230,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest, LoadsBundle) {
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path},
+                                  base::Version("1.0.0")});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -249,7 +250,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path},
+                                  base::Version("1.0.0")});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -277,7 +279,8 @@ fetch('title.txt')
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path},
+                                  base::Version("1.0.0")});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -293,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path},
+                                  base::Version("1.0.0")});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -312,7 +316,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path},
+                                  base::Version("1.0.0")});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -397,8 +402,9 @@ self.addEventListener('activate', (event) => {
 )js");
   RegisterWebApp(CreateIsolatedWebApp(
       GURL(kUrl),
-      WebApp::IsolationData{InstalledBundle{
-          .path = SignAndWriteBundleToDisk(builder.CreateBundle())}}));
+      WebApp::IsolationData{InstalledBundle{.path = SignAndWriteBundleToDisk(
+                                                builder.CreateBundle())},
+                            base::Version("1.0.0")}));
   TrustWebBundleId();
 
   NavigateAndWaitForTitle(GURL(kUrl),
@@ -412,7 +418,8 @@ class IsolatedWebAppURLLoaderFactoryFrameBrowserTest
     base::FilePath bundle_path =
         SignAndWriteBundleToDisk(builder.CreateBundle());
     std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-        kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+        kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path},
+                                    base::Version("1.0.0")});
     RegisterWebApp(std::move(iwa));
     TrustWebBundleId();
 
@@ -518,7 +525,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppURLLoaderFactoryCSPBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path},
+                                  base::Version("1.0.0")});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 
@@ -545,7 +553,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppURLLoaderFactoryCSPBrowserTest,
   base::FilePath bundle_path = SignAndWriteBundleToDisk(builder.CreateBundle());
 
   std::unique_ptr<WebApp> iwa = CreateIsolatedWebApp(
-      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path}});
+      kUrl, WebApp::IsolationData{InstalledBundle{.path = bundle_path},
+                                  base::Version("1.0.0")});
   RegisterWebApp(std::move(iwa));
   TrustWebBundleId();
 

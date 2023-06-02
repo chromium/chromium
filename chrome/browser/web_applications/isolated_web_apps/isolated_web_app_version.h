@@ -25,6 +25,8 @@ enum class IwaVersionParseError {
 base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
 ParseIwaVersionIntoComponents(base::StringPiece version_string);
 
+std::string IwaVersionParseErrorToString(IwaVersionParseError error);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_VERSION_H_

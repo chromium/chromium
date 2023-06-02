@@ -59,4 +59,20 @@ ParseIwaVersionIntoComponents(base::StringPiece version_string) {
   return components;
 }
 
+std::string IwaVersionParseErrorToString(IwaVersionParseError error) {
+  switch (error) {
+    case IwaVersionParseError::kNotThreeComponents:
+      return "A version must consist of exactly three components separated by "
+             "dots (`x.y.z`)";
+    case IwaVersionParseError::kEmptyComponent:
+      return "A version component may not be empty";
+    case IwaVersionParseError::kNonDigit:
+      return "A version component may only contain digits";
+    case IwaVersionParseError::kLeadingZero:
+      return "A version component may not have leading zeros";
+    case IwaVersionParseError::kCannotConvertToNumber:
+      return "A version component could not be converted into a number";
+  }
+}
+
 }  // namespace web_app

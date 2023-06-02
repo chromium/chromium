@@ -476,9 +476,12 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallUrlSetInWebAppDB) {
 }
 
 TEST_P(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
+  base::Version version("1.2.3");
+
   WebAppInstallInfo info;
   info.start_url = GURL("https://foo.example");
   info.title = u"Foo Title";
+  info.isolated_web_app_version = version;
 
   const IsolatedWebAppLocation location =
       DevModeBundle{.path = base::FilePath(FILE_PATH_LITERAL("p"))};
@@ -494,6 +497,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   EXPECT_EQ(location, installed_app->isolation_data()->location);
+  EXPECT_EQ(version, installed_app->isolation_data()->version);
 }
 
 TEST_P(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {

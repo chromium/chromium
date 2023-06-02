@@ -179,6 +179,9 @@ message IsolationDataProto {
   // The partition_name of every <controlledframe> StoragePartition managed by
   // this Isolated Web App.
   repeated string controlled_frame_partitions = 4;
+
+  // The version of the IWA.
+  required string version = 5;
 }
 
 // Full WebApp object data. See detailed comments in

@@ -235,8 +235,10 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
 #endif
 
   if (options.isolated_web_app_location.has_value()) {
+    CHECK(web_app_info.isolated_web_app_version.IsValid());
     web_app->SetIsolationData(
-        WebApp::IsolationData(*options.isolated_web_app_location));
+        WebApp::IsolationData(*options.isolated_web_app_location,
+                              web_app_info.isolated_web_app_version));
   }
 
   web_app->SetParentAppId(web_app_info.parent_app_id);

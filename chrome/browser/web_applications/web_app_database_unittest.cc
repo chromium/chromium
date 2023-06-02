@@ -621,21 +621,22 @@ TEST_F(WebAppDatabaseProtoDataTest, DoesNotSetIsolationDataIfNotIsolated) {
 
 TEST_F(WebAppDatabaseProtoDataTest, SavesInstalledBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      WebApp::IsolationData(InstalledBundle{.path = path}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      InstalledBundle{.path = path}, base::Version("1.0.0")));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
   EXPECT_THAT(web_app->isolation_data()->location,
               VariantWith<InstalledBundle>(
                   Field("path", &InstalledBundle::path, Eq(path))));
+  EXPECT_THAT(web_app->isolation_data()->version, Eq(base::Version("1.0.0")));
 }
 
 TEST_F(WebAppDatabaseProtoDataTest,
        HandlesCorruptedInstalledBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      WebApp::IsolationData(InstalledBundle{.path = path}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      InstalledBundle{.path = path}, base::Version("1.0.0")));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -655,21 +656,22 @@ TEST_F(WebAppDatabaseProtoDataTest,
 
 TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("dev_bundle_path"));
-  std::unique_ptr<WebApp> web_app =
-      CreateIsolatedWebApp(WebApp::IsolationData(DevModeBundle{.path = path}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      DevModeBundle{.path = path}, base::Version("1.0.0")));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
   EXPECT_THAT(web_app->isolation_data()->location,
               VariantWith<DevModeBundle>(
                   Field("path", &DevModeBundle::path, Eq(path))));
+  EXPECT_THAT(web_app->isolation_data()->version, Eq(base::Version("1.0.0")));
 }
 
 TEST_F(WebAppDatabaseProtoDataTest,
        HandlesCorruptedDevModeBundleIsolationData) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
-  std::unique_ptr<WebApp> web_app =
-      CreateIsolatedWebApp(WebApp::IsolationData(DevModeBundle{.path = path}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      DevModeBundle{.path = path}, base::Version("1.0.0")));
 
   std::unique_ptr<WebAppProto> web_app_proto =
       WebAppDatabase::CreateWebAppProto(*web_app);
@@ -688,9 +690,10 @@ TEST_F(WebAppDatabaseProtoDataTest,
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeProxyIsolationData) {
-  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(
-      WebApp::IsolationData(DevModeProxy{.proxy_url = url::Origin::Create(GURL(
-                                             "https://proxy-example.com/"))}));
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      DevModeProxy{.proxy_url =
+                       url::Origin::Create(GURL("https://proxy-example.com/"))},
+      base::Version("1.0.0")));
 
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app, Eq(*protoed_web_app));
@@ -699,6 +702,23 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesDevModeProxyIsolationData) {
       VariantWith<DevModeProxy>(
           Field("proxy_url", &DevModeProxy::proxy_url,
                 Eq(url::Origin::Create(GURL("https://proxy-example.com/"))))));
+  EXPECT_THAT(web_app->isolation_data()->version, Eq(base::Version("1.0.0")));
+}
+
+TEST_F(WebAppDatabaseProtoDataTest, HandlesCorruptedIsolationDataVersion) {
+  base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
+  // The version must have three numeric parts, thus using five parts here
+  // should break deserialization.
+  std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(WebApp::IsolationData(
+      InstalledBundle{.path = path}, base::Version("1.2.3.4.5")));
+
+  std::unique_ptr<WebAppProto> web_app_proto =
+      WebAppDatabase::CreateWebAppProto(*web_app);
+  ASSERT_THAT(web_app_proto, NotNull());
+
+  std::unique_ptr<WebApp> protoed_web_app =
+      WebAppDatabase::CreateWebApp(*web_app_proto);
+  EXPECT_THAT(protoed_web_app, IsNull());
 }
 
 TEST_F(WebAppDatabaseProtoDataTest, PermissionsPolicyRoundTrip) {

@@ -341,8 +341,9 @@ TEST(WebAppTest, IsolationDataStartsEmpty) {
 TEST(WebAppTest, IsolationDataDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id=*/absl::nullopt,
                            GURL("https://example.com"))};
-  app.SetIsolationData(WebApp::IsolationData(InstalledBundle{
-      .path = base::FilePath(FILE_PATH_LITERAL("random_path"))}));
+  app.SetIsolationData(WebApp::IsolationData(
+      InstalledBundle{.path = base::FilePath(FILE_PATH_LITERAL("random_path"))},
+      base::Version("1.0.0")));
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
@@ -352,6 +353,7 @@ TEST(WebAppTest, IsolationDataDebugValue) {
             "path": "random_path"
           }
         },
+        "version": "1.0.0",
         "controlled_frame_partitions": []
       })")
                                             .value();

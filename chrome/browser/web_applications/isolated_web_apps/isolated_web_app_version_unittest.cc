@@ -17,6 +17,7 @@ namespace web_app {
 namespace {
 
 using testing::Eq;
+using testing::HasSubstr;
 using testing::IsTrue;
 
 struct IwaVersionTestParam {
@@ -104,6 +105,28 @@ INSTANTIATE_TEST_SUITE_P(
         {.version_string = "1.2.03",
          .expected_components =
              base::unexpected(IwaVersionParseError::kLeadingZero)}}));
+
+using IwaVersionParseErrorToStringTest =
+    ::testing::TestWithParam<std::pair<IwaVersionParseError, std::string>>;
+
+TEST_P(IwaVersionParseErrorToStringTest, ConvertsErrorToString) {
+  EXPECT_THAT(IwaVersionParseErrorToString(GetParam().first),
+              HasSubstr(GetParam().second));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IwaVersionParseErrorToStringTest,
+    ::testing::Values(
+        std::make_pair(IwaVersionParseError::kNotThreeComponents,
+                       "exactly three components"),
+        std::make_pair(IwaVersionParseError::kEmptyComponent,
+                       "may not be empty"),
+        std::make_pair(IwaVersionParseError::kNonDigit, "only contain digits"),
+        std::make_pair(IwaVersionParseError::kLeadingZero,
+                       "not have leading zeros"),
+        std::make_pair(IwaVersionParseError::kCannotConvertToNumber,
+                       "could not be converted into a number")));
 
 }  // namespace
 }  // namespace web_app

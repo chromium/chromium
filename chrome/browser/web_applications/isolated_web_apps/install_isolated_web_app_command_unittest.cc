@@ -133,6 +133,7 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
   manifest->start_url = application_url.Resolve("/testing-start-url.html");
   manifest->display = DisplayMode::kStandalone;
   manifest->short_name = u"test short manifest name";
+  manifest->version = u"1.0.0";
   return manifest;
 }
 
@@ -557,6 +558,50 @@ TEST_F(InstallIsolatedWebAppCommandTest,
                   std::move(fake_data_retriever)),
               IsInstallationError(HasSubstr("App is not installable")));
 }
+
+struct InvalidVersionParam {
+  absl::optional<std::u16string> version;
+  std::string error;
+  std::string test_name;
+};
+
+class InstallIsolatedWebAppCommandInvalidVersionTest
+    : public InstallIsolatedWebAppCommandTest,
+      public ::testing::WithParamInterface<InvalidVersionParam> {};
+
+TEST_P(InstallIsolatedWebAppCommandInvalidVersionTest, InstallationFails) {
+  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  std::unique_ptr<MockDataRetriever> fake_data_retriever =
+      CreateDefaultDataRetriever(url_info.origin().GetURL());
+
+  auto manifest = CreateDefaultManifest(url_info.origin().GetURL());
+  manifest->version = GetParam().version;
+
+  ON_CALL(*fake_data_retriever, CheckInstallabilityAndRetrieveManifest)
+      .WillByDefault(ReturnManifest(
+          manifest, CreateDefaultManifestURL(url_info.origin().GetURL())));
+
+  EXPECT_THAT(ExecuteCommand(
+                  Parameters{
+                      .url_info = url_info,
+                  },
+                  std::move(fake_data_retriever)),
+              IsInstallationError(HasSubstr(GetParam().error)));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    InstallIsolatedWebAppCommandInvalidVersionTest,
+    ::testing::Values(InvalidVersionParam{.version = absl::nullopt,
+                                          .error = "`version` is not present",
+                                          .test_name = "NoVersion"},
+                      InvalidVersionParam{.version = u"10",
+                                          .error = "Failed to parse `version`",
+                                          .test_name = "InvalidVersionFormat"}),
+    [](const ::testing::TestParamInfo<
+        InstallIsolatedWebAppCommandInvalidVersionTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 TEST_F(InstallIsolatedWebAppCommandTest, CommandLocksOnAppIdAndWebContents) {
   base::test::TestFuture<base::expected<InstallIsolatedWebAppCommandSuccess,

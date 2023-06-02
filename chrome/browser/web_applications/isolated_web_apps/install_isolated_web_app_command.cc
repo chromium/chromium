@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 
+#include <array>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -32,6 +33,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -277,6 +279,27 @@ InstallIsolatedWebAppCommand::CreateInstallInfoFromManifest(
 
   WebAppInstallInfo info(manifest.id);
   UpdateWebAppInfoFromManifest(manifest, manifest_url, &info);
+
+  if (!manifest.version.has_value()) {
+    return base::unexpected(
+        "Manifest `version` is not present. manifest_url: " +
+        manifest_url.possibly_invalid_spec());
+  }
+  std::string version_string = base::UTF16ToUTF8(*manifest.version);
+
+  base::expected<std::array<uint32_t, 3>, IwaVersionParseError>
+      version_components = ParseIwaVersionIntoComponents(version_string);
+  if (!version_components.has_value()) {
+    return base::unexpected(base::StrCat(
+        {"Failed to parse `version` from the manifest: It must be in the form "
+         "`x.y.z`, where `x`, `y`, and `z` are numbers without leading zeros. "
+         "Detailed error: ",
+         IwaVersionParseErrorToString(version_components.error()),
+         " Got: ", version_string}));
+  }
+  base::Version version(
+      std::vector(version_components->begin(), version_components->end()));
+  info.isolated_web_app_version = version;
 
   std::string encoded_id = manifest.id.path();
 
