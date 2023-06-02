@@ -962,10 +962,10 @@ TEST_F(PlayerCompositorDelegateTest, CriticalMemoryPressureBeforeStart) {
     // execution the files are required by the service or no bitmap will be
     // created.
     base::RunLoop loop;
-    PlayerCompositorDelegateImpl player_compositor_delegate;
     memory_pressure::test::FakeMemoryPressureMonitor memory_pressure_monitor;
     memory_pressure_monitor.SetAndNotifyMemoryPressure(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    PlayerCompositorDelegateImpl player_compositor_delegate;
     player_compositor_delegate.SetFakeMemoryPressureMonitor(
         &memory_pressure_monitor);
     player_compositor_delegate.Initialize(
