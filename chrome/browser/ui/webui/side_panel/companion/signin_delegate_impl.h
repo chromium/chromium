@@ -31,6 +31,7 @@ class SigninDelegateImpl : public SigninDelegate {
   void StartSigninFlow() override;
   void EnableMsbb(bool enable_msbb) override;
   void LoadUrlInNewTab(const GURL& url) override;
+  bool ShouldShowRegionSearchIPH() override;
 
  private:
   Profile* GetProfile();

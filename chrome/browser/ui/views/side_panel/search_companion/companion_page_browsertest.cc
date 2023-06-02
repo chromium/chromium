@@ -34,6 +34,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -361,6 +362,8 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   }
 
   virtual void SetUpFeatureList() {
+    iph_feature_list_.InitAndEnableFeatures(
+        {feature_engagement::kIPHCompanionSidePanelRegionSearchFeature});
     base::FieldTrialParams params;
     params["companion-homepage-url"] =
         companion_server_.GetURL("/companion_iframe.html").spec();
@@ -431,6 +434,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer page_url_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::EmbeddedTestServer companion_server_{

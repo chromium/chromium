@@ -142,6 +142,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAutofillFeedbackNewBadgeFeature,
     &kIPHBatterySaverModeFeature,
     &kIPHCompanionSidePanelFeature,
+    &kIPHCompanionSidePanelRegionSearchFeature,
     &kIPHDesktopTabGroupsNewGroupFeature,
     &kIPHDesktopCustomizeChromeFeature,
     &kIPHDownloadToolbarButtonFeature,

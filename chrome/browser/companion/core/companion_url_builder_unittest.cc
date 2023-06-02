@@ -34,6 +34,7 @@ class MockSigninDelegate : public SigninDelegate {
   MOCK_METHOD0(StartSigninFlow, void());
   MOCK_METHOD1(EnableMsbb, void(bool));
   MOCK_METHOD1(LoadUrlInNewTab, void(const GURL&));
+  MOCK_METHOD0(ShouldShowRegionSearchIPH, bool());
 };
 
 }  // namespace
@@ -54,6 +55,8 @@ class CompanionUrlBuilderTest : public testing::Test {
     SetSignInAndMsbbExpectations(/*is_sign_in_allowed=*/true,
                                  /*is_signed_in=*/true,
                                  /*msbb_pref_enabled=*/true);
+    EXPECT_CALL(signin_delegate_, ShouldShowRegionSearchIPH())
+        .WillRepeatedly(testing::Return(true));
     url_builder_ = std::make_unique<CompanionUrlBuilder>(&pref_service_,
                                                          &signin_delegate_);
   }
@@ -212,6 +215,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_EQ(0, proto.promo_state().msbb_promo_denial_count());
   EXPECT_EQ(0, proto.promo_state().exps_promo_denial_count());
   EXPECT_EQ(2, proto.promo_state().exps_promo_shown_count());
+  EXPECT_TRUE(proto.promo_state().should_show_region_search_iph());
 }
 
 TEST_F(CompanionUrlBuilderTest, NonProtobufParams) {

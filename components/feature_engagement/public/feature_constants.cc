@@ -30,6 +30,9 @@ BASE_FEATURE(kIPHBatterySaverModeFeature,
 BASE_FEATURE(kIPHCompanionSidePanelFeature,
              "IPH_CompanionSidePanel",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHCompanionSidePanelRegionSearchFeature,
+             "IPH_CompanionSidePanelRegionSearch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDesktopSharedHighlightingFeature,
              "IPH_DesktopSharedHighlighting",
              base::FEATURE_DISABLED_BY_DEFAULT);
