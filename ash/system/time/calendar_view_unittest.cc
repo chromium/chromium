@@ -39,6 +39,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -399,6 +400,7 @@ TEST_F(CalendarViewTest, InitDec) {
                 ->GetText());
 }
 
+// TODO(b/285280977): Remove when CalendarView is out of TrayDetailedView.
 TEST_F(CalendarViewTest, NoBackButton) {
   CreateCalendarView();
 
@@ -2828,7 +2830,8 @@ class CalendarViewAnimationWithJellyEnabledTest
 
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures({features::kCalendarJelly}, {});
+    scoped_feature_list_->InitWithFeatures(
+        {features::kCalendarJelly, chromeos::features::kJelly}, {});
     CalendarViewAnimationTest::SetUp();
   }
 

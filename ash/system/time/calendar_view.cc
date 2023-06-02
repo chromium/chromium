@@ -72,8 +72,10 @@ constexpr int kContentHorizontalPadding = 20;
 constexpr int kMonthVerticalPadding = 10;
 constexpr int kLabelVerticalPadding = 10;
 constexpr int kLabelTextInBetweenPadding = 10;
-constexpr int kWeekRowHorizontalPadding =
+const int kWeekRowHorizontalPadding =
     kContentHorizontalPadding - calendar_utils::kDateHorizontalPadding;
+const int kWeekRowHorizontalPaddingJelly =
+    kContentHorizontalPadding - calendar_utils::kDateHorizontalPaddingJelly;
 constexpr int kExpandedCalendarPadding = 11;
 constexpr int kChevronPadding = calendar_utils::kColumnSetPadding - 1;
 constexpr int kMonthHeaderLabelTopPadding = 14;
@@ -487,14 +489,17 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   tri_view->AddView(TriView::Container::START, header_container);
 
   auto* button_container = new views::View();
+  const int horizontal_padding = features::IsCalendarJellyEnabled()
+                                     ? kWeekRowHorizontalPaddingJelly
+                                     : kWeekRowHorizontalPadding;
   views::BoxLayout* button_container_layout =
       button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
   button_container_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
   // Aligns button with the calendar dates in the `TableLayout`.
-  button_container_layout->set_between_child_spacing(
-      calendar_utils::kDateHorizontalPadding + kChevronPadding);
+  button_container_layout->set_between_child_spacing(horizontal_padding +
+                                                     kChevronPadding);
 
   up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
@@ -513,8 +518,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 
   // Add month header.
   auto month_header = std::make_unique<MonthHeaderView>();
-  month_header->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      0, kWeekRowHorizontalPadding, 0, kWeekRowHorizontalPadding)));
+  month_header->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, horizontal_padding, 0, horizontal_padding)));
   AddChildView(std::move(month_header));
 
   // Add scroll view.
@@ -538,8 +543,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   content_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   content_view_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kContentVerticalPadding, kWeekRowHorizontalPadding,
-                        kContentVerticalPadding, kWeekRowHorizontalPadding)));
+      gfx::Insets::TLBR(kContentVerticalPadding, horizontal_padding,
+                        kContentVerticalPadding, horizontal_padding)));
 
   // Focusable nodes must have an accessible name and valid role.
   // TODO(crbug.com/1348930): Review the accessible name and role.

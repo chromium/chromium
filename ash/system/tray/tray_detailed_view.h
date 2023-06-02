@@ -61,7 +61,10 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   views::BoxLayout* box_layout() { return box_layout_; }
 
   // Creates the row containing the back button and title. Optionally omits the
-  // back button if `create_back_button` is false.
+  // back button and left aligns the label contained in the CENTER view if
+  // `create_back_button` is false.
+  // TODO(b/285280977): Remove `create_back_button` when CalendarView is out of
+  // TrayDetailedView.
   void CreateTitleRow(int string_id, bool create_back_button = true);
 
   // Creates a scrollable list. The list has a border at the bottom if there is
@@ -132,8 +135,12 @@ class ASH_EXPORT TrayDetailedView : public views::View,
   virtual void HandleViewClicked(views::View* view);
 
   // Returns the TriView used for the title row. A label with `string_id` is
-  // added to the CENTER view.
-  std::unique_ptr<TriView> CreateTitleTriView(int string_id);
+  // added to the CENTER view. Left aligns the label contained in the CENTER
+  // view and reduces padding if `create_back_button` is false.
+  // TODO(b/285280977): Remove `create_back_button` when CalendarView is out of
+  // TrayDetailedView.
+  std::unique_ptr<TriView> CreateTitleTriView(int string_id,
+                                              bool create_back_button);
 
   // Returns the separator used between the title row and the contents.
   std::unique_ptr<views::Separator> CreateTitleSeparator();

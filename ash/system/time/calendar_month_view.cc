@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_model.h"
@@ -20,6 +21,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -95,10 +97,20 @@ CalendarDateCellView::CalendarDateCellView(
       time_difference_(time_difference),
       calendar_view_controller_(calendar_view_controller) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
+  SetBorder(views::CreateEmptyBorder(features::IsCalendarJellyEnabled()
+                                         ? calendar_utils::kDateCellInsetsJelly
+                                         : calendar_utils::kDateCellInsets));
   label()->SetElideBehavior(gfx::NO_ELIDE);
   label()->SetSubpixelRenderingEnabled(false);
-
+  if (features::IsCalendarJellyEnabled()) {
+    if (is_today_) {
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
+                                            *label());
+    } else {
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1,
+                                            *label());
+    }
+  }
   views::FocusRing::Remove(this);
 
   DisableFocus();
@@ -154,8 +166,12 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
                 AshColorProvider::ControlsLayerType::kFocusRingColor);
 
   const gfx::Rect content = GetContentsBounds();
+  const int horizontal_padding =
+      (features::IsCalendarJellyEnabled()
+           ? calendar_utils::kDateHorizontalPaddingJelly
+           : calendar_utils::kDateHorizontalPadding);
   const gfx::Point center(
-      (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
+      (content.width() + horizontal_padding * 2) / 2,
       (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2);
 
   if (views::View::HasFocus() ||
@@ -337,10 +353,13 @@ void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
 
 gfx::Point CalendarDateCellView::GetEventsPresentIndicatorCenterPosition() {
   const gfx::Rect content = GetContentsBounds();
-  return gfx::Point(
-      (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
-      content.height() + calendar_utils::kDateVerticalPadding +
-          kGapBetweenDateAndIndicator);
+  const int horizontal_padding =
+      (features::IsCalendarJellyEnabled()
+           ? calendar_utils::kDateHorizontalPaddingJelly
+           : calendar_utils::kDateHorizontalPadding);
+  return gfx::Point((content.width() + horizontal_padding * 2) / 2,
+                    content.height() + calendar_utils::kDateVerticalPadding +
+                        kGapBetweenDateAndIndicator);
 }
 
 void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
