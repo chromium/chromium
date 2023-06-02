@@ -249,10 +249,14 @@ void SkiaOutputDeviceVulkan::EndPaint() {
       sk_surface_size_pairs_[scoped_write_->image_index()].sk_surface;
   auto backend = SkSurfaces::GetBackendRenderTarget(
         sk_surface.get(), SkSurfaces::BackendHandleAccess::kFlushRead);
+#if DCHECK_IS_ON()
   GrVkImageInfo vk_image_info;
-  if (UNLIKELY(!backend.getVkImageInfo(&vk_image_info)))
+  if (UNLIKELY(!context_provider_->GetGrContext()->abandoned() &&
+               !backend.getVkImageInfo(&vk_image_info))) {
     NOTREACHED() << "Failed to get the image info.";
+  }
   DCHECK_EQ(vk_image_info.fImageLayout, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+#endif
   scoped_write_.reset();
 #if DCHECK_IS_ON()
   image_modified_ = true;
