@@ -6201,7 +6201,6 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/services/system_signals/public/cpp/browser",
-      "//components/power_metrics",
     ]
     public_deps +=
         [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
@@ -6581,6 +6580,7 @@ static_library("browser") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
+      "//components/power_metrics",
       "//components/user_notes:features",
       "//components/user_notes/browser",
       "//components/user_notes/interfaces",
