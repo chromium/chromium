@@ -274,6 +274,34 @@ suite('<app-management-arc-detail-view>', () => {
       assertFalse(locationItem.shadowRoot.querySelector('#description')
                       .textContent.includes('While in use'));
     });
+
+    test('Managed permission has policy indicator', async () => {
+      const permission = createBoolPermission(
+          PermissionType.kLocation, /*value=*/ true,
+          /*is_managed=*/ true);
+
+      fakeHandler.setPermission(arcPermissionView.app_.id, permission);
+      await flushTasks();
+
+      const locationItem =
+          getPermissionItemByType(arcPermissionView, 'kLocation');
+      assertTrue(
+          !!locationItem.shadowRoot.querySelector('cr-policy-indicator'));
+    });
+
+    test('Unmanaged permission has no policy indicator', async () => {
+      const permission = createBoolPermission(
+          PermissionType.kLocation, /*value=*/ true,
+          /*is_managed=*/ false);
+
+      fakeHandler.setPermission(arcPermissionView.app_.id, permission);
+      await flushTasks();
+
+      const locationItem =
+          getPermissionItemByType(arcPermissionView, 'kLocation');
+      assertFalse(
+          !!locationItem.shadowRoot.querySelector('cr-policy-indicator'));
+    });
   });
 
 });
