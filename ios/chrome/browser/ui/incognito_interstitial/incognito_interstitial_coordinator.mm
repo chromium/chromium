@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_view_controller.h"
 #import "ios/chrome/browser/ui/incognito_interstitial/incognito_interstitial_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_util.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -70,34 +69,13 @@
 
 - (void)didTapPrimaryActionButton {
   // Dismiss modals (including interstitial) and open link in incognito tab.
-  __weak __typeof(self) weakSelf = self;
-  UrlLoadParams copyOfUrlLoadParams = self.urlLoadParams;
-  void (^dismissModalsAndOpenTab)() = ^{
-    __typeof(self) strongSelf = weakSelf;
-    strongSelf.incognitoInterstitialAction =
-        IncognitoInterstitialActions::kOpenInChromeIncognito;
-    [strongSelf.tabOpener
-        dismissModalsAndMaybeOpenSelectedTabInMode:
-            ApplicationModeForTabOpening::INCOGNITO
-                                 withUrlLoadParams:copyOfUrlLoadParams
-                                    dismissOmnibox:YES
-                                        completion:nil];
-  };
-
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  IncognitoReauthSceneAgent* reauthAgent =
-      [IncognitoReauthSceneAgent agentFromScene:sceneState];
-  if (reauthAgent.authenticationRequired) {
-    [reauthAgent
-        authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
-          if (success) {
-            dismissModalsAndOpenTab();
-          }
-        }];
-  } else {
-    dismissModalsAndOpenTab();
-  }
+  self.incognitoInterstitialAction =
+      IncognitoInterstitialActions::kOpenInChromeIncognito;
+  [self.tabOpener dismissModalsAndMaybeOpenSelectedTabInMode:
+                      ApplicationModeForTabOpening::INCOGNITO
+                                           withUrlLoadParams:self.urlLoadParams
+                                              dismissOmnibox:YES
+                                                  completion:nil];
 }
 
 - (void)didTapSecondaryActionButton {

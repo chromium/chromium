@@ -50,7 +50,6 @@ source_set("incognito_interstitial") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp/incognito",
     "//ios/chrome/browser/ui/ntp/incognito:util",
