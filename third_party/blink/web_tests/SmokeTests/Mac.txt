@@ -958,7 +958,6 @@ http/tests/misc/insert-iframe-into-xml-document-before-xsl-transform.html
 http/tests/navigation/location-change-repeated-from-blank.html
 http/tests/permissions/chromium/test-request-worker.html
 http/tests/preload/meta-viewport-link-headers-imagesrcset.html
-http/tests/preload/without_doc_write_evaluator.html
 http/tests/security/cross-origin-shared-worker-allowed.html
 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigation-change-async.html
 http/tests/security/offscreencanvas-placeholder-read-blocked-no-crossorigin.html
