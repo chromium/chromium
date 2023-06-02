@@ -694,20 +694,32 @@ bool InputMethodController::CommitText(
   return InsertTextAndMoveCaret(text, relative_caret_position, ime_text_spans);
 }
 
-bool InputMethodController::ReplaceText(const String& text,
-                                        PlainTextRange range) {
+bool InputMethodController::ReplaceTextAndMoveCaret(
+    const String& text,
+    PlainTextRange range,
+    MoveCaretBehavior move_caret_behavior) {
   EventQueueScope scope;
   const PlainTextRange old_selection(GetSelectionOffsets());
   if (!SetSelectionOffsets(range))
     return false;
   if (!InsertText(text))
     return false;
-  wtf_size_t selection_delta = text.length() - range.length();
-  wtf_size_t start = old_selection.Start();
-  wtf_size_t end = old_selection.End();
-  return SetSelectionOffsets(
-      {start >= range.End() ? start + selection_delta : start,
-       end >= range.End() ? end + selection_delta : end});
+
+  switch (move_caret_behavior) {
+    case MoveCaretBehavior::kMoveCaretAfterText: {
+      wtf_size_t absolute_caret_position = range.Start() + text.length();
+      return SetSelectionOffsets(
+          {absolute_caret_position, absolute_caret_position});
+    }
+    case MoveCaretBehavior::kDoNotMove: {
+      wtf_size_t selection_delta = text.length() - range.length();
+      wtf_size_t start = old_selection.Start();
+      wtf_size_t end = old_selection.End();
+      return SetSelectionOffsets(
+          {start >= range.End() ? start + selection_delta : start,
+           end >= range.End() ? end + selection_delta : end});
+    }
+  }
 }
 
 bool InputMethodController::ReplaceComposition(const String& text) {
@@ -1556,11 +1568,12 @@ void InputMethodController::ExtendSelectionAndReplace(
     return;
   }
 
-  ReplaceText(
+  ReplaceTextAndMoveCaret(
       replacement_text,
       PlainTextRange(
           std::max(static_cast<int>(selection_offsets.Start()) - before, 0),
-          selection_offsets.End() + after));
+          selection_offsets.End() + after),
+      MoveCaretBehavior::kMoveCaretAfterText);
 }
 
 void InputMethodController::GetLayoutBounds(gfx::Rect* control_bounds,

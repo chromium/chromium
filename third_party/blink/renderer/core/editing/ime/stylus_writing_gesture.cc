@@ -375,7 +375,9 @@ bool StylusWritingGestureRemoveSpaces::MaybeApplyGesture(LocalFrame* frame) {
 
   InputMethodController& input_method_controller =
       frame->GetInputMethodController();
-  input_method_controller.ReplaceText("", space_range.value());
+  input_method_controller.ReplaceTextAndMoveCaret(
+      "", space_range.value(),
+      InputMethodController::MoveCaretBehavior::kDoNotMove);
   input_method_controller.SetEditableSelectionOffsets(
       PlainTextRange(space_range->Start(), space_range->Start()));
   return true;
@@ -482,8 +484,9 @@ bool StylusWritingGestureSplitOrMerge::MaybeApplyGesture(LocalFrame* frame) {
   }
 
   // Remove spaces found.
-  input_method_controller.ReplaceText("",
-                                      PlainTextRange(space_start, space_end));
+  input_method_controller.ReplaceTextAndMoveCaret(
+      "", PlainTextRange(space_start, space_end),
+      InputMethodController::MoveCaretBehavior::kDoNotMove);
   input_method_controller.SetEditableSelectionOffsets(
       PlainTextRange(space_start, space_start));
   return true;
