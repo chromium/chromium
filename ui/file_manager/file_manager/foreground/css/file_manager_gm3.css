@@ -932,7 +932,7 @@ html.focus-outline-visible
 html.focus-outline-visible
     .dialog-footer div.select > div.options:not(:hover) option.selected::after {
   border: 2px solid var(--cros-sys-focus_ring);
-  border-radius: 4px;
+  border-radius: 8px;
   content: '';
   height: 32px; /* option height - 2 x border width */
   left: 0;

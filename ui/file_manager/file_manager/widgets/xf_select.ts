@@ -167,8 +167,8 @@ export class XfSelect extends XfBase {
     const alignment = this.menuAlignment || 'center';
     return html`<cr-action-menu>
         ${this.options.map((option, index) => {
-          const checked = this.selectedOption_!.value === option.value;
-          return html`
+      const checked = this.selectedOption_!.value === option.value;
+      return html`
               <cr-button
                   class="dropdown-item dropdown-item-${alignment}"
                   role="menuitemcheckbox"
@@ -180,7 +180,7 @@ export class XfSelect extends XfBase {
                 <div class='dropdown-filler'></div>
                 <div slot='suffix-icon' class='selected-icon'></div>
               </cr-button>`;
-        })}
+    })}
         </cr-action-menu>`;
   }
 
@@ -482,7 +482,7 @@ function getCSS(): CSSResultGroup {
     :host-context(.focus-outline-visible)
         cr-action-menu cr-button:focus::after {
       border: 2px solid var(--cros-sys-focus_ring);
-      border-radius: 4px;
+      border-radius: 8px;
       content: '';
       height: 32px; /* option height - 2 x border width */
       left: 0;
