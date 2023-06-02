@@ -7,6 +7,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
@@ -19,7 +20,6 @@ class ScriptPromiseResolver;
 namespace {
 class SharedXnnpackContext;
 class XnnRuntimeWrapper;
-struct ArrayBufferViewInfo;
 }
 
 // Map the MLGraph's input or output name to the XNNPACK external Value ID.
