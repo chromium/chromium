@@ -12,6 +12,8 @@ static_library("ash") {
   sources = [ "user_permission_service_ash.cc" ]
 
   public_deps = [ "//components/device_signals/core/browser" ]
+
+  deps = [ "//ash/constants" ]
 }
 
 source_set("unit_tests") {
@@ -20,6 +22,7 @@ source_set("unit_tests") {
 
   deps = [
     ":ash",
+    "//ash/constants",
     "//base/test:test_support",
     "//components/device_signals/core/browser",
     "//components/device_signals/core/browser:test_support",
