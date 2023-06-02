@@ -79,8 +79,9 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
         const controlledframe = document.createElement('controlledframe');
         controlledframe.setAttribute('src', $1);
         controlledframe.setAttribute('partition', $2);
-        await new Promise((resolve) => {
+        await new Promise((resolve, reject) => {
           controlledframe.addEventListener('loadcommit', resolve);
+          controlledframe.addEventListener('loadabort', reject);
           document.body.appendChild(controlledframe);
         });
       })();
@@ -108,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
   EXPECT_THAT(GetIwaUsage(url_info), IsApproximately(1000));
 
   // Create a persisted <controlledframe>, add some usage to it.
-  EXPECT_TRUE(CreateControlledFrame(web_contents,
+  ASSERT_TRUE(CreateControlledFrame(web_contents,
                                     dev_server()->GetURL("/empty_title.html"),
                                     "persist:partition_name"));
   ASSERT_EQ(1UL, web_contents->GetInnerWebContents().size());
@@ -116,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
   EXPECT_THAT(GetIwaUsage(url_info), IsApproximately(2000));
 
   // Create another persisted <controlledframe> with a different partition name.
-  EXPECT_TRUE(CreateControlledFrame(web_contents,
+  ASSERT_TRUE(CreateControlledFrame(web_contents,
                                     dev_server()->GetURL("/empty_title.html"),
                                     "persist:partition_name_2"));
   ASSERT_EQ(2UL, web_contents->GetInnerWebContents().size());
@@ -125,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
   EXPECT_THAT(GetIwaUsage(url_info), IsApproximately(3000));
 
   // Create an in-memory <controlledframe> that won't count towards IWA usage.
-  EXPECT_TRUE(CreateControlledFrame(
+  ASSERT_TRUE(CreateControlledFrame(
       web_contents, dev_server()->GetURL("/empty_title.html"), "unpersisted"));
   ASSERT_EQ(3UL, web_contents->GetInnerWebContents().size());
   AddUsageIfMissing(web_contents->GetInnerWebContents()[0]);
