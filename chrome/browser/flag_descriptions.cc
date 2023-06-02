@@ -6113,12 +6113,6 @@ const char kLacrosProfileMigrationForceOffDescription[] =
     "migration is rolled out to the user, the migration will not run and the "
     "user can continue to use lacros without profile migration.";
 
-extern const char kLanguagePacksInOobeName[] = "Language Packs in OOBE";
-extern const char kLanguagePacksInOobeDescription[] =
-    "Enables the call to install Language Packs during the OOBE flow. This "
-    "logic improves the user experience by fetching language resources as "
-    "early as possible.";
-
 const char kLauncherItemSuggestName[] = "Launcher ItemSuggest";
 const char kLauncherItemSuggestDescription[] =
     "Allows configuration of experiment parameters for ItemSuggest in the "

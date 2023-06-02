@@ -4843,11 +4843,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "language-packs-in-oobe",
-    "owners": [ "claudiomagni", "cros-borders-eng@google.com"],
-    "expiry_milestone": 119
-  },
-  {
     "name": "large-favicon-from-google",
     "owners": [
       "bttk"

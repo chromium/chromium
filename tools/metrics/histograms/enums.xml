@@ -58969,7 +58969,6 @@ from previous Chrome versions.
       label="JourneysOnDeviceClusteringContentClustering:enabled"/>
   <int value="-2048927838" label="AutoplayWhitelistSettings:enabled"/>
   <int value="-2048873628" label="UseToastManager:enabled"/>
-  <int value="-2048829250" label="LanguagePacksInOobe:disabled"/>
   <int value="-2048732429" label="enable-alternative-services"/>
   <int value="-2048679945" label="NTPOfflinePageDownloadSuggestions:disabled"/>
   <int value="-2048395454" label="ChromeDuetLabeled:disabled"/>
@@ -61754,7 +61753,6 @@ from previous Chrome versions.
   <int value="-616508634" label="DisableCryptAuthV1DeviceSync:enabled"/>
   <int value="-616414905" label="ThumbnailCacheRefactor:disabled"/>
   <int value="-615974325" label="ArcMouseWheelSmoothScroll:disabled"/>
-  <int value="-615899374" label="LanguagePacksInOobe:enabled"/>
   <int value="-615254902" label="SystemJapanesePhysicalTyping:enabled"/>
   <int value="-614223913"
       label="ClickToCallContextMenuForSelectedText:enabled"/>
