@@ -17,7 +17,8 @@ import {AppManagementBrowserProxy} from './browser_proxy.js';
 
 const AppManagementAppDetailsItemBase = I18nMixin(PolymerElement);
 
-class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
+export class AppManagementAppDetailsItem extends
+    AppManagementAppDetailsItemBase {
   static get is() {
     return 'app-management-app-details-item';
   }

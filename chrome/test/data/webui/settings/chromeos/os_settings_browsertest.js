@@ -142,30 +142,10 @@ TEST_F('OSSettingsOsBluetoothSavedDevicesListTest', 'AllJsTests', () => {
   mocha.run();
 });
 
-var OSSettingsAppManagementAppDetailsTest =
-    class extends OSSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/app_management/app_details_item_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: super.featureList.enabled.concat(
-          ['features::kAppManagementAppDetails']),
-    };
-  }
-};
-
 function crostiniTestGenPreamble() {
   GEN('crostini::FakeCrostiniFeatures fake_crostini_features;');
   GEN('fake_crostini_features.SetAll(true);');
 }
-
-TEST_F('OSSettingsAppManagementAppDetailsTest', 'AllJsTests', () => {
-  mocha.run();
-});
 
 var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
   /** @override */
@@ -208,7 +188,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['AppsPage', 'apps_page_test.js'],
  ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
- ['AppManagementAppDetailsItem', 'app_management/app_details_item_test.js'],
  ['AppManagementArcDetailView', 'app_management/arc_detail_view_test.js'],
  ['AppManagementDomSwitch', 'app_management/dom_switch_test.js'],
  ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
@@ -494,6 +473,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'OsA11yPageTtsVoiceSubpage',
    'os_a11y_page/tts_voice_subpage_test.js',
+ ],
+ [
+   'OsAppsPageAppManagementPageAppDetailsItem',
+   'os_apps_page/app_management_page/app_details_item_test.js',
+   {enabled: ['features::kAppManagementAppDetails']},
  ],
  [
    'OsAppsPageAppManagementPageAppDetailView',
