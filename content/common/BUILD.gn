@@ -150,6 +150,8 @@ source_set("common") {
     "service_worker/race_network_request_url_loader_client.h",
     "service_worker/service_worker_resource_loader.cc",
     "service_worker/service_worker_resource_loader.h",
+    "service_worker/service_worker_router_evaluator.cc",
+    "service_worker/service_worker_router_evaluator.h",
     "set_process_title.cc",
     "set_process_title.h",
     "skia_utils.cc",
