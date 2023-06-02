@@ -141,16 +141,23 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       } else {
         // End time is not 0 or infinite.
         // Convert to percentages then multiply by the timeline_duration
-        normalized_->start_delay =
-            (timing_.start_delay.AsTimeValue() / end_time) *
-            normalized_->timeline_duration.value();
 
-        normalized_->end_delay = (timing_.end_delay.AsTimeValue() / end_time) *
-                                 normalized_->timeline_duration.value();
+        // TODO(kevers): Revisit once % delays are supported. At present,
+        // % delays are zero and the following product aligns with the animation
+        // range. Note the range duration will need to be plumbed through to
+        // InertEffect via CSSAnimationProxy. One more reason to try and get rid
+        // of InertEffect.
+        AnimationTimeDelta range_duration =
+            IntrinsicIterationDuration() * timing_.iteration_count;
+
+        normalized_->start_delay =
+            (timing_.start_delay.AsTimeValue() / end_time) * range_duration;
+
+        normalized_->end_delay =
+            (timing_.end_delay.AsTimeValue() / end_time) * range_duration;
 
         normalized_->iteration_duration =
-            (timing_.iteration_duration.value() / end_time) *
-            normalized_->timeline_duration.value();
+            (timing_.iteration_duration.value() / end_time) * range_duration;
       }
     } else {
       // Default (auto) duration with a non-monotonic timeline case.
