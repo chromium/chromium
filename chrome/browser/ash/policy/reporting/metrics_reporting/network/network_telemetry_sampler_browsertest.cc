@@ -5,16 +5,23 @@
 #include <memory>
 #include <utility>
 
+#include "base/callback_list.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
+#include "base/test/repeating_test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
@@ -85,6 +92,32 @@ void VerifyNetworkTelemetryData(const MetricData& metric_data) {
   EXPECT_TRUE(network_telemetry.power_management_enabled());
   EXPECT_TRUE(network_telemetry.encryption_on());
 }
+
+class DeviceSettingsServiceWaiter
+    : public ::ash::DeviceSettingsService::Observer {
+ public:
+  DeviceSettingsServiceWaiter() {
+    DCHECK(::ash::DeviceSettingsService::IsInitialized());
+    device_settings_observation_.Observe(::ash::DeviceSettingsService::Get());
+  }
+
+  DeviceSettingsServiceWaiter(const DeviceSettingsServiceWaiter&) = delete;
+  DeviceSettingsServiceWaiter& operator=(const DeviceSettingsServiceWaiter&) =
+      delete;
+
+  ~DeviceSettingsServiceWaiter() override = default;
+
+  void Wait() { run_loop.Run(); }
+
+ private:
+  // ::ash::DeviceSettingsService::Observer:
+  void DeviceSettingsUpdated() override { run_loop.Quit(); }
+
+  base::RunLoop run_loop;
+  base::ScopedObservation<::ash::DeviceSettingsService,
+                          ::ash::DeviceSettingsService::Observer>
+      device_settings_observation_{this};
+};
 
 class NetworkTelemetrySamplerBrowserTest
     : public ::policy::DevicePolicyCrosBrowserTest {
@@ -174,19 +207,46 @@ class NetworkTelemetrySamplerBrowserTest
   }
 
   void SetReportNetworkStatusPolicy(bool enabled) {
+    bool network_status_enabled;
+    base::test::RepeatingTestFuture<void> test_future;
+    base::CallbackListSubscription subscription =
+        ::ash::CrosSettings::Get()->AddSettingsObserver(
+            ::ash::kReportDeviceNetworkStatus, test_future.GetCallback());
     device_reporting()->set_report_network_status(enabled);
     policy_helper_.RefreshDevicePolicy();
+
+    ASSERT_TRUE(test_future.Wait());
+    ASSERT_TRUE(::ash::CrosSettings::Get()->GetBoolean(
+        ::ash::kReportDeviceNetworkStatus, &network_status_enabled));
+    ASSERT_THAT(network_status_enabled, Eq(enabled));
   }
 
   void SetReportNetworkTelemetryCollectionRateMs(int64_t rate) {
+    int collection_rate;
+    base::test::RepeatingTestFuture<void> test_future;
+    base::CallbackListSubscription subscription =
+        ::ash::CrosSettings::Get()->AddSettingsObserver(
+            ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
+            test_future.GetCallback());
     device_reporting()->set_report_network_telemetry_collection_rate_ms(rate);
     policy_helper_.RefreshDevicePolicy();
+
+    ASSERT_TRUE(test_future.Wait());
+    ASSERT_TRUE(::ash::CrosSettings::Get()->GetInteger(
+        ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
+        &collection_rate));
+    ASSERT_THAT(collection_rate, Eq(rate));
   }
 
   void Deprovision() {
+    DeviceSettingsServiceWaiter waiter;
     policy_helper_.device_policy()->policy_data().set_state(
         PolicyData::DEPROVISIONED);
     policy_helper_.RefreshDevicePolicy();
+    waiter.Wait();
+
+    ASSERT_THAT(::ash::DeviceSettingsService::Get()->policy_data()->state(),
+                Eq(PolicyData::DEPROVISIONED));
   }
 
   DeviceReportingProto* device_reporting() {
@@ -204,13 +264,7 @@ IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, PRE_Default) {
   // PRE-condition.
 }
 
-// TODO(crbug.com/1450419): Flaky on ChromeOS
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Default DISABLED_Default
-#else
-#define MAYBE_Default Default
-#endif
-IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, MAYBE_Default) {
+IN_PROC_BROWSER_TEST_F(NetworkTelemetrySamplerBrowserTest, Default) {
   ::chromeos::MissiveClientTestObserver missive_observer(
       base::BindRepeating(&IsNetworkTelemetry));
 
