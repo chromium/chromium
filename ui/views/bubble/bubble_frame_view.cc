@@ -496,7 +496,7 @@ void BubbleFrameView::Layout() {
                              0, 0));
     }
     button->SetPosition(
-        gfx::Point(buttons_rect.right() - button->width(), buttons_rect.y()));
+        gfx::Point(buttons_rect.x() - button->width(), buttons_rect.y()));
     buttons_rect.Union(button->bounds());
   }
   // Add a left margin that equals the right margin.
