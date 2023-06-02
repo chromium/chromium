@@ -179,6 +179,8 @@ TEST_F(MediaItemManagerImplTest, RefreshItems) {
   // Refresh this item.
   EXPECT_CALL(dialog_delegate, RefreshMediaItem("foo", _));
   item_manager()->RefreshItem("foo");
+
+  item_manager()->SetDialogDelegate(nullptr);
 }
 
 }  // namespace global_media_controls
