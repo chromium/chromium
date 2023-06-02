@@ -6,6 +6,7 @@
 
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/permissions/permission_util.h"
@@ -14,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -60,7 +62,10 @@ PermissionPromptBubbleTwoOriginsView::PermissionPromptBubbleTwoOriginsView(
   CHECK_EQ(delegate->Requests()[0]->request_type(),
            permissions::RequestType::kStorageAccess);
 
-  AddFaviconRow();
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  CreateFaviconRow();
   MaybeAddDescription();
 
   CHECK(browser);
@@ -94,17 +99,31 @@ PermissionPromptBubbleTwoOriginsView::~PermissionPromptBubbleTwoOriginsView() =
     default;
 
 void PermissionPromptBubbleTwoOriginsView::AddedToWidget() {
-  if (GetUrlIdentityObject().type == UrlIdentity::Type::kDefault) {
-    // TODO(crbug/1433644): There might be a risk of URL spoofing from origins
-    // that are too wide to fit in the bubble.
-    std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
-        GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
-    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label->SetCollapseWhenHidden(true);
-    label->SetMultiLine(true);
-    label->SetMaxLines(4);
-    GetBubbleFrameView()->SetTitleView(std::move(label));
+  if (GetUrlIdentityObject().type != UrlIdentity::Type::kDefault) {
+    return;
   }
+
+  auto title_container = std::make_unique<views::FlexLayoutView>();
+  title_container->SetOrientation(views::LayoutOrientation::kVertical);
+
+  title_container->AddChildView(std::move(favicon_container_));
+
+  // TODO(crbug/1433644): There might be a risk of URL spoofing from origins
+  // that are too large to fit in the bubble.
+  auto label = std::make_unique<views::Label>(
+      GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetCollapseWhenHidden(true);
+  label->SetMultiLine(true);
+  label->SetMaxLines(4);
+  label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kScaleToMaximum,
+                               /*adjust_height_for_width=*/true));
+  title_container->AddChildView(std::move(label));
+
+  GetBubbleFrameView()->SetTitleView(std::move(title_container));
 }
 
 void PermissionPromptBubbleTwoOriginsView::Show() {
@@ -120,22 +139,7 @@ void PermissionPromptBubbleTwoOriginsView::Show() {
                                    base::Unretained(this)));
 }
 
-void PermissionPromptBubbleTwoOriginsView::AddFaviconRow() {
-  // Line container for the favicon icons.
-  auto* line_container =
-      AddChildViewAt(std::make_unique<views::View>(), /*index=*/0);
-
-  views::BoxLayout* box_layout =
-      line_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          /*between_child_spacing=*/4));
-
-  // Center box_layout children horizontally and vertically.
-  box_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  box_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-
+void PermissionPromptBubbleTwoOriginsView::CreateFaviconRow() {
   // Getting default favicon.
   const ui::NativeTheme* native_theme =
       ui::NativeTheme::GetInstanceForNativeUi();
@@ -144,20 +148,28 @@ void PermissionPromptBubbleTwoOriginsView::AddFaviconRow() {
       is_dark ? IDR_DEFAULT_FAVICON_DARK_32 : IDR_DEFAULT_FAVICON_32;
   ui::ImageModel default_favicon_ = ui::ImageModel::FromResourceId(resource_id);
 
+  const int favicon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_VECTOR_ICON_PADDING);
+
+  // Container for the favicon icons.
+  favicon_container_ = std::make_unique<views::FlexLayoutView>();
+  favicon_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  favicon_container_->SetProperty(views::kMarginsKey,
+                                  gfx::Insets().set_bottom(favicon_margin));
+
   // Left favicon for embedding origin.
-  favicon_left_ = line_container->AddChildView(
+  favicon_left_ = favicon_container_->AddChildView(
       std::make_unique<views::ImageView>(default_favicon_));
   favicon_left_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-
-  // Three dots.
-  line_container->AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          views::kOptionsIcon, ui::kColorIcon, /*icon_size=*/40)));
+  favicon_left_->SetProperty(views::kMarginsKey,
+                             gfx::Insets().set_right(favicon_margin));
 
   // Right favicon for requesting origin.
-  favicon_right_ = line_container->AddChildView(
+  favicon_right_ = favicon_container_->AddChildView(
       std::make_unique<views::ImageView>(default_favicon_));
   favicon_right_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
+  favicon_right_->SetProperty(views::kMarginsKey,
+                              gfx::Insets().set_left(favicon_margin));
 }
 
 void PermissionPromptBubbleTwoOriginsView::OnEmbeddingOriginFaviconLoaded(
@@ -192,7 +204,7 @@ void PermissionPromptBubbleTwoOriginsView::MaybeAddDescription() {
 
   if (description.has_value()) {
     auto* description_label =
-        AddChildViewAt(std::make_unique<views::StyledLabel>(), /*index=*/1);
+        AddChildViewAt(std::make_unique<views::StyledLabel>(), /*index=*/0);
     description_label->SetText(description.value());
     description_label->SetID(
         permissions::PermissionPromptViewID::

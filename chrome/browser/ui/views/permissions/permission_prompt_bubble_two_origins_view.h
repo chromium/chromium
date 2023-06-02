@@ -10,20 +10,21 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "components/favicon_base/favicon_types.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 // Bubble that prompts the user to grant or deny a permission request from from
 // a pair of origins.
 //
-// ----------------------------------------------
-// |                                       [ X ]|
-// | Prompt title mentioning the two origins    |
-// | ------------------------------------------ |
-// | Favicons from the two origins              |
-// | ------------------------------------------ |
-// | Optional description with an optional link |
-// | ------------------------------------------ |
-// |                        [ Block ] [ Allow ] |
-// ----------------------------------------------
+// -------------------------------------------------
+// |                                          [ X ]|
+// | Favicons from the two origins                 |
+// | --------------------------------------------- |
+// | Prompt title mentioning the requesting origin |
+// | --------------------------------------------- |
+// | Optional description with an optional link    |
+// | --------------------------------------------- |
+// |                           [ Block ] [ Allow ] |
+// -------------------------------------------------
 class PermissionPromptBubbleTwoOriginsView
     : public PermissionPromptBubbleBaseView {
  public:
@@ -45,7 +46,7 @@ class PermissionPromptBubbleTwoOriginsView
   void Show() override;
 
  private:
-  void AddFaviconRow();
+  void CreateFaviconRow();
 
   void OnEmbeddingOriginFaviconLoaded(
       const favicon_base::FaviconRawBitmapResult& favicon_result);
@@ -76,6 +77,11 @@ class PermissionPromptBubbleTwoOriginsView
 
   // The task tracker for loading favicons.
   std::unique_ptr<base::CancelableTaskTracker> favicon_tracker_;
+
+  // Container that holds the favicon icons for the two origins.
+  // Its ownership is transferred after widget creation to the views hierarchy
+  // and becomes nullptr.
+  std::unique_ptr<views::FlexLayoutView> favicon_container_;
 
   raw_ptr<views::ImageView> favicon_right_;
   raw_ptr<views::ImageView> favicon_left_;
