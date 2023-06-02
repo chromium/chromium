@@ -3549,7 +3549,7 @@
       },
       'linux-blink-animation-use-time-delta': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'all',
