@@ -15,7 +15,7 @@ namespace media {
 namespace {
 
 constexpr char kInternalInputVirtualDevice[] = "Built-in mic";
-constexpr char kInternalOutputVirtualDevice[] = "Built-in speaker";
+constexpr char kInternalOutputVirtualDevice[] = "Built-in speaker/headphone";
 constexpr char kHeadphoneLineOutVirtualDevice[] = "Headphone/Line Out";
 
 // Names below are from the node_type_to_str function in CRAS server.
