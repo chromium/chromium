@@ -762,7 +762,12 @@ public class CriticalPersistedTabDataTest {
             CriticalPersistedTabData criticalPersistedTabData =
                     new CriticalPersistedTabData(tab, spyStorage, MOCK_DATA_ID);
             criticalPersistedTabData.setUrl(URL_A);
-            tab = MockTab.initializeWithCriticalPersistedTabData(tab, criticalPersistedTabData);
+            // LIVE_IN_BACKGROUND ensures shouldSave is not set to true - see TabStateAttributes
+            // initialization.
+            tab.initialize(null, TabCreationState.LIVE_IN_BACKGROUND, null, null, null, false, null,
+                    false);
+            tab.getUserDataHost().setUserData(
+                    CriticalPersistedTabData.class, criticalPersistedTabData);
             tab.registerTabSaving();
             tab.setIsTabSaveEnabled(true);
 

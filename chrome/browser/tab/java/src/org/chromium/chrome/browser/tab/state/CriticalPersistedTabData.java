@@ -867,6 +867,11 @@ public class CriticalPersistedTabData extends PersistedTabData {
         mShouldSave = true;
     }
 
+    @VisibleForTesting
+    public boolean getShouldSaveForTesting() {
+        return mShouldSave;
+    }
+
     /**
      * @return true if the serialized {@link CriticalPersistedTabData} is empty.
      */

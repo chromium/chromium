@@ -117,6 +117,34 @@ public class TabStateAttributesTest {
     }
 
     @Test
+    public void testDefaultShouldSave() {
+        TabStateAttributes.createForTab(mTab, null);
+        Assert.assertTrue(CriticalPersistedTabData.from(mTab).getShouldSaveForTesting());
+        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
+        mTab.getUserDataHost().removeUserData(CriticalPersistedTabData.class);
+
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+        Assert.assertTrue(CriticalPersistedTabData.from(mTab).getShouldSaveForTesting());
+        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
+        mTab.getUserDataHost().removeUserData(CriticalPersistedTabData.class);
+
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        Assert.assertFalse(CriticalPersistedTabData.from(mTab).getShouldSaveForTesting());
+        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
+        mTab.getUserDataHost().removeUserData(CriticalPersistedTabData.class);
+
+        TabStateAttributes.createForTab(mTab, TabCreationState.LIVE_IN_BACKGROUND);
+        Assert.assertFalse(CriticalPersistedTabData.from(mTab).getShouldSaveForTesting());
+        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
+        mTab.getUserDataHost().removeUserData(CriticalPersistedTabData.class);
+
+        TabStateAttributes.createForTab(mTab, TabCreationState.LIVE_IN_FOREGROUND);
+        Assert.assertFalse(CriticalPersistedTabData.from(mTab).getShouldSaveForTesting());
+        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
+        mTab.getUserDataHost().removeUserData(CriticalPersistedTabData.class);
+    }
+
+    @Test
     public void testTitleUpdate() {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
         TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
