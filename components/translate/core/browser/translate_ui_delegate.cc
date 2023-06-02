@@ -23,7 +23,7 @@ namespace {
 const char kNeverTranslateLang[] = "Translate.NeverTranslateLang";
 const char kNeverTranslateSite[] = "Translate.NeverTranslateSite";
 const char kAlwaysTranslateLang[] = "Translate.AlwaysTranslateLang";
-const char kShowErrorUI[] = "Translate.ShowErrorUI";
+const char kShowErrorUI[] = "Translate.Translation.ShowErrorUI";
 
 }  // namespace
 

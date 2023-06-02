@@ -585,17 +585,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.ShowErrorUI" enum="TranslateError"
-    expires_after="2023-10-01">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Chrome Translate shows an error UI (infobar or bubble) when an error happens
-    on translation and the UI message depends on what kind of error happens.
-    This metric counts how often each error message is shown.
-  </summary>
-</histogram>
-
 <histogram name="Translate.TranslateAssistContentResult"
     enum="TranslateAssistContentResult" expires_after="2022-06-30">
   <owner>jds@chromium.org</owner>
@@ -627,6 +616,20 @@ chromium-metrics-reviews@google.com.
     The number of characters of page content extracted at language detection
     time, recorded when a translation successfully finishes. This can be used as
     a rough estimate for the amount of content translated.
+  </summary>
+</histogram>
+
+<histogram name="Translate.Translation.ShowErrorUI" enum="TranslateError"
+    expires_after="2023-10-01">
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Chrome Translate shows an error UI (infobar or bubble) when an error happens
+    on translation with a UI message specific to the error type. This metric
+    records how often each error message is shown.
+
+    This is not recorded every translation, it is only recorded when a
+    translation results in an error and the error UI is shown.
   </summary>
 </histogram>
 
