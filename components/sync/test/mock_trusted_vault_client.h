@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "components/sync/service/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {
 
-class MockTrustedVaultClient : public TrustedVaultClient {
+class MockTrustedVaultClient : public trusted_vault::TrustedVaultClient {
  public:
   MockTrustedVaultClient();
   ~MockTrustedVaultClient() override;

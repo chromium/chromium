@@ -24,8 +24,8 @@
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/service/trusted_vault_client.h"
 #include "components/sync/test/mock_sync_engine.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -150,7 +150,7 @@ class TestTrustedVaultServer {
   // Mimics a user going through a key-retrieval flow (e.g. reauth) such that
   // keys are fetched from the server and cached in |client|.
   void MimicKeyRetrievalByUser(const std::string& gaia_id,
-                               TrustedVaultClient* client) {
+                               trusted_vault::TrustedVaultClient* client) {
     DCHECK(client);
     DCHECK_NE(0U, gaia_id_to_keys_.count(gaia_id))
         << "StoreKeysOnServer() should have been called for " << gaia_id;
@@ -184,7 +184,7 @@ class TestTrustedVaultServer {
 };
 
 // Simple in-memory implementation of TrustedVaultClient.
-class TestTrustedVaultClient : public TrustedVaultClient {
+class TestTrustedVaultClient : public trusted_vault::TrustedVaultClient {
  public:
   explicit TestTrustedVaultClient(const TestTrustedVaultServer* server)
       : server_(server) {}

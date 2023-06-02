@@ -19,7 +19,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/service/sync_service_impl.h"
-#include "components/sync/service/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -108,7 +108,7 @@ std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
     const AccountInfo& account_info) {
   syncer::SyncServiceImpl* sync_service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile);
-  syncer::TrustedVaultClient* trusted_vault_client =
+  trusted_vault::TrustedVaultClient* trusted_vault_client =
       sync_service->GetSyncClientForTest()->GetTrustedVaultClient();
 
   // Waits until the sync trusted vault keys have been received and stored.

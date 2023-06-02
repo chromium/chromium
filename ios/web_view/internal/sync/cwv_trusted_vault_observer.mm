@@ -13,7 +13,7 @@
 @implementation CWVTrustedVaultObserver
 
 - (instancetype)initWithTrustedVaultObserver:
-    (syncer::TrustedVaultClient::Observer*)observer {
+    (trusted_vault::TrustedVaultClient::Observer*)observer {
   self = [super init];
   if (self) {
     _observer = observer;

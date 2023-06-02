@@ -26,6 +26,7 @@ if (!is_android) {
       "trusted_vault_access_token_fetcher_frontend.h",
       "trusted_vault_access_token_fetcher_impl.cc",
       "trusted_vault_access_token_fetcher_impl.h",
+      "trusted_vault_client.h",
       "trusted_vault_connection.cc",
       "trusted_vault_connection.h",
       "trusted_vault_connection_impl.cc",
@@ -43,10 +44,7 @@ if (!is_android) {
       "trusted_vault_server_constants.cc",
       "trusted_vault_server_constants.h",
     ]
-    public_deps = [
-      "//base",
-      "//components/sync/service",
-    ]
+    public_deps = [ "//base" ]
     deps = [
       "//components/os_crypt/sync",
       "//components/signin/public/identity_manager",
@@ -106,5 +104,13 @@ if (!is_android) {
     ]
 
     deps = [ ":trusted_vault" ]
+  }
+}
+if (is_android) {
+  # TODO(crbug.com/1423343): move trusted_vault_client.h to a dedicated build
+  # target shared across platforms.
+  static_library("trusted_vault") {
+    sources = [ "trusted_vault_client.h" ]
+    public_deps = [ "//base" ]
   }
 }

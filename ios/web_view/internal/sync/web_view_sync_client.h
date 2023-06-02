@@ -56,7 +56,7 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
       syncer::SyncService* sync_service) override;
   invalidation::InvalidationService* GetInvalidationService() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
-  syncer::TrustedVaultClient* GetTrustedVaultClient() override;
+  trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
@@ -77,7 +77,7 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
   syncer::SyncInvalidationsService* sync_invalidations_service_;
 
   std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
-  std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
+  std::unique_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
 };
 
 }  // namespace ios_web_view

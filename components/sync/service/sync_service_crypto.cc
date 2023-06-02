@@ -32,7 +32,7 @@ enum class TrustedVaultFetchKeysAttemptForUMA {
 };
 
 // Used for the case where a null client is passed to SyncServiceCrypto.
-class EmptyTrustedVaultClient : public TrustedVaultClient {
+class EmptyTrustedVaultClient : public trusted_vault::TrustedVaultClient {
  public:
   EmptyTrustedVaultClient() = default;
   ~EmptyTrustedVaultClient() override = default;
@@ -154,7 +154,8 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-TrustedVaultClient* ResoveNullClient(TrustedVaultClient* client) {
+trusted_vault::TrustedVaultClient* ResoveNullClient(
+    trusted_vault::TrustedVaultClient* client) {
   if (client) {
     return client;
   }
@@ -233,8 +234,9 @@ SyncServiceCrypto::State::State()
 
 SyncServiceCrypto::State::~State() = default;
 
-SyncServiceCrypto::SyncServiceCrypto(Delegate* delegate,
-                                     TrustedVaultClient* trusted_vault_client)
+SyncServiceCrypto::SyncServiceCrypto(
+    Delegate* delegate,
+    trusted_vault::TrustedVaultClient* trusted_vault_client)
     : delegate_(delegate),
       trusted_vault_client_(ResoveNullClient(trusted_vault_client)) {
   DCHECK(delegate_);

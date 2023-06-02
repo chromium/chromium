@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/sync/service/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_registration_verifier.h"
 
 namespace network {
@@ -25,7 +25,7 @@ class TrustedVaultClientBackend;
 
 // iOS version of TrustedVaultClient. This class uses the Chrome trusted vault
 // service to store the shared keys.
-class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
+class IOSTrustedVaultClient : public trusted_vault::TrustedVaultClient {
  public:
   IOSTrustedVaultClient(
       ChromeAccountManagerService* account_manager_service,

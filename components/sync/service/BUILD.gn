@@ -64,7 +64,6 @@ static_library("service") {
     "sync_user_settings_impl.h",
     "syncable_service_based_model_type_controller.cc",
     "syncable_service_based_model_type_controller.h",
-    "trusted_vault_client.h",
     "trusted_vault_histograms.cc",
     "trusted_vault_histograms.h",
   ]
@@ -78,6 +77,7 @@ static_library("service") {
     "//components/sync/nigori",
     "//components/sync/protocol",
     "//components/sync/protocol:util",
+    "//components/trusted_vault",
     "//net",
     "//url",
   ]

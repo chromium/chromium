@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_SERVICE_TRUSTED_VAULT_CLIENT_H_
-#define COMPONENTS_SYNC_SERVICE_TRUSTED_VAULT_CLIENT_H_
+#ifndef COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CLIENT_H_
+#define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -14,7 +14,7 @@
 
 struct CoreAccountInfo;
 
-namespace syncer {
+namespace trusted_vault {
 
 // Interface that allows platform-specific logic related to accessing locally
 // available trusted vault encryption keys.
@@ -97,6 +97,6 @@ class TrustedVaultClient {
       const CoreAccountInfo& account_info) = 0;
 };
 
-}  // namespace syncer
+}  // namespace trusted_vault
 
-#endif  // COMPONENTS_SYNC_SERVICE_TRUSTED_VAULT_CLIENT_H_
+#endif  // COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CLIENT_H_

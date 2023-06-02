@@ -14,8 +14,8 @@
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/service/trusted_vault_client.h"
 #include "components/sync/test/fake_server.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 
 // Checker used to block until a Nigori with a given passphrase type is
 // available on the server.
@@ -79,7 +79,7 @@ class TrustedVaultKeyRequiredStateChecker
 // Checker used to block until trusted vault keys are changed.
 class TrustedVaultKeysChangedStateChecker
     : public StatusChangeChecker,
-      syncer::TrustedVaultClient::Observer {
+      trusted_vault::TrustedVaultClient::Observer {
  public:
   explicit TrustedVaultKeysChangedStateChecker(
       syncer::SyncServiceImpl* service);

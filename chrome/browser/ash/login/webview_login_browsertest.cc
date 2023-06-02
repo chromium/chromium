@@ -94,9 +94,9 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
-#include "components/sync/service/trusted_vault_client.h"
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithSyncTrustedVaultEnabled,
   syncer::SyncServiceImpl* sync_service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
           browser->profile());
-  syncer::TrustedVaultClient* trusted_vault_client =
+  trusted_vault::TrustedVaultClient* trusted_vault_client =
       sync_service->GetSyncClientForTest()->GetTrustedVaultClient();
 
   // Verify that the sync trusted vault keys have been received and stored.

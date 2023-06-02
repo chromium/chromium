@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/browser_sync/browser_sync_client.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 
 class ChromeBrowserState;
 
@@ -52,7 +53,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
       syncer::SyncService* sync_service) override;
   invalidation::InvalidationService* GetInvalidationService() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
-  syncer::TrustedVaultClient* GetTrustedVaultClient() override;
+  trusted_vault::TrustedVaultClient* GetTrustedVaultClient() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
@@ -66,7 +67,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   // The sync api component factory in use by this client.
   std::unique_ptr<browser_sync::SyncApiComponentFactoryImpl> component_factory_;
 
-  std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
+  std::unique_ptr<trusted_vault::TrustedVaultClient> trusted_vault_client_;
 
   // Members that must be fetched on the UI thread but accessed on their
   // respective backend threads.

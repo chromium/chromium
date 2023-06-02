@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/sync/service/trusted_vault_client.h"
+#import "components/trusted_vault/trusted_vault_client.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -18,7 +18,8 @@
 namespace ios_web_view {
 
 // Concrete observer just for testing.
-class TrustedVaultObserver : public syncer::TrustedVaultClient::Observer {
+class TrustedVaultObserver
+    : public trusted_vault::TrustedVaultClient::Observer {
   void OnTrustedVaultKeysChanged() override {}
   void OnTrustedVaultRecoverabilityChanged() override {}
 };

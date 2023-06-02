@@ -177,7 +177,7 @@ WebViewSyncClient::GetSyncInvalidationsService() {
   return sync_invalidations_service_;
 }
 
-syncer::TrustedVaultClient* WebViewSyncClient::GetTrustedVaultClient() {
+trusted_vault::TrustedVaultClient* WebViewSyncClient::GetTrustedVaultClient() {
   return trusted_vault_client_.get();
 }
 

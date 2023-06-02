@@ -14,6 +14,7 @@ include_rules = [
   "+components/sync/nigori",
   "+components/sync/protocol",
   "+components/sync/test",
+  "+components/trusted_vault",
   "+net",
   "+services/network/public/cpp",
   "+services/network/public/mojom",

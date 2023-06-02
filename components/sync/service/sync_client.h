@@ -21,13 +21,16 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace trusted_vault {
+class TrustedVaultClient;
+}
+
 namespace syncer {
 
 class SyncApiComponentFactory;
 class SyncInvalidationsService;
 class SyncService;
 class SyncTypePreferenceProvider;
-class TrustedVaultClient;
 
 // Interface for clients of the Sync API to plumb through necessary dependent
 // components. This interface is purely for abstracting dependencies, and
@@ -57,7 +60,7 @@ class SyncClient {
 
   virtual invalidation::InvalidationService* GetInvalidationService() = 0;
   virtual SyncInvalidationsService* GetSyncInvalidationsService() = 0;
-  virtual TrustedVaultClient* GetTrustedVaultClient() = 0;
+  virtual trusted_vault::TrustedVaultClient* GetTrustedVaultClient() = 0;
   virtual scoped_refptr<ExtensionsActivity> GetExtensionsActivity() = 0;
 
   // Returns the current SyncApiComponentFactory instance.

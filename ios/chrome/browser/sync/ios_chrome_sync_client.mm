@@ -186,7 +186,8 @@ IOSChromeSyncClient::GetSyncInvalidationsService() {
   return SyncInvalidationsServiceFactory::GetForBrowserState(browser_state_);
 }
 
-syncer::TrustedVaultClient* IOSChromeSyncClient::GetTrustedVaultClient() {
+trusted_vault::TrustedVaultClient*
+IOSChromeSyncClient::GetTrustedVaultClient() {
   return trusted_vault_client_.get();
 }
 

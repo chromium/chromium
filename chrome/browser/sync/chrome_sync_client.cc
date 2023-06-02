@@ -578,7 +578,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   return controllers;
 }
 
-syncer::TrustedVaultClient* ChromeSyncClient::GetTrustedVaultClient() {
+trusted_vault::TrustedVaultClient* ChromeSyncClient::GetTrustedVaultClient() {
   return trusted_vault_client_.get();
 }
 

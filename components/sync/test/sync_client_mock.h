@@ -35,7 +35,10 @@ class SyncClientMock : public SyncClient {
               GetSyncInvalidationsService,
               (),
               (override));
-  MOCK_METHOD(TrustedVaultClient*, GetTrustedVaultClient, (), (override));
+  MOCK_METHOD(trusted_vault::TrustedVaultClient*,
+              GetTrustedVaultClient,
+              (),
+              (override));
   MOCK_METHOD(scoped_refptr<ExtensionsActivity>,
               GetExtensionsActivity,
               (),
