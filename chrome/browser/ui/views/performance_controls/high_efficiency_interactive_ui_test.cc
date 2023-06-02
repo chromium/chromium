@@ -173,6 +173,10 @@ class HighEfficiencyInteractiveTest : public InteractiveBrowserTest {
     return embedded_test_server()->GetURL("example.com", path);
   }
 
+  GURL GetURL(base::StringPiece hostname, base::StringPiece path) {
+    return embedded_test_server()->GetURL(hostname, path);
+  }
+
  private:
   base::SimpleTestTickClock test_clock_;
   resource_coordinator::ScopedSetTickClockForTesting
@@ -582,10 +586,10 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
 }
 
 // High Efficiency Dialog bubble should add the site it is currently on
-// to the exclusion list if the cancel button of the dialog bubble is clicked.
+// to the exceptions list if the cancel button of the dialog bubble is clicked.
 // Opening the dialog button again will cause the cancel button to be disabled.
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
-                       ModifyExclusionListOnCancelButtonClick) {
+                       ModifyExceptionsListOnCancelButtonClick) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
@@ -599,20 +603,20 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
           l10n_util::GetStringUTF16(
               IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST)),
       // Clicking the dialog's cancel button should add the site to the
-      // exclusion list
+      // exception list
       PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       Do(base::BindLambdaForTesting([=]() {
         PrefService* const pref_service = browser()->profile()->GetPrefs();
-        const base::Value::List& discard_exclusion = pref_service->GetList(
+        const base::Value::List& discard_exception = pref_service->GetList(
             performance_manager::user_tuning::prefs::kTabDiscardingExceptions);
-        EXPECT_EQ(1u, discard_exclusion.size());
+        EXPECT_EQ(1u, discard_exception.size());
         std::string current_site_host = browser()
                                             ->tab_strip_model()
                                             ->GetActiveWebContents()
                                             ->GetURL()
                                             .host();
-        std::string added_exception = discard_exclusion.front().GetString();
+        std::string added_exception = discard_exception.front().GetString();
         EXPECT_EQ(current_site_host, added_exception);
       })),
       FlushEvents(),
@@ -632,12 +636,12 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
                        CancelButtonStatePreseveredWhenSwitchingTabs) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
-      AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
+      NavigateWebContents(kFirstTabContents, GetURL("a.test", "/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GetURL("b.test", "/title1.html")),
       DiscardAndSelectTab(0, kFirstTabContents), TryDiscardTab(1),
       PressButton(kHighEfficiencyChipElementId),
       WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
-      // Add site to the exclusion list
+      // Add site to the exceptions list
       PressButton(HighEfficiencyBubbleView::kHighEfficiencyDialogCancelButton),
       WaitForHide(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
       FlushEvents(),
