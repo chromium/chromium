@@ -18,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class BookmarkUiPrefs {
     private static final @BookmarkRowDisplayPref int INITIAL_BOOKMARK_ROW_DISPLAY_PREF =
-            BookmarkRowDisplayPref.COMPACT;
+            BookmarkRowDisplayPref.VISUAL;
     private static final @BookmarkRowSortOrder int INITIAL_BOOKMARK_ROW_SORT_ORDER =
             BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL;
 

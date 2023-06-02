@@ -85,7 +85,7 @@ public class BookmarkUiPrefsTest {
     public void initialBookmarkRowDisplayPref() {
         // Nothing has been written to shared prefs manager.
         Assert.assertEquals(
-                BookmarkRowDisplayPref.COMPACT, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
+                BookmarkRowDisplayPref.VISUAL, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
     @Test
