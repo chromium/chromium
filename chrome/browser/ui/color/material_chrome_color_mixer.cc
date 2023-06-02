@@ -50,6 +50,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorProfileMenuHeaderLabel] = {ui::kColorSysOnTonalContainer};
   mixer[kColorProfileMenuIconButton] = {ui::kColorSysOnTonalContainer};
   mixer[kColorProfileMenuIconButtonBackground] = {ui::kColorSysTonalContainer};
+  mixer[kColorProfileMenuIconButtonBackgroundHovered] = {
+      ui::kColorSysStateHoverOnSubtle};
 
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;

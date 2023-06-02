@@ -300,6 +300,7 @@
   E_CPONLY(kColorProfileMenuHeaderLabel) \
   E_CPONLY(kColorProfileMenuIconButton) \
   E_CPONLY(kColorProfileMenuIconButtonBackground) \
+  E_CPONLY(kColorProfileMenuIconButtonBackgroundHovered) \
   /* Profiles colors. */ \
   E_CPONLY(kColorProfilesReauthDialogBorder) \
   /* PWA colors. */ \

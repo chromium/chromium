@@ -47,6 +47,9 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
@@ -58,6 +61,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -222,9 +226,26 @@ class CircularImageButton : public views::ImageButton {
     const int kBorderThickness = show_border_ ? 1 : 0;
     const SkScalar kButtonRadius = (button_size_ + 2 * kBorderThickness) / 2.0f;
     if (features::IsChromeRefresh2023() && has_background_color_) {
-      // TODO(crbug.com/1422119): Set colors for hover and pressed states.
       SetBackground(views::CreateThemedRoundedRectBackground(
           kColorProfileMenuIconButtonBackground, kButtonRadius));
+      views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnHover(true);
+      views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
+      views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
+          [](CircularImageButton* host) {
+            const auto* color_provider = host->GetColorProvider();
+            const SkColor hover_color = color_provider->GetColor(
+                kColorProfileMenuIconButtonBackgroundHovered);
+            const float hover_alpha = SkColorGetA(hover_color);
+
+            auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
+                host->size(), host->height() / 2,
+                gfx::PointF(host->GetLocalBounds().CenterPoint()),
+                SkColorSetA(hover_color, SK_AlphaOPAQUE));
+            ink_drop_highlight->set_visible_opacity(hover_alpha /
+                                                    SK_AlphaOPAQUE);
+            return ink_drop_highlight;
+          },
+          this));
     }
 
     // TODO(crbug.com/1422119): Remove border for Chrome Refresh 2023.
