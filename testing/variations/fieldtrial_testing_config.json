@@ -5668,14 +5668,14 @@
             ]
         }
     ],
-    "FeedLoadingPlaceholderStudy": [
+    "FeedLoadingPlaceholder": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20211118",
+                    "name": "Enabled",
                     "enable_features": [
                         "FeedLoadingPlaceholder"
                     ]
@@ -5753,6 +5753,21 @@
                     },
                     "enable_features": [
                         "IPH_FeedSwipeRefresh"
+                    ]
+                }
+            ]
+        }
+    ],
+    "FeedUserInteractionReliabilityReport": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230602",
+                    "enable_features": [
+                        "FeedUserInteractionReliabilityReport"
                     ]
                 }
             ]
