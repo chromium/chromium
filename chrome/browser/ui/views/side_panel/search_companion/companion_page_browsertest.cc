@@ -584,7 +584,8 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 }
 
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnTabForegrounded) {
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       AutoRefreshOnSigninStateChange) {
   EnableSignInMsbbExps(/*signed_in=*/false, /*msbb=*/false, /*exps=*/false);
 
   // Load a page on the active tab and open companion side panel
@@ -595,6 +596,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnTabForegrounded) {
   WaitForCompanionToBeLoaded();
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kSearchCompanion);
+  auto* companion_web_contents = GetCompanionWebContents(browser());
 
   // Inspect the URL from the proto. This will reset the proto.
   auto proto = GetLastCompanionProtoFromUrlLoad();
@@ -604,41 +606,15 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnTabForegrounded) {
   // Navigate to a new tab.
   chrome::NewTab(browser());
 
-  // Go back to the original tab. This should refresh the companion.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  WaitForCompanionIframeReload();
+  // Sign-in to chrome. The companion should refresh automatically even though
+  // it's in background.
+  content::TestNavigationObserver nav_observer(companion_web_contents, 1);
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/false, /*exps=*/false);
 
+  nav_observer.Wait();
   proto = GetLastCompanionProtoFromUrlLoad();
   EXPECT_TRUE(proto.has_value());
   EXPECT_TRUE(proto->page_url().empty());
-}
-
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
-                       DontAutoRefreshIfHasAllPermissions) {
-  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
-
-  // Load a page on the active tab and open companion side panel
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
-
-  WaitForCompanionToBeLoaded();
-  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
-            SidePanelEntry::Id::kSearchCompanion);
-
-  // Inspect the URL from the proto. This will reset the proto.
-  auto proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_TRUE(proto.has_value());
-  EXPECT_FALSE(proto->page_url().empty());
-  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
-
-  // Navigate to a new tab.
-  chrome::NewTab(browser());
-
-  // Go back to the original tab. This should not refresh the companion.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  proto = GetLastCompanionProtoFromUrlLoad();
-  EXPECT_FALSE(proto.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,

@@ -7,10 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,6 +34,7 @@ class SigninDelegate;
 class CompanionPageHandler
     : public side_panel::mojom::CompanionPageHandler,
       public content::WebContentsObserver,
+      public signin::IdentityManager::Observer,
       public unified_consent::UrlKeyedDataCollectionConsentHelper::Observer {
  public:
   CompanionPageHandler(
@@ -65,7 +68,10 @@ class CompanionPageHandler
   // content::WebContentsObserver overrides.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void OnVisibilityChanged(content::Visibility visibility) override;
+
+  // IdentityManager::Observer overrides.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   // UrlKeyedDataCollectionConsentHelper::Observer overrides.
   void OnUrlKeyedDataCollectionConsentStateChanged(
@@ -95,10 +101,6 @@ class CompanionPageHandler
   void DidFinishFindingCqTexts(
       const std::vector<std::pair<std::string, bool>>& text_found_vec);
 
-  // Helper method to determine whether the user has met all the access
-  // requirements, i.e. signed in, msbb enabled, and has exps access.
-  bool MeetsAllAccessRequirements();
-
   mojo::Receiver<side_panel::mojom::CompanionPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
   raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui_ = nullptr;
@@ -113,6 +115,15 @@ class CompanionPageHandler
 
   // The current URL of the main frame.
   GURL page_url_;
+
+  // Observers for sign-in and MSBB status.
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+  base::ScopedObservation<
+      unified_consent::UrlKeyedDataCollectionConsentHelper,
+      unified_consent::UrlKeyedDataCollectionConsentHelper::Observer>
+      consent_helper_observation_{this};
 
   base::WeakPtrFactory<CompanionPageHandler> weak_ptr_factory_{this};
 };
