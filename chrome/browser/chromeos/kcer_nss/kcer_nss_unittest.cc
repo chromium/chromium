@@ -195,11 +195,15 @@ std::vector<uint8_t> PrependSHA256DigestInfo(base::span<const uint8_t> hash) {
 // thread.
 class TokenHolder {
  public:
-  explicit TokenHolder(Token token) {
+  explicit TokenHolder(Token token, bool initialize) {
     io_token_ = std::make_unique<internal::KcerTokenImplNss>(token);
     io_token_->SetAttributeTranslationForTesting(/*is_enabled=*/true);
     weak_ptr_ = io_token_->GetWeakPtr();
     // After this point `io_token_` should only be used on the IO thread.
+
+    if (initialize) {
+      Initialize();
+    }
   }
 
   ~TokenHolder() {
@@ -208,6 +212,9 @@ class TokenHolder {
   }
 
   void Initialize() {
+    CHECK(!is_initialized_);
+    is_initialized_ = true;
+
     base::RunLoop run_loop;
 
     IOTaskRunner()->PostTaskAndReply(
@@ -234,6 +241,7 @@ class TokenHolder {
   base::WeakPtr<internal::KcerTokenImplNss> weak_ptr_;
   std::unique_ptr<internal::KcerTokenImplNss> io_token_;
   crypto::ScopedTestNSSDB nss_slot_;
+  bool is_initialized_ = false;
 };
 
 // A helper class for receiving notifications from Kcer.
@@ -255,7 +263,8 @@ class NotificationsObserver {
     }
   }
 
-  // Waits until the required number of notifications is received.
+  // Waits until the required number of notifications is received. Tries to
+  // check that no extra notifications is sent.
   bool WaitUntil(size_t notifications) {
     if (notifications_counter_ < notifications) {
       expected_notifications_ = notifications;
@@ -285,18 +294,6 @@ class NotificationsObserver {
   base::WeakPtrFactory<NotificationsObserver> weak_factory_{this};
 };
 
-class KcerNssTest : public testing::Test {
- public:
-  KcerNssTest() : observer_(task_environment_) {}
-
- protected:
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
-      base::test::TaskEnvironment::MainThreadType::UI,
-      content::BrowserTaskEnvironment::REAL_IO_THREAD};
-  NotificationsObserver observer_;
-};
-
 std::unique_ptr<net::CertBuilder> MakeCertIssuer() {
   auto issuer = std::make_unique<net::CertBuilder>(/*orig_cert=*/nullptr,
                                                    /*issuer=*/nullptr);
@@ -320,137 +317,68 @@ std::unique_ptr<net::CertBuilder> MakeCertBuilder(
   return cert_builder;
 }
 
-// Test that Kcer forwards notifications from external sources. (Notifications
-// created by Kcer are tested together with the methods that create them.)
-TEST_F(KcerNssTest, ObserveExternalNotification) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
+// Test fixture for KcerNss tests. Provides the least amount of pre-configured
+// setup to give more control to the tests themself.
+class KcerNssTest : public testing::Test {
+ public:
+  KcerNssTest() : observer_(task_environment_) {}
 
-  std::unique_ptr<Kcer> kcer =
-      internal::CreateKcer(IOTaskRunner(), user_token.GetWeakPtr(),
-                           /*device_token=*/nullptr);
+ protected:
+  void InitializeKcer(std::vector<Token> tokens) {
+    base::WeakPtr<internal::KcerToken> user_token_ptr;
+    base::WeakPtr<internal::KcerToken> device_token_ptr;
 
-  NotificationsObserver observer_1(task_environment_);
-  NotificationsObserver observer_2(task_environment_);
+    for (Token token_type : tokens) {
+      if (token_type == Token::kUser) {
+        CHECK(!user_token_ptr.MaybeValid());
+        user_token_ =
+            std::make_unique<TokenHolder>(token_type, /*initialize=*/true);
+        user_token_ptr = user_token_->GetWeakPtr();
+      } else if (token_type == Token::kDevice) {
+        CHECK(!device_token_ptr.MaybeValid());
+        device_token_ =
+            std::make_unique<TokenHolder>(token_type, /*initialize=*/true);
+        device_token_ptr = device_token_->GetWeakPtr();
+      }
+    }
 
-  // Add the first observer.
-  auto subscription_1 = kcer->AddObserver(observer_1.GetCallback());
+    kcer_ =
+        internal::CreateKcer(IOTaskRunner(), user_token_ptr, device_token_ptr);
+    observers_subscription_ = kcer_->AddObserver(observer_.GetCallback());
+  }
 
-  EXPECT_EQ(observer_1.Notifications(), 0u);
-
-  // Check that it receives a notification.
-  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
-  EXPECT_TRUE(observer_1.WaitUntil(/*notifications=*/1));
-
-  // Add one more observer.
-  auto subscription_2 = kcer->AddObserver(observer_2.GetCallback());
-
-  // Check that both of them receive a notification.
-  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
-  EXPECT_TRUE(observer_1.WaitUntil(/*notifications=*/2));
-  EXPECT_TRUE(observer_2.WaitUntil(/*notifications=*/1));
-
-  // Destroy the first subscription, the first observer should stop receiving
-  // notifications now.
-  subscription_1 = base::CallbackListSubscription();
-
-  // Check that only the second observer receives a notification.
-  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
-  EXPECT_TRUE(observer_2.WaitUntil(/*notifications=*/2));
-  EXPECT_TRUE(observer_1.WaitUntil(/*notifications=*/2));
-}
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+      base::test::TaskEnvironment::MainThreadType::UI,
+      content::BrowserTaskEnvironment::REAL_IO_THREAD};
+  NotificationsObserver observer_;
+  base::CallbackListSubscription observers_subscription_;
+  std::unique_ptr<TokenHolder> user_token_;
+  std::unique_ptr<TokenHolder> device_token_;
+  std::unique_ptr<Kcer> kcer_;
+};
 
 // Test that if a method is called with a token that is not (and won't be)
 // available, then an error is returned.
 TEST_F(KcerNssTest, UseUnavailableTokenThenGetError) {
-  std::unique_ptr<Kcer> kcer =
-      internal::CreateKcer(IOTaskRunner(), /*user_token=*/nullptr,
-                           /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  InitializeKcer(/*tokens=*/{});
 
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                       /*hardware_backed=*/true, generate_waiter.GetCallback());
+  kcer_->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                        /*hardware_backed=*/true,
+                        generate_waiter.GetCallback());
 
   ASSERT_FALSE(generate_waiter.Get().has_value());
   EXPECT_EQ(generate_waiter.Get().error(), Error::kTokenIsNotAvailable);
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
-TEST_F(KcerNssTest, ImportCertForImportedKey) {
-  absl::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
-  ASSERT_TRUE(key.has_value() && (key->size() > 0));
-  absl::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
-      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
-  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
-
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer =
-      internal::CreateKcer(IOTaskRunner(), user_token.GetWeakPtr(),
-                           /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
-
-  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
-  kcer->ImportKey(Token::kUser, Pkcs8PrivateKeyInfoDer(std::move(key.value())),
-                  import_key_waiter.GetCallback());
-  ASSERT_TRUE(import_key_waiter.Get().has_value());
-
-  const PublicKey& public_key = import_key_waiter.Get().value();
-
-  EXPECT_EQ(public_key.GetToken(), Token::kUser);
-  // Arbitrary bytes, not much to check about them.
-  EXPECT_EQ(public_key.GetPkcs11Id()->size(), 20u);
-  // Arbitrary bytes, not much to check about them.
-  EXPECT_EQ(public_key.GetSpki()->size(), 294u);
-
-  base::test::TestFuture<base::expected<void, Error>> import_cert_waiter;
-  kcer->ImportCertFromBytes(Token::kUser, CertDer(std::move(cert.value())),
-                            import_cert_waiter.GetCallback());
-  EXPECT_TRUE(import_cert_waiter.Get().has_value());
-
-  EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/1));
-}
-
-// Test that a certificate can not be imported, if there's no key for it on
-// the token.
-TEST_F(KcerNssTest, ImportCertWithoutKeyThenFail) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
-
-  std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
-  std::unique_ptr<net::CertBuilder> cert_builder = MakeCertBuilder(
-      issuer.get(), base::Base64Decode(kPublicKeyBase64).value());
-
-  CertDer cert(StrToBytes(cert_builder->GetDER()));
-
-  base::test::TestFuture<base::expected<void, Error>> import_waiter;
-  kcer->ImportCertFromBytes(Token::kUser, std::move(cert),
-                            import_waiter.GetCallback());
-  ASSERT_FALSE(import_waiter.Get().has_value());
-  EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportCertificate);
-
-  // Double check that ListCerts doesn't find the cert.
-  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
-                         base::flat_map<Token, Error>>
-      certs_waiter;
-  kcer->ListCerts({Token::kUser}, certs_waiter.GetCallback());
-  EXPECT_TRUE(certs_waiter.Get<0>().empty());  // Cert list is empty.
-  EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
-  EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
-}
-
 // Test that all methods can be queued while a token is initializing and that
 // the entire task queue can be processed when initialization completes (in
 // this case - completes with a failure).
-TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
-  TokenHolder user_token(Token::kUser);
+TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
+  // Do not initialize yet to simulate slow initialization.
+  TokenHolder user_token(Token::kUser, /*initialize=*/false);
 
   std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
   std::unique_ptr<net::CertBuilder> cert_builder = MakeCertBuilder(
@@ -590,15 +518,47 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
-TEST_F(KcerNssTest, ListKeys) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-  TokenHolder device_token(Token::kDevice);
-  device_token.Initialize();
+// Test that Kcer forwards notifications from external sources. (Notifications
+// created by Kcer are tested together with the methods that create them.)
+TEST_F(KcerNssTest, ObserveExternalNotification) {
+  TokenHolder user_token(Token::kUser, /*initialize=*/true);
 
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), device_token.GetWeakPtr());
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  std::unique_ptr<Kcer> kcer =
+      internal::CreateKcer(IOTaskRunner(), user_token.GetWeakPtr(),
+                           /*device_token=*/nullptr);
+
+  NotificationsObserver observer_1(task_environment_);
+  NotificationsObserver observer_2(task_environment_);
+
+  // Add the first observer.
+  auto subscription_1 = kcer->AddObserver(observer_1.GetCallback());
+
+  EXPECT_EQ(observer_1.Notifications(), 0u);
+
+  // Check that it receives a notification.
+  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  EXPECT_TRUE(observer_1.WaitUntil(/*notifications=*/1));
+
+  // Add one more observer.
+  auto subscription_2 = kcer->AddObserver(observer_2.GetCallback());
+
+  // Check that both of them receive a notification.
+  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  EXPECT_TRUE(observer_1.WaitUntil(/*notifications=*/2));
+  EXPECT_TRUE(observer_2.WaitUntil(/*notifications=*/1));
+
+  // Destroy the first subscription, the first observer should stop receiving
+  // notifications now.
+  subscription_1 = base::CallbackListSubscription();
+
+  // Check that only the second observer receives a notification.
+  net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  EXPECT_TRUE(observer_2.WaitUntil(/*notifications=*/2));
+  EXPECT_TRUE(observer_1.WaitUntil(/*notifications=*/2));
+}
+
+TEST_F(KcerNssTest, ListKeys) {
+  InitializeKcer({Token::kUser, Token::kDevice});
 
   std::vector<PublicKey> all_expected_keys;
   std::vector<PublicKey> user_expected_keys;
@@ -608,8 +568,8 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
         list_keys_waiter;
-    kcer->ListKeys({Token::kUser, Token::kDevice},
-                   list_keys_waiter.GetCallback());
+    kcer_->ListKeys({Token::kUser, Token::kDevice},
+                    list_keys_waiter.GetCallback());
 
     ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
     EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
@@ -620,9 +580,9 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<base::expected<PublicKey, Error>>
         generate_key_waiter;
-    kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                         /*hardware_backed=*/true,
-                         generate_key_waiter.GetCallback());
+    kcer_->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                          /*hardware_backed=*/true,
+                          generate_key_waiter.GetCallback());
     ASSERT_TRUE(generate_key_waiter.Get().has_value());
     user_expected_keys.push_back(generate_key_waiter.Get().value());
     all_expected_keys.push_back(generate_key_waiter.Take().value());
@@ -632,8 +592,8 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
         list_keys_waiter;
-    kcer->ListKeys({Token::kUser, Token::kDevice},
-                   list_keys_waiter.GetCallback());
+    kcer_->ListKeys({Token::kUser, Token::kDevice},
+                    list_keys_waiter.GetCallback());
     ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
     EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
                 testing::UnorderedElementsAreArray(all_expected_keys));
@@ -643,9 +603,9 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<base::expected<PublicKey, Error>>
         generate_key_waiter;
-    kcer->GenerateRsaKey(Token::kDevice, /*modulus_length_bits=*/2048,
-                         /*hardware_backed=*/true,
-                         generate_key_waiter.GetCallback());
+    kcer_->GenerateRsaKey(Token::kDevice, /*modulus_length_bits=*/2048,
+                          /*hardware_backed=*/true,
+                          generate_key_waiter.GetCallback());
     ASSERT_TRUE(generate_key_waiter.Get().has_value());
     device_expected_keys.push_back(generate_key_waiter.Get().value());
     all_expected_keys.push_back(generate_key_waiter.Take().value());
@@ -655,8 +615,8 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
         list_keys_waiter;
-    kcer->ListKeys({Token::kUser, Token::kDevice},
-                   list_keys_waiter.GetCallback());
+    kcer_->ListKeys({Token::kUser, Token::kDevice},
+                    list_keys_waiter.GetCallback());
     ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
     EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
                 testing::UnorderedElementsAreArray(all_expected_keys));
@@ -666,9 +626,9 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<base::expected<PublicKey, Error>>
         generate_key_waiter;
-    kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
-                        /*hardware_backed=*/true,
-                        generate_key_waiter.GetCallback());
+    kcer_->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                         /*hardware_backed=*/true,
+                         generate_key_waiter.GetCallback());
     ASSERT_TRUE(generate_key_waiter.Get().has_value());
     user_expected_keys.push_back(generate_key_waiter.Get().value());
     all_expected_keys.push_back(generate_key_waiter.Take().value());
@@ -678,9 +638,9 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<base::expected<PublicKey, Error>>
         generate_key_waiter;
-    kcer->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
-                        /*hardware_backed=*/true,
-                        generate_key_waiter.GetCallback());
+    kcer_->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
+                         /*hardware_backed=*/true,
+                         generate_key_waiter.GetCallback());
     ASSERT_TRUE(generate_key_waiter.Get().has_value());
     device_expected_keys.push_back(generate_key_waiter.Get().value());
     all_expected_keys.push_back(generate_key_waiter.Take().value());
@@ -690,8 +650,8 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
         list_keys_waiter;
-    kcer->ListKeys({Token::kUser, Token::kDevice},
-                   list_keys_waiter.GetCallback());
+    kcer_->ListKeys({Token::kUser, Token::kDevice},
+                    list_keys_waiter.GetCallback());
     ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
     EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
                 testing::UnorderedElementsAreArray(all_expected_keys));
@@ -701,7 +661,7 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
         list_keys_waiter;
-    kcer->ListKeys({Token::kUser}, list_keys_waiter.GetCallback());
+    kcer_->ListKeys({Token::kUser}, list_keys_waiter.GetCallback());
     ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
     EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
                 testing::UnorderedElementsAreArray(user_expected_keys));
@@ -711,7 +671,7 @@ TEST_F(KcerNssTest, ListKeys) {
   {
     base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
         list_keys_waiter;
-    kcer->ListKeys({Token::kDevice}, list_keys_waiter.GetCallback());
+    kcer_->ListKeys({Token::kDevice}, list_keys_waiter.GetCallback());
     ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
     EXPECT_THAT(list_keys_waiter.Get<std::vector<PublicKey>>(),
                 testing::UnorderedElementsAreArray(device_expected_keys));
@@ -725,17 +685,12 @@ TEST_F(KcerNssTest, ListKeys) {
 // TODO(miersh): Expand crypto::SignatureVerifier to work with more signature
 // schemes and add them to the test.
 TEST_F(KcerNssTest, SignRsa) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  InitializeKcer({Token::kUser});
 
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_key_waiter;
-  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                       /*hardware_backed=*/true,
-                       generate_key_waiter.GetCallback());
+  kcer_->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                        /*hardware_backed=*/true,
+                        generate_key_waiter.GetCallback());
   ASSERT_TRUE(generate_key_waiter.Get().has_value());
   const PublicKey& public_key = generate_key_waiter.Get().value();
 
@@ -744,8 +699,8 @@ TEST_F(KcerNssTest, SignRsa) {
   // Test kRsaPkcs1Sha1 signature.
   {
     base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
-    kcer->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha1,
-               data_to_sign, sign_waiter.GetCallback());
+    kcer_->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha1,
+                data_to_sign, sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Get().has_value());
     const Signature& signature = sign_waiter.Get().value();
 
@@ -757,18 +712,19 @@ TEST_F(KcerNssTest, SignRsa) {
     EXPECT_TRUE(signature_verifier.VerifyFinal());
   }
 
-  // Test kRsaPkcs1Sha256 signature.
+  // Test kRsaPkcs1Sha256 signature. Save signature to compare with it later.
+  Signature rsa256_signature;
   {
     base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
-    kcer->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha256,
-               data_to_sign, sign_waiter.GetCallback());
+    kcer_->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha256,
+                data_to_sign, sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Get().has_value());
-    const Signature& signature = sign_waiter.Get().value();
+    rsa256_signature = sign_waiter.Get().value();
 
     crypto::SignatureVerifier signature_verifier;
     ASSERT_TRUE(signature_verifier.VerifyInit(
         crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-        signature.value(), public_key.GetSpki().value()));
+        rsa256_signature.value(), public_key.GetSpki().value()));
     signature_verifier.VerifyUpdate(data_to_sign.value());
     EXPECT_TRUE(signature_verifier.VerifyFinal());
   }
@@ -776,8 +732,8 @@ TEST_F(KcerNssTest, SignRsa) {
   // Test kRsaPssRsaeSha256 signature.
   {
     base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
-    kcer->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPssRsaeSha256,
-               data_to_sign, sign_waiter.GetCallback());
+    kcer_->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPssRsaeSha256,
+                data_to_sign, sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Get().has_value());
     const Signature& signature = sign_waiter.Get().value();
 
@@ -789,6 +745,37 @@ TEST_F(KcerNssTest, SignRsa) {
     EXPECT_TRUE(signature_verifier.VerifyFinal());
   }
 
+  // Test `Kcer::SignRsaPkcs1Raw()` (kRsaPkcs1Sha256, but for pre-hashed
+  // values).
+  {
+    // A caller would need to hash the data themself before calling
+    // `SignRsaPkcs1Digest`, do that here.
+    auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+    hasher->Update(data_to_sign->data(), data_to_sign->size());
+    std::vector<uint8_t> hash(hasher->GetHashLength());
+    hasher->Finish(hash.data(), hash.size());
+    DigestWithPrefix digest_with_prefix(PrependSHA256DigestInfo(hash));
+
+    // Generate the signature.
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer_->SignRsaPkcs1Raw(PrivateKeyHandle(public_key),
+                           std::move(digest_with_prefix),
+                           sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    // Verify the signature.
+    crypto::SignatureVerifier signature_verifier;
+    ASSERT_TRUE(signature_verifier.VerifyInit(
+        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+        signature.value(), public_key.GetSpki().value()));
+    signature_verifier.VerifyUpdate(data_to_sign.value());
+    EXPECT_TRUE(signature_verifier.VerifyFinal());
+    // Manual hashing + `SignRsaPkcs1Digest` should produce the same signature
+    // as just `Sign`.
+    EXPECT_EQ(signature, rsa256_signature);
+  }
+
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
@@ -796,17 +783,12 @@ TEST_F(KcerNssTest, SignRsa) {
 // TODO(miersh): Expand crypto::SignatureVerifier to work with more signature
 // schemes and add them to the test.
 TEST_F(KcerNssTest, SignEcc) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  InitializeKcer({Token::kUser});
 
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_key_waiter;
-  kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
-                      /*hardware_backed=*/true,
-                      generate_key_waiter.GetCallback());
+  kcer_->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                       /*hardware_backed=*/true,
+                       generate_key_waiter.GetCallback());
   ASSERT_TRUE(generate_key_waiter.Get().has_value());
   const PublicKey& public_key = generate_key_waiter.Get().value();
 
@@ -815,9 +797,9 @@ TEST_F(KcerNssTest, SignEcc) {
   // Test kEcdsaSecp256r1Sha256 signature.
   {
     base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
-    kcer->Sign(PrivateKeyHandle(public_key),
-               SigningScheme::kEcdsaSecp256r1Sha256, data_to_sign,
-               sign_waiter.GetCallback());
+    kcer_->Sign(PrivateKeyHandle(public_key),
+                SigningScheme::kEcdsaSecp256r1Sha256, data_to_sign,
+                sign_waiter.GetCallback());
     ASSERT_TRUE(sign_waiter.Get().has_value());
     const Signature& signature = sign_waiter.Get().value();
 
@@ -832,70 +814,40 @@ TEST_F(KcerNssTest, SignEcc) {
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
-// Test that `Kcer::SignRsaPkcs1Raw()` produces a correct signature.
-TEST_F(KcerNssTest, SignRsaPkcs1Raw) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
+// Test that a certificate can not be imported, if there's no key for it on
+// the token.
+TEST_F(KcerNssTest, ImportCertWithoutKeyThenFail) {
+  InitializeKcer({Token::kUser});
 
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  std::unique_ptr<net::CertBuilder> issuer = MakeCertIssuer();
+  std::unique_ptr<net::CertBuilder> cert_builder = MakeCertBuilder(
+      issuer.get(), base::Base64Decode(kPublicKeyBase64).value());
 
-  base::test::TestFuture<base::expected<PublicKey, Error>> generate_key_waiter;
-  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                       /*hardware_backed=*/true,
-                       generate_key_waiter.GetCallback());
-  ASSERT_TRUE(generate_key_waiter.Get().has_value());
-  const PublicKey& public_key = generate_key_waiter.Get().value();
+  CertDer cert(StrToBytes(cert_builder->GetDER()));
 
-  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+  base::test::TestFuture<base::expected<void, Error>> import_waiter;
+  kcer_->ImportCertFromBytes(Token::kUser, std::move(cert),
+                             import_waiter.GetCallback());
+  ASSERT_FALSE(import_waiter.Get().has_value());
+  EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportCertificate);
 
-  // A caller would need to hash the data themself before calling
-  // `SignRsaPkcs1Raw`, do that here.
-  auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  hasher->Update(data_to_sign->data(), data_to_sign->size());
-  std::vector<uint8_t> hash(hasher->GetHashLength());
-  hasher->Finish(hash.data(), hash.size());
-  DigestWithPrefix digest_with_prefix(PrependSHA256DigestInfo(hash));
-
-  // Generate the signature.
-  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
-  kcer->SignRsaPkcs1Raw(PrivateKeyHandle(public_key),
-                        std::move(digest_with_prefix),
-                        sign_waiter.GetCallback());
-  ASSERT_TRUE(sign_waiter.Get().has_value());
-  const Signature& signature = sign_waiter.Get().value();
-
-  // Verify the signature.
-  crypto::SignatureVerifier signature_verifier;
-  ASSERT_TRUE(signature_verifier.VerifyInit(
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-      signature.value(), public_key.GetSpki().value()));
-  signature_verifier.VerifyUpdate(data_to_sign.value());
-  EXPECT_TRUE(signature_verifier.VerifyFinal());
-
-  // Verify that manual hashing + `SignRsaPkcs1Raw` produces the same
-  // signature as just `Sign`.
-  base::test::TestFuture<base::expected<Signature, Error>> normal_sign_waiter;
-  kcer->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha256,
-             data_to_sign, normal_sign_waiter.GetCallback());
-  ASSERT_TRUE(normal_sign_waiter.Get().has_value());
-  EXPECT_EQ(sign_waiter.Get().value(), normal_sign_waiter.Get().value());
+  // Double check that ListCerts doesn't find the cert.
+  base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
+                         base::flat_map<Token, Error>>
+      certs_waiter;
+  kcer_->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+  EXPECT_TRUE(certs_waiter.Get<0>().empty());  // Cert list is empty.
+  EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
 // Test that Kcer::GetTokenInfo() method returns meaningful values.
 TEST_F(KcerNssTest, GetTokenInfo) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  InitializeKcer({Token::kUser});
 
   base::test::TestFuture<base::expected<TokenInfo, Error>>
       get_token_info_waiter;
-  kcer->GetTokenInfo(Token::kUser, get_token_info_waiter.GetCallback());
+  kcer_->GetTokenInfo(Token::kUser, get_token_info_waiter.GetCallback());
   ASSERT_TRUE(get_token_info_waiter.Get().has_value());
   const TokenInfo& token_info = get_token_info_waiter.Get().value();
 
@@ -911,22 +863,19 @@ TEST_F(KcerNssTest, GetTokenInfo) {
 
 // Test RSA specific fields from GetKeyInfo's result.
 TEST_F(KcerNssTest, GetKeyInfoForRsaKey) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  InitializeKcer({Token::kUser});
 
   // Generate new key.
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                       /*hardware_backed=*/true, generate_waiter.GetCallback());
+  kcer_->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                        /*hardware_backed=*/true,
+                        generate_waiter.GetCallback());
   ASSERT_TRUE(generate_waiter.Get().has_value());
   const PublicKey& public_key = generate_waiter.Get().value();
 
   base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-  kcer->GetKeyInfo(PrivateKeyHandle(public_key), key_info_waiter.GetCallback());
+  kcer_->GetKeyInfo(PrivateKeyHandle(public_key),
+                    key_info_waiter.GetCallback());
   ASSERT_TRUE(key_info_waiter.Get().has_value());
   const KeyInfo& key_info = key_info_waiter.Get().value();
   EXPECT_EQ(key_info.key_type, KeyType::kRsa);
@@ -942,22 +891,18 @@ TEST_F(KcerNssTest, GetKeyInfoForRsaKey) {
 
 // Test ECC specific fields from GetKeyInfo's result.
 TEST_F(KcerNssTest, GetKeyInfoForEccKey) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  InitializeKcer({Token::kUser});
 
   // Generate new key.
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
-                      /*hardware_backed=*/true, generate_waiter.GetCallback());
+  kcer_->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                       /*hardware_backed=*/true, generate_waiter.GetCallback());
   ASSERT_TRUE(generate_waiter.Get().has_value());
   const PublicKey& public_key = generate_waiter.Get().value();
 
   base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-  kcer->GetKeyInfo(PrivateKeyHandle(public_key), key_info_waiter.GetCallback());
+  kcer_->GetKeyInfo(PrivateKeyHandle(public_key),
+                    key_info_waiter.GetCallback());
   ASSERT_TRUE(key_info_waiter.Get().has_value());
   const KeyInfo& key_info = key_info_waiter.Get().value();
   EXPECT_EQ(key_info.key_type, KeyType::kEcc);
@@ -971,17 +916,12 @@ TEST_F(KcerNssTest, GetKeyInfoForEccKey) {
 // Test generic fields from GetKeyInfo's result and they get updated after
 // related Set* methods.
 TEST_F(KcerNssTest, GetKeyInfoGeneric) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  InitializeKcer({Token::kUser});
 
   // Generate new key.
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
-                      /*hardware_backed=*/true, generate_waiter.GetCallback());
+  kcer_->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                       /*hardware_backed=*/true, generate_waiter.GetCallback());
   ASSERT_TRUE(generate_waiter.Get().has_value());
   const PublicKey& public_key = generate_waiter.Get().value();
 
@@ -999,8 +939,8 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
 
   {
     base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-    kcer->GetKeyInfo(PrivateKeyHandle(public_key),
-                     key_info_waiter.GetCallback());
+    kcer_->GetKeyInfo(PrivateKeyHandle(public_key),
+                      key_info_waiter.GetCallback());
     ASSERT_TRUE(key_info_waiter.Get().has_value());
     const KeyInfo& key_info = key_info_waiter.Get().value();
 
@@ -1017,16 +957,16 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
     expected_key_info.nickname = "new_nickname";
 
     base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
-    kcer->SetKeyNickname(PrivateKeyHandle(public_key),
-                         expected_key_info.nickname.value(),
-                         set_nickname_waiter.GetCallback());
+    kcer_->SetKeyNickname(PrivateKeyHandle(public_key),
+                          expected_key_info.nickname.value(),
+                          set_nickname_waiter.GetCallback());
     ASSERT_TRUE(set_nickname_waiter.Get().has_value());
   }
 
   {
     base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-    kcer->GetKeyInfo(PrivateKeyHandle(public_key),
-                     key_info_waiter.GetCallback());
+    kcer_->GetKeyInfo(PrivateKeyHandle(public_key),
+                      key_info_waiter.GetCallback());
     ASSERT_TRUE(key_info_waiter.Get().has_value());
     EXPECT_TRUE(
         KeyInfoEquals(expected_key_info, key_info_waiter.Get().value()));
@@ -1038,16 +978,16 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
     expected_key_info.key_permissions->mutable_key_usages()->set_arc(true);
 
     base::test::TestFuture<base::expected<void, Error>> set_permissions_waiter;
-    kcer->SetKeyPermissions(PrivateKeyHandle(public_key),
-                            expected_key_info.key_permissions.value(),
-                            set_permissions_waiter.GetCallback());
+    kcer_->SetKeyPermissions(PrivateKeyHandle(public_key),
+                             expected_key_info.key_permissions.value(),
+                             set_permissions_waiter.GetCallback());
     ASSERT_TRUE(set_permissions_waiter.Get().has_value());
   }
 
   {
     base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-    kcer->GetKeyInfo(PrivateKeyHandle(public_key),
-                     key_info_waiter.GetCallback());
+    kcer_->GetKeyInfo(PrivateKeyHandle(public_key),
+                      key_info_waiter.GetCallback());
     ASSERT_TRUE(key_info_waiter.Get().has_value());
     EXPECT_TRUE(
         KeyInfoEquals(expected_key_info, key_info_waiter.Get().value()));
@@ -1057,7 +997,7 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
     expected_key_info.cert_provisioning_profile_id = "cert_prov_id_123";
 
     base::test::TestFuture<base::expected<void, Error>> set_permissions_waiter;
-    kcer->SetCertProvisioningProfileId(
+    kcer_->SetCertProvisioningProfileId(
         PrivateKeyHandle(public_key),
         expected_key_info.cert_provisioning_profile_id.value(),
         set_permissions_waiter.GetCallback());
@@ -1066,8 +1006,8 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
 
   {
     base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-    kcer->GetKeyInfo(PrivateKeyHandle(public_key),
-                     key_info_waiter.GetCallback());
+    kcer_->GetKeyInfo(PrivateKeyHandle(public_key),
+                      key_info_waiter.GetCallback());
     ASSERT_TRUE(key_info_waiter.Get().has_value());
     EXPECT_TRUE(
         KeyInfoEquals(expected_key_info, key_info_waiter.Get().value()));
@@ -1076,27 +1016,53 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
-// Test different ways to call DoesPrivateKeyExist() method and that it returns
-// correct results when Kcer has access to one token.
-TEST_F(KcerNssTest, DoesPrivateKeyExistOneToken) {
-  TokenHolder device_token(Token::kDevice);
-  device_token.Initialize();
+TEST_F(KcerNssTest, ImportCertForImportedKey) {
+  InitializeKcer({Token::kUser});
 
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), /*user_token=*/nullptr, device_token.GetWeakPtr());
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  absl::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+  absl::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  kcer_->ImportKey(Token::kUser, Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_TRUE(import_key_waiter.Get().has_value());
+
+  const PublicKey& public_key = import_key_waiter.Get().value();
+
+  EXPECT_EQ(public_key.GetToken(), Token::kUser);
+  // Arbitrary bytes, not much to check about them.
+  EXPECT_EQ(public_key.GetPkcs11Id()->size(), 20u);
+  // Arbitrary bytes, not much to check about them.
+  EXPECT_EQ(public_key.GetSpki()->size(), 294u);
+
+  base::test::TestFuture<base::expected<void, Error>> import_cert_waiter;
+  kcer_->ImportCertFromBytes(Token::kUser, CertDer(std::move(cert.value())),
+                             import_cert_waiter.GetCallback());
+  EXPECT_TRUE(import_cert_waiter.Get().has_value());
+
+  EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/1));
+}
+
+// Test different ways to call DoesPrivateKeyExist() method and that it
+// returns correct results when Kcer has access to one token.
+TEST_F(KcerNssTest, DoesPrivateKeyExistOneToken) {
+  InitializeKcer({Token::kDevice});
 
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
-                      /*hardware_backed=*/true, generate_waiter.GetCallback());
+  kcer_->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
+                       /*hardware_backed=*/true, generate_waiter.GetCallback());
   ASSERT_TRUE(generate_waiter.Get().has_value());
   const PublicKey& public_key = generate_waiter.Get().value();
 
   // The private key should be found by the PublicKey.
   {
     base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(PrivateKeyHandle(public_key),
-                              does_exist_waiter.GetCallback());
+    kcer_->DoesPrivateKeyExist(PrivateKeyHandle(public_key),
+                               does_exist_waiter.GetCallback());
     ASSERT_TRUE(does_exist_waiter.Get().has_value());
     EXPECT_EQ(does_exist_waiter.Get().value(), true);
   }
@@ -1104,8 +1070,8 @@ TEST_F(KcerNssTest, DoesPrivateKeyExistOneToken) {
   // The private key should be found by the SPKI.
   {
     base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(PrivateKeyHandle(public_key.GetSpki()),
-                              does_exist_waiter.GetCallback());
+    kcer_->DoesPrivateKeyExist(PrivateKeyHandle(public_key.GetSpki()),
+                               does_exist_waiter.GetCallback());
     ASSERT_TRUE(does_exist_waiter.Get().has_value());
     EXPECT_EQ(does_exist_waiter.Get().value(), true);
   }
@@ -1113,7 +1079,7 @@ TEST_F(KcerNssTest, DoesPrivateKeyExistOneToken) {
   // The private key should be found on the specified token by the SPKI.
   {
     base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(
+    kcer_->DoesPrivateKeyExist(
         PrivateKeyHandle(Token::kDevice, public_key.GetSpki()),
         does_exist_waiter.GetCallback());
     ASSERT_TRUE(does_exist_waiter.Get().has_value());
@@ -1123,7 +1089,7 @@ TEST_F(KcerNssTest, DoesPrivateKeyExistOneToken) {
   // Looking for a key on a non-existing token should return an error.
   {
     base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(
+    kcer_->DoesPrivateKeyExist(
         PrivateKeyHandle(Token::kUser, public_key.GetSpki()),
         does_exist_waiter.GetCallback());
     ASSERT_FALSE(does_exist_waiter.Get().has_value());
@@ -1133,7 +1099,7 @@ TEST_F(KcerNssTest, DoesPrivateKeyExistOneToken) {
   // Looking for a key by an invalid SPKI should return an error.
   {
     base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(
+    kcer_->DoesPrivateKeyExist(
         PrivateKeyHandle(PublicKeySpki(std::vector<uint8_t>{1, 2, 3})),
         does_exist_waiter.GetCallback());
     ASSERT_FALSE(does_exist_waiter.Get().has_value());
@@ -1145,7 +1111,7 @@ TEST_F(KcerNssTest, DoesPrivateKeyExistOneToken) {
     std::vector<uint8_t> non_existing_key =
         base::Base64Decode(kPublicKeyBase64).value();
     base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(
+    kcer_->DoesPrivateKeyExist(
         PrivateKeyHandle(PublicKeySpki(std::move(non_existing_key))),
         does_exist_waiter.GetCallback());
     ASSERT_TRUE(does_exist_waiter.Get().has_value())
@@ -1156,132 +1122,18 @@ TEST_F(KcerNssTest, DoesPrivateKeyExistOneToken) {
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
-class KcerNssAllKeyTypesTest : public KcerNssTest,
-                               public testing::WithParamInterface<KeyType> {
- protected:
-  KeyType GetKeyType() { return GetParam(); }
-};
-
-// Test different ways to call DoesPrivateKeyExist() method and that it returns
-// correct results when Kcer has access to two tokens.
-TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
-  TokenHolder device_token(Token::kDevice);
-  device_token.Initialize();
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), device_token.GetWeakPtr());
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
-
-  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  switch (GetKeyType()) {
-    case KeyType::kRsa:
-      kcer->GenerateRsaKey(Token::kDevice, /*modulus_length_bits=*/2048,
-                           /*hardware_backed=*/true,
-                           generate_waiter.GetCallback());
-      break;
-    case KeyType::kEcc:
-      kcer->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
-                          /*hardware_backed=*/true,
-                          generate_waiter.GetCallback());
-      break;
-  }
-  ASSERT_TRUE(generate_waiter.Get().has_value());
-  const PublicKey& public_key = generate_waiter.Get().value();
-
-  // The private key should be found by the PublicKey.
-  {
-    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(PrivateKeyHandle(public_key),
-                              does_exist_waiter.GetCallback());
-    ASSERT_TRUE(does_exist_waiter.Get().has_value());
-    EXPECT_EQ(does_exist_waiter.Get().value(), true);
-  }
-
-  // The private key should be found by the SPKI.
-  {
-    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(PrivateKeyHandle(public_key.GetSpki()),
-                              does_exist_waiter.GetCallback());
-    ASSERT_TRUE(does_exist_waiter.Get().has_value());
-    EXPECT_EQ(does_exist_waiter.Get().value(), true);
-  }
-
-  // The private key should be found on the specified token by the SPKI.
-  {
-    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(
-        PrivateKeyHandle(Token::kDevice, public_key.GetSpki()),
-        does_exist_waiter.GetCallback());
-    ASSERT_TRUE(does_exist_waiter.Get().has_value());
-    EXPECT_EQ(does_exist_waiter.Get().value(), true);
-  }
-
-  // Looking for a key on another (existing) token should return a negative
-  // result.
-  {
-    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(
-        PrivateKeyHandle(Token::kUser, public_key.GetSpki()),
-        does_exist_waiter.GetCallback());
-    ASSERT_TRUE(does_exist_waiter.Get().has_value());
-    EXPECT_EQ(does_exist_waiter.Get().value(), false);
-  }
-
-  // Looking for a key by an incorrect SPKI should return an error.
-  {
-    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(
-        PrivateKeyHandle(PublicKeySpki(std::vector<uint8_t>{1, 2, 3})),
-        does_exist_waiter.GetCallback());
-    ASSERT_FALSE(does_exist_waiter.Get().has_value());
-    EXPECT_EQ(does_exist_waiter.Get().error(), Error::kFailedToGetKeyId);
-  }
-
-  // Looking for a non-existing key should return a negative result.
-  {
-    std::vector<uint8_t> non_existing_key =
-        base::Base64Decode(kPublicKeyBase64).value();
-    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
-    kcer->DoesPrivateKeyExist(
-        PrivateKeyHandle(PublicKeySpki(std::move(non_existing_key))),
-        does_exist_waiter.GetCallback());
-    ASSERT_TRUE(does_exist_waiter.Get().has_value())
-        << does_exist_waiter.Get().error();
-    EXPECT_EQ(does_exist_waiter.Get().value(), false);
-  }
-
-  EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
-}
-
-TEST_P(KcerNssAllKeyTypesTest, RemoveKeyAndCertsWithManyCerts) {
+TEST_F(KcerNssTest, RemoveKeyAndCertsWithManyCerts) {
   if (NSS_VersionCheck("3.68") != PR_TRUE) {
     // TODO(b/283925148): Remove this when all the builders are updated.
     GTEST_SKIP() << "NSS is too old";
   }
 
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  InitializeKcer({Token::kUser});
 
   // Generate new key.
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  switch (GetKeyType()) {
-    case KeyType::kRsa:
-      kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                           /*hardware_backed=*/true,
-                           generate_waiter.GetCallback());
-      break;
-    case KeyType::kEcc:
-      kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
-                          /*hardware_backed=*/true,
-                          generate_waiter.GetCallback());
-      break;
-  }
+  kcer_->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                       /*hardware_backed=*/true, generate_waiter.GetCallback());
   ASSERT_TRUE(generate_waiter.Get().has_value());
   const PublicKey& public_key = generate_waiter.Get().value();
 
@@ -1292,8 +1144,8 @@ TEST_P(KcerNssAllKeyTypesTest, RemoveKeyAndCertsWithManyCerts) {
         MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
     // Import a cert.
     base::test::TestFuture<base::expected<void, Error>> import_waiter;
-    kcer->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
-                         import_waiter.GetCallback());
+    kcer_->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
+                          import_waiter.GetCallback());
     EXPECT_TRUE(import_waiter.Get().has_value());
     EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/1));
   }
@@ -1303,8 +1155,8 @@ TEST_P(KcerNssAllKeyTypesTest, RemoveKeyAndCertsWithManyCerts) {
         MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
     // Import a cert.
     base::test::TestFuture<base::expected<void, Error>> import_waiter;
-    kcer->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
-                         import_waiter.GetCallback());
+    kcer_->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
+                          import_waiter.GetCallback());
     EXPECT_TRUE(import_waiter.Get().has_value());
     EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/2));
   }
@@ -1314,8 +1166,8 @@ TEST_P(KcerNssAllKeyTypesTest, RemoveKeyAndCertsWithManyCerts) {
         MakeCertBuilder(issuer.get(), public_key.GetSpki().value());
     // Import a cert.
     base::test::TestFuture<base::expected<void, Error>> import_waiter;
-    kcer->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
-                         import_waiter.GetCallback());
+    kcer_->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
+                          import_waiter.GetCallback());
     EXPECT_TRUE(import_waiter.Get().has_value());
     EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/3));
   }
@@ -1324,14 +1176,14 @@ TEST_P(KcerNssAllKeyTypesTest, RemoveKeyAndCertsWithManyCerts) {
   base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
                          base::flat_map<Token, Error>>
       certs_waiter;
-  kcer->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+  kcer_->ListCerts({Token::kUser}, certs_waiter.GetCallback());
   EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
   EXPECT_EQ(certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>().size(),
             3u);
 
   base::test::TestFuture<base::expected<void, Error>> remove_waiter;
-  kcer->RemoveKeyAndCerts(PrivateKeyHandle(public_key),
-                          remove_waiter.GetCallback());
+  kcer_->RemoveKeyAndCerts(PrivateKeyHandle(public_key),
+                           remove_waiter.GetCallback());
   EXPECT_TRUE(remove_waiter.Get().has_value());
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/4));
 
@@ -1339,7 +1191,7 @@ TEST_P(KcerNssAllKeyTypesTest, RemoveKeyAndCertsWithManyCerts) {
   base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
                          base::flat_map<Token, Error>>
       certs_waiter_2;
-  kcer->ListCerts({Token::kUser}, certs_waiter_2.GetCallback());
+  kcer_->ListCerts({Token::kUser}, certs_waiter_2.GetCallback());
   EXPECT_TRUE(certs_waiter_2.Get<1>().empty());  // Error map is empty.
   EXPECT_TRUE(
       certs_waiter_2.Get<std::vector<scoped_refptr<const Cert>>>().empty());
@@ -1347,33 +1199,113 @@ TEST_P(KcerNssAllKeyTypesTest, RemoveKeyAndCertsWithManyCerts) {
   // Check that the generated key cannot be found anymore.
   base::test::TestFuture<std::vector<PublicKey>, base::flat_map<Token, Error>>
       list_keys_waiter;
-  kcer->ListKeys({Token::kUser}, list_keys_waiter.GetCallback());
+  kcer_->ListKeys({Token::kUser}, list_keys_waiter.GetCallback());
   ASSERT_TRUE(list_keys_waiter.Get<1>().empty());  // Error map is empty.
   EXPECT_TRUE(list_keys_waiter.Get<std::vector<PublicKey>>().empty());
+}
+
+class KcerNssAllKeyTypesTest : public KcerNssTest,
+                               public testing::WithParamInterface<KeyType> {
+ public:
+  KeyType GetKeyType() { return GetParam(); }
+};
+
+// Test different ways to call DoesPrivateKeyExist() method and that it
+// returns correct results when Kcer has access to two tokens.
+TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
+  InitializeKcer({Token::kUser, Token::kDevice});
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
+  switch (GetKeyType()) {
+    case KeyType::kRsa:
+      kcer_->GenerateRsaKey(Token::kDevice, /*modulus_length_bits=*/2048,
+                            /*hardware_backed=*/true,
+                            generate_waiter.GetCallback());
+      break;
+    case KeyType::kEcc:
+      kcer_->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
+                           /*hardware_backed=*/true,
+                           generate_waiter.GetCallback());
+      break;
+  }
+  ASSERT_TRUE(generate_waiter.Get().has_value());
+  const PublicKey& public_key = generate_waiter.Get().value();
+
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer_->DoesPrivateKeyExist(PrivateKeyHandle(public_key),
+                               does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), true);
+  }
+
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer_->DoesPrivateKeyExist(PrivateKeyHandle(public_key.GetSpki()),
+                               does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), true);
+  }
+
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer_->DoesPrivateKeyExist(
+        PrivateKeyHandle(Token::kDevice, public_key.GetSpki()),
+        does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), true);
+  }
+
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer_->DoesPrivateKeyExist(
+        PrivateKeyHandle(Token::kUser, public_key.GetSpki()),
+        does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), false);
+  }
+
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer_->DoesPrivateKeyExist(
+        PrivateKeyHandle(PublicKeySpki(std::vector<uint8_t>{1, 2, 3})),
+        does_exist_waiter.GetCallback());
+    ASSERT_FALSE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().error(), Error::kFailedToGetKeyId);
+  }
+
+  {
+    std::vector<uint8_t> non_existing_key =
+        base::Base64Decode(kPublicKeyBase64).value();
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer_->DoesPrivateKeyExist(
+        PrivateKeyHandle(PublicKeySpki(std::move(non_existing_key))),
+        does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value())
+        << does_exist_waiter.Get().error();
+    EXPECT_EQ(does_exist_waiter.Get().value(), false);
+  }
+
+  EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
 // Test that all methods work together as expected. Simulate a potential
 // lifecycle of a key and related objects.
 TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-  auto subscription = kcer->AddObserver(observer_.GetCallback());
+  InitializeKcer({Token::kUser, Token::kDevice});
 
   // Generate new key.
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
   switch (GetKeyType()) {
     case KeyType::kRsa:
-      kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                           /*hardware_backed=*/true,
-                           generate_waiter.GetCallback());
+      kcer_->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                            /*hardware_backed=*/true,
+                            generate_waiter.GetCallback());
       break;
     case KeyType::kEcc:
-      kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
-                          /*hardware_backed=*/true,
-                          generate_waiter.GetCallback());
+      kcer_->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                           /*hardware_backed=*/true,
+                           generate_waiter.GetCallback());
       break;
   }
   ASSERT_TRUE(generate_waiter.Get().has_value());
@@ -1385,8 +1317,8 @@ TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
 
   // Import a cert for the key.
   base::test::TestFuture<base::expected<void, Error>> import_waiter;
-  kcer->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
-                       import_waiter.GetCallback());
+  kcer_->ImportX509Cert(Token::kUser, cert_builder->GetX509Certificate(),
+                        import_waiter.GetCallback());
   EXPECT_TRUE(import_waiter.Get().has_value());
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/1));
 
@@ -1394,7 +1326,7 @@ TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
   base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
                          base::flat_map<Token, Error>>
       certs_waiter;
-  kcer->ListCerts({Token::kUser}, certs_waiter.GetCallback());
+  kcer_->ListCerts({Token::kUser}, certs_waiter.GetCallback());
   EXPECT_TRUE(certs_waiter.Get<1>().empty());  // Error map is empty.
   const auto& certs =
       certs_waiter.Get<std::vector<scoped_refptr<const Cert>>>();
@@ -1404,7 +1336,7 @@ TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
 
   // Remove the cert.
   base::test::TestFuture<base::expected<void, Error>> remove_cert_waiter;
-  kcer->RemoveCert(certs.front(), remove_cert_waiter.GetCallback());
+  kcer_->RemoveCert(certs.front(), remove_cert_waiter.GetCallback());
   ASSERT_TRUE(remove_cert_waiter.Get().has_value());
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/2));
 
@@ -1412,7 +1344,7 @@ TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
   base::test::TestFuture<std::vector<scoped_refptr<const Cert>>,
                          base::flat_map<Token, Error>>
       certs_waiter_2;
-  kcer->ListCerts({Token::kUser}, certs_waiter_2.GetCallback());
+  kcer_->ListCerts({Token::kUser}, certs_waiter_2.GetCallback());
   EXPECT_TRUE(certs_waiter_2.Get<1>().empty());  // Error map is empty.
   ASSERT_EQ(certs_waiter_2.Get<std::vector<scoped_refptr<const Cert>>>().size(),
             0u);
@@ -1424,8 +1356,8 @@ TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
   // Import another cert for the key to check that the key was not removed and
   // is still usable.
   base::test::TestFuture<base::expected<void, Error>> import_waiter_2;
-  kcer->ImportX509Cert(Token::kUser, cert_builder_2->GetX509Certificate(),
-                       import_waiter_2.GetCallback());
+  kcer_->ImportX509Cert(Token::kUser, cert_builder_2->GetX509Certificate(),
+                        import_waiter_2.GetCallback());
   EXPECT_TRUE(import_waiter_2.Get().has_value());
 }
 
