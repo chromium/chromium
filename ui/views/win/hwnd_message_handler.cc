@@ -1011,7 +1011,12 @@ void HWNDMessageHandler::FlashFrame(bool flash) {
 }
 
 void HWNDMessageHandler::ClearNativeFocus() {
-  ::SetFocus(hwnd());
+  // Headless windows don't get native focus, so just pretend we grabbed one.
+  if (IsHeadless()) {
+    delegate_->HandleNativeFocus(0);
+  } else {
+    ::SetFocus(hwnd());
+  }
 }
 
 void HWNDMessageHandler::SetCapture() {
@@ -1507,7 +1512,12 @@ void HWNDMessageHandler::SetInitialFocus() {
   if (!(GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_TRANSPARENT) &&
       !(GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_NOACTIVATE)) {
     // The window does not get keyboard messages unless we focus it.
-    SetFocus(hwnd());
+    // Headless windows don't get native focus, so just pretend we grabbed one.
+    if (IsHeadless()) {
+      delegate_->HandleNativeFocus(0);
+    } else {
+      ::SetFocus(hwnd());
+    }
   }
 }
 
@@ -2153,7 +2163,11 @@ LRESULT HWNDMessageHandler::OnKeyEvent(UINT message,
 }
 
 void HWNDMessageHandler::OnKillFocus(HWND focused_window) {
-  delegate_->HandleNativeBlur(focused_window);
+  // Headless windows are believed to always have focus, so avoid
+  // reporting native focus changes.
+  if (!IsHeadless()) {
+    delegate_->HandleNativeBlur(focused_window);
+  }
   SetMsgHandled(FALSE);
 }
 
@@ -2741,7 +2755,11 @@ LRESULT HWNDMessageHandler::OnSetCursor(UINT message,
 }
 
 void HWNDMessageHandler::OnSetFocus(HWND last_focused_window) {
-  delegate_->HandleNativeFocus(last_focused_window);
+  // Headless windows are believed to always have focus, so avoid
+  // reporting native focus changes.
+  if (!IsHeadless()) {
+    delegate_->HandleNativeFocus(last_focused_window);
+  }
   SetMsgHandled(FALSE);
 }
 
