@@ -1,4 +1,10 @@
 <style include="shortcut-customization-shared">
+  #container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
   #restoreAllButton {
     /*
      * Specifying a large single value for border-radius ensures perfectly
@@ -24,13 +30,15 @@
     margin-inline-start: 4px;
   }
 </style>
-<cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked"
-  hidden="[[restoreAllButtonHidden]]">
-  [[i18n('resetAllShortcuts')]]
-</cr-button>
-<div id="keyboardSettingsLinkContainer">
-  <a id="keyboardSettingsLink" href="[[keyboardSettingsLink]]">
-    <span>[[i18n('keyboardSettings')]]</span>
-    <iron-icon icon="shortcut-customization:open-in-new"></iron-icon>
-  </a>
+<div id="container">
+  <cr-button id="restoreAllButton" on-click="onRestoreAllDefaultClicked"
+      hidden="[[restoreAllButtonHidden]]">
+      [[i18n('resetAllShortcuts')]]
+  </cr-button>
+  <div id="keyboardSettingsLinkContainer">
+    <a id="keyboardSettingsLink" href="[[keyboardSettingsLink]]">
+      <span>[[i18n('keyboardSettings')]]</span>
+      <iron-icon icon="shortcut-customization:open-in-new"></iron-icon>
+    </a>
+  </div>
 </div>
