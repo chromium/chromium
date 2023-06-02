@@ -3583,7 +3583,7 @@
       },
       'linux-cr23-rel': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
           'x86-64',
         ],
         'test_suites': {
