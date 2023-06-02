@@ -58,10 +58,10 @@ constexpr gfx::Size kCompactSize(kCompactWidth, kFeatureTileHeight);
 constexpr gfx::Size kCompactIconButtonSize(kIconSize, kIconSize);
 constexpr gfx::Insets kCompactIconButtonMargins =
     gfx::Insets::TLBR(6, 22, 4, 22);
-constexpr gfx::Size kCompactTitleLabelSize(kCompactWidth - 32,
+constexpr gfx::Size kCompactTitleLabelSize(kCompactWidth - 24,
                                            kCompactTitleLineHeight * 2);
 constexpr gfx::Insets kCompactTitleLabelMargins =
-    gfx::Insets::TLBR(0, 16, 6, 16);
+    gfx::Insets::TLBR(0, 12, 6, 12);
 
 // Creates an ink drop hover highlight for `host` with `color_id`.
 std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(

@@ -129,7 +129,7 @@ TEST_F(FeatureTilePixelTest, CompactTile) {
   tile->SetLabel(u"A very very long label");
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "elided",
-      /*revision_number=*/1, widget_.get()));
+      /*revision_number=*/2, widget_.get()));
 
   // Test font descenders ("g").
   tile->SetLabel(u"Multi-line ggggg");
