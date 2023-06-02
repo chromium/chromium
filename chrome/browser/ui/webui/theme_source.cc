@@ -268,6 +268,12 @@ void ThemeSource::SendColorsCss(
     generate_rgb_vars =
         base::ToLowerASCII(generate_rgb_vars_query_value) == "true";
   }
+  bool shadow_host = false;
+  std::string shadow_host_query_value;
+  if (net::GetValueForKeyInQuery(url, "shadow_host",
+                                 &shadow_host_query_value)) {
+    shadow_host = base::ToLowerASCII(shadow_host_query_value) == "true";
+  }
   if (!net::GetValueForKeyInQuery(url, "sets", &sets_param)) {
     LOG(ERROR)
         << "colors.css requires a 'sets' query parameter to specify the color "
@@ -326,11 +332,18 @@ void ThemeSource::SendColorsCss(
     return generate_color_mapping(set_name, start, end, color_id_to_css_name);
   };
 
-  std::string css_string = base::StrCat({
+  std::string css_selector;
+  if (shadow_host) {
+    css_selector = ":host";
+  } else {
     // This selector requires more specificity than other existing CSS
     // selectors that define variables. We increase the specifity by adding
     // a pseudoselector.
-    "html:not(#z) {",
+    css_selector = "html:not(#z)";
+  }
+
+  std::string css_string = base::StrCat({
+    css_selector, "{",
         generate_color_provider_mapping("ui", ui::kUiColorsStart,
                                         ui::kUiColorsEnd, ui::ColorIdName),
         generate_color_provider_mapping("chrome", kChromeColorsStart,

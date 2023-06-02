@@ -16,18 +16,19 @@ import {BrowserProxy} from './browser_proxy.js';
 export const COLORS_CSS_SELECTOR: string = 'link[href*=\'//theme/colors.css\']';
 
 /**
- * Forces the document to refresh its colors.css stylesheet. This is used to
+ * Forces the root to refresh its colors.css stylesheet. This is used to
  * fetch an updated stylesheet when the ColorProvider associated with the WebUI
  * has changed.
  * Returns a promise which resolves to true once the new colors are loaded and
  * installed into the DOM. In the case of an error returns false.
  */
-export async function refreshColorCss(): Promise<boolean> {
-  const colorCssNode = document.querySelector(COLORS_CSS_SELECTOR);
-  if (!colorCssNode) {
+export async function refreshColorCss(root: Document|ShadowRoot = document):
+    Promise<boolean> {
+  const oldColorsCssLink = root.querySelector(COLORS_CSS_SELECTOR);
+  if (!oldColorsCssLink) {
     return false;
   }
-  const href = colorCssNode.getAttribute('href');
+  const href = oldColorsCssLink.getAttribute('href');
   if (!href) {
     return false;
   }
@@ -48,14 +49,15 @@ export async function refreshColorCss(): Promise<boolean> {
   const newColorsLoaded = new Promise(resolve => {
     newColorsCssLink.onload = resolve;
   });
-  document.getElementsByTagName('body')[0]!.appendChild(newColorsCssLink);
+  if (root === document) {
+    document.getElementsByTagName('body')[0]!.appendChild(newColorsCssLink);
+  } else {
+    root.appendChild(newColorsCssLink);
+  }
 
   await newColorsLoaded;
 
-  const oldColorCssNode = document.querySelector(COLORS_CSS_SELECTOR);
-  if (oldColorCssNode) {
-    oldColorCssNode.remove();
-  }
+  oldColorsCssLink.remove();
   return true;
 }
 
@@ -68,9 +70,10 @@ let clientColorChangeListeners: Array<() => void> = [];
  * Calls `refreshColorCss()` and any listeners previously registered via
  * `addColorChangeListener()`
  */
-export async function colorProviderChangeHandler() {
+export async function colorProviderChangeHandler(
+    root: Document|ShadowRoot = document) {
   // The webui's current css variables may now be stale, force update them.
-  await refreshColorCss();
+  await refreshColorCss(root);
   // Notify any interested javascript that the color scheme has changed.
   for (const listener of clientColorChangeListeners) {
     listener();
@@ -96,10 +99,10 @@ export function removeColorChangeListener(changeListener: () => void) {
 }
 
 /** Starts listening for ColorProvider change updates from the browser. */
-export function startColorChangeUpdater() {
+export function startColorChangeUpdater(root: Document|ShadowRoot = document) {
   if (listenerId === null) {
     listenerId = BrowserProxy.getInstance()
                      .callbackRouter.onColorProviderChanged.addListener(
-                         colorProviderChangeHandler);
+                         colorProviderChangeHandler.bind(undefined, root));
   }
 }
