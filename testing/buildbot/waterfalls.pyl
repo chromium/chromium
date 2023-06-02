@@ -3601,7 +3601,7 @@
       },
       'linux-headless-shell-rel': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'headless_browser_gtests',
