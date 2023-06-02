@@ -7155,24 +7155,6 @@
             ]
         }
     ],
-    "IOSMagicStack": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "kReducedSpaceParam": "-30"
-                    },
-                    "enable_features": [
-                        "MagicStack"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSNewOverflowMenuIPH": [
         {
             "platforms": [
