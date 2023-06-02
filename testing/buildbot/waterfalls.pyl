@@ -3609,7 +3609,7 @@
       },
       'linux-lacros-dbg-tests-fyi': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'chrome',
