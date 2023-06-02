@@ -81,7 +81,8 @@ void VideoToolboxDecompressionInterface::Reset() {
     return;
   }
 
-  std::ignore = std::move(pending_decodes_);
+  pending_decodes_ = {};
+
   DestroySession();
 }
 

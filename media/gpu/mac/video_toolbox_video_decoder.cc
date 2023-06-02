@@ -239,7 +239,7 @@ void VideoToolboxVideoDecoder::ResetInternal(DecoderStatus status) {
   video_toolbox_->Reset();
 
   decode_metadata_.clear();
-  std::ignore = std::move(output_queue_);
+  output_queue_ = {};
   output_frames_.clear();
 
   // Drop in-flight frame conversions.
