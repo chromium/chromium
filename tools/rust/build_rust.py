@@ -309,6 +309,13 @@ def CargoVendor(cargo_bin):
         else:
             sys.exit(1)
 
+        vendor_env = os.environ
+        # The Cargo.toml files in the Rust toolchain may use nightly Cargo
+        # features, but the cargo binary is beta. This env var enables the
+        # beta cargo binary to allow nightly features anyway.
+        # https://github.com/rust-lang/rust/commit/2e52f4deb0544480b6aefe2c0cc1e6f3c893b081
+        vendor_env['RUSTC_BOOTSTRAP'] = '1'
+
         vendor_cmd = [
             cargo_bin,
             'vendor',
@@ -317,7 +324,7 @@ def CargoVendor(cargo_bin):
         ]
         for s in SYNC_TARGETS:
             vendor_cmd.extend(['--sync', s])
-        if RunCommand(vendor_cmd, fail_hard=False):
+        if RunCommand(vendor_cmd, fail_hard=False, env=vendor_env):
             break  # Success, break out of the retry loop.
         elif i < 2:
             print('Failed cargo vendor, retrying...')
