@@ -84,6 +84,8 @@ std::string getCurrentAbi() {
   return "x86_64";
 #elif defined(__aarch64__)
   return "arm64-v8a";
+#elif defined(__riscv) && (__riscv_xlen == 64)
+  return "riscv64";
 #else
 #error "Unsupported target abi"
 #endif
