@@ -92,18 +92,30 @@ enum ContentSecurityPolicyHashAlgorithm {
   kContentSecurityPolicyHashAlgorithmSha512 = 1 << 4
 };
 
-// Helper function that returns true if the given |header_type| should be
-// checked when the CheckHeaderType is |check_header_type|.
+// Returns true if the given `header_type` should be checked given
+// `check_header_type` and `reporting_disposition`.
 bool CheckHeaderTypeMatches(
     ContentSecurityPolicy::CheckHeaderType check_header_type,
+    ReportingDisposition reporting_disposition,
     ContentSecurityPolicyType header_type) {
-  switch (check_header_type) {
-    case ContentSecurityPolicy::CheckHeaderType::kCheckAll:
-      return true;
-    case ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly:
-      return header_type == ContentSecurityPolicyType::kReport;
-    case ContentSecurityPolicy::CheckHeaderType::kCheckEnforce:
-      return header_type == ContentSecurityPolicyType::kEnforce;
+  switch (reporting_disposition) {
+    case ReportingDisposition::kSuppressReporting:
+      switch (check_header_type) {
+        case ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly:
+          return false;
+        case ContentSecurityPolicy::CheckHeaderType::kCheckAll:
+        case ContentSecurityPolicy::CheckHeaderType::kCheckEnforce:
+          return header_type == ContentSecurityPolicyType::kEnforce;
+      }
+    case ReportingDisposition::kReport:
+      switch (check_header_type) {
+        case ContentSecurityPolicy::CheckHeaderType::kCheckAll:
+          return true;
+        case ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly:
+          return header_type == ContentSecurityPolicyType::kReport;
+        case ContentSecurityPolicy::CheckHeaderType::kCheckEnforce:
+          return header_type == ContentSecurityPolicyType::kEnforce;
+      }
   }
   NOTREACHED();
   return false;
@@ -623,8 +635,7 @@ bool AllowResourceHintRequestForPolicy(
     ParserDisposition parser_disposition,
     const KURL& url_before_redirects,
     RedirectStatus redirect_status,
-    ReportingDisposition reporting_disposition,
-    ContentSecurityPolicy::CheckHeaderType check_header_type) {
+    ReportingDisposition reporting_disposition) {
   // The loop ignores default-src directives, which is the directive to report
   // for resource hints. So we don't need to check report-only policies.
   if (csp.header->type == ContentSecurityPolicyType::kEnforce) {
@@ -682,10 +693,12 @@ bool ContentSecurityPolicy::AllowRequest(
     }
 
     return base::ranges::all_of(policies_, [&](const auto& policy) {
-      return AllowResourceHintRequestForPolicy(
-          *policy, this, url, nonce, integrity_metadata, parser_disposition,
-          url_before_redirects, redirect_status, reporting_disposition,
-          check_header_type);
+      return !CheckHeaderTypeMatches(check_header_type, reporting_disposition,
+                                     policy->header->type) ||
+             AllowResourceHintRequestForPolicy(
+                 *policy, this, url, nonce, integrity_metadata,
+                 parser_disposition, url_before_redirects, redirect_status,
+                 reporting_disposition);
     });
   }
 
@@ -749,8 +762,10 @@ bool ContentSecurityPolicy::AllowFromSource(
 
   bool is_allowed = true;
   for (const auto& policy : policies_) {
-    if (!CheckHeaderTypeMatches(check_header_type, policy->header->type))
+    if (!CheckHeaderTypeMatches(check_header_type, reporting_disposition,
+                                policy->header->type)) {
       continue;
+    }
     is_allowed &= CSPDirectiveListAllowFromSource(
         *policy, this, type, url, url_before_redirects, redirect_status,
         reporting_disposition, nonce, hashes, parser_disposition);
@@ -837,6 +852,7 @@ bool ContentSecurityPolicy::AllowTrustedTypePolicy(
   violation_details = AllowTrustedTypePolicyDetails::kAllowed;
   for (const auto& policy : policies_) {
     if (!CheckHeaderTypeMatches(CheckHeaderType::kCheckAll,
+                                ReportingDisposition::kReport,
                                 policy->header->type)) {
       continue;
     }
