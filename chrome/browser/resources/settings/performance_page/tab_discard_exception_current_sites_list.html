@@ -1,4 +1,10 @@
 <style include="settings-shared">
+  /* add padding so that checkbox ripple is not cut off */
+  .ripple-padding {
+    padding-inline-end: 20px;
+    padding-inline-start: 20px;
+  }
+
   cr-checkbox::part(label-container) {
     min-width: 0;
   }
@@ -19,7 +25,7 @@
       aria-rowcount$="[[currentSites_.length]]"
       hidden$="[[!currentSites_.length]]">
     <template>
-      <cr-checkbox class="list-item no-outline" role="row"
+      <cr-checkbox class="list-item no-outline ripple-padding" role="row"
           tab-index="[[tabIndex]]"
           aria-rowindex$="[[getAriaRowindex_(index)]]"
           on-change="onToggleSelection_" checked="{{selected}}">

@@ -19,11 +19,26 @@
     height: 250px;
   }
 
+  /*
+   * remove padding as we will introduce the padding on an inner element so as
+   * not to cut off the checkbox ripple
+   */
+  #body {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
   #helpText {
     padding-bottom: 20px;
   }
 
+  /*
+   * adds horizontal padding to account for the removed padding from the dialog
+   * body
+   */
   #inputPage {
+    padding-inline-end: 20px;
+    padding-inline-start: 20px;
     padding-top: 20px;
   }
 </style>
@@ -33,7 +48,7 @@
     <cr-tabs id="tabs" tab-names="[[tabNames_]]" selected="{{selectedTab_}}">
     </cr-tabs>
   </div>
-  <div slot="body">
+  <div id="body" slot="body">
     <iron-pages selected="[[selectedTab_]]">
       <tab-discard-exception-current-sites-list id="list" prefs="{{prefs}}"
           on-sites-populated="onSitesPopulated_"
