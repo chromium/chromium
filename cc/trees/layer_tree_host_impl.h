@@ -1060,6 +1060,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
                                 uint32_t frame_token);
 
+  // Flush pending work if we are currently not visible.
+  void MaybeFlushPendingWork();
+
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.
   std::unique_ptr<InputDelegateForCompositor> input_delegate_;

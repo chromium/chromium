@@ -2203,13 +2203,42 @@ void LayerTreeHostImpl::ReclaimResources(
   // If we're not visible, we likely released resources, so we want to
   // aggressively flush here to make sure those DeleteSharedImage() calls make
   // it to the GPU process to free up the memory.
-  if (!visible_ && layer_tree_frame_sink_->context_provider()) {
-    if (base::FeatureList::IsEnabled(
-            features::kReclaimResourcesFlushInBackground)) {
-      auto* compositor_context = layer_tree_frame_sink_->context_provider();
-      compositor_context->ContextSupport()->FlushPendingWork();
-    }
+  MaybeFlushPendingWork();
+
+  if (base::FeatureList::IsEnabled(
+          features::kReclaimResourcesDelayedFlushInBackground)) {
+    // There are cases where the release callbacks executed from the call above
+    // don't actually free the GPU resource from this thread. For instance, for
+    // TextureLayer,
+    // TextureLayer::TransferableResourceHolder::~TransferableResourceHolder()
+    // posts a task to the main thread, and so flushing here is not sufficient.
+    //
+    // Ideally, we would not rely on a time-based delay, but given layering,
+    // threading and possibly unknown cases where the release can jump from
+    // thread to thread, this is likely a more practical solution. See
+    // crbug.com/1449271 for an example.
+    GetTaskRunner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&LayerTreeHostImpl::MaybeFlushPendingWork,
+                       weak_factory_.GetWeakPtr()),
+        base::Seconds(1));
   }
+}
+
+void LayerTreeHostImpl::MaybeFlushPendingWork() {
+  // If we're not in background, delayed work will be flushed "at some point",
+  // and we also may have something better to do.
+  if (visible_ || !has_valid_layer_tree_frame_sink_ ||
+      !base::FeatureList::IsEnabled(
+          features::kReclaimResourcesFlushInBackground)) {
+    return;
+  }
+
+  auto* compositor_context = layer_tree_frame_sink_->context_provider();
+  if (!compositor_context || !compositor_context->ContextSupport()) {
+    return;
+  }
+  compositor_context->ContextSupport()->FlushPendingWork();
 }
 
 void LayerTreeHostImpl::OnDraw(const gfx::Transform& transform,

@@ -102,6 +102,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUIEnableSharedImageCacheForGpu);
 // flush to actually reclaim resources.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesFlushInBackground);
 
+// When LayerTreeHostImpl::ReclaimResources() is called in background, trigger a
+// additional delayed flush to reclaim resources.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimResourcesDelayedFlushInBackground);
+
 // Try to play a longer list of ops before giving up in solid color analysis for
 // tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMoreAggressiveSolidColorDetection);
