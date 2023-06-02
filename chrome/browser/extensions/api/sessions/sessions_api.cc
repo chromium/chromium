@@ -45,6 +45,12 @@
 #include "extensions/common/error_utils.h"
 #include "ui/base/layout.h"
 
+// TODO(crbug.com/1424800): Remove once the restore issue has been resolved.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+#endif
+
 namespace extensions {
 
 namespace windows = api::windows;
@@ -621,6 +627,8 @@ SessionsEventRouter::SessionsEventRouter(Profile* profile)
   // TabRestoreServiceFactory::GetForProfile() can return nullptr (i.e., when in
   // incognito mode)
   if (tab_restore_service_) {
+    VLOG(1) << "SessionsEventRouter::SessionsEventRouter, loading tabs from "
+               "last session.";
     tab_restore_service_->LoadTabsFromLastSession();
     tab_restore_service_->AddObserver(this);
   }
