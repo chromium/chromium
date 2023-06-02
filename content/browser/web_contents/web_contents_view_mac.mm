@@ -409,8 +409,9 @@ void WebContentsViewMac::SetOverscrollControllerEnabled(bool enabled) {
 // would fire when the event-tracking loop polls for events.  So we need to
 // bounce the message via Cocoa, instead.
 bool WebContentsViewMac::CloseTabAfterEventTrackingIfNeeded() {
-  if (!base::MessagePumpMac::IsHandlingSendEvent())
+  if (!base::message_pump_mac::IsHandlingSendEvent()) {
     return false;
+  }
 
   deferred_close_weak_ptr_factory_.InvalidateWeakPtrs();
   auto weak_ptr = deferred_close_weak_ptr_factory_.GetWeakPtr();
