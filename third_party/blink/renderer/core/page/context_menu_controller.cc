@@ -755,12 +755,17 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
       // An impression should be attached to the navigation regardless of
       // whether a background request would have been allowed or attempted.
-      if (!data.impression &&
-          selected_frame->GetAttributionSrcLoader()->CanRegister(
-              result.AbsoluteLinkURL(), /*element=*/anchor,
-              /*request_id=*/absl::nullopt)) {
-        data.impression = blink::Impression{
-            .nav_type = mojom::blink::AttributionNavigationType::kContextMenu};
+      if (!data.impression) {
+        if (AttributionSrcLoader* attribution_src_loader =
+                selected_frame->GetAttributionSrcLoader();
+            attribution_src_loader->CanRegister(result.AbsoluteLinkURL(),
+                                                /*element=*/anchor,
+                                                /*request_id=*/absl::nullopt)) {
+          data.impression = blink::Impression{
+              .nav_type = mojom::blink::AttributionNavigationType::kContextMenu,
+              .runtime_features = attribution_src_loader->GetRuntimeFeatures(),
+          };
+        }
       }
     }
   }
