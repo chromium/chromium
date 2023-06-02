@@ -454,8 +454,10 @@ bool DCLayerTree::VisualTree::UpdateTree(
           visual_subtrees_[i]->container_visual(), FALSE, nullptr);
     }
 
-    dc_layer_tree_->AddDelegatedInkVisualToTreeIfNeeded(
-        root_surface_visual.Get());
+    if (root_surface_visual) {
+      dc_layer_tree_->AddDelegatedInkVisualToTreeIfNeeded(
+          root_surface_visual.Get());
+    }
 
     needs_commit = true;
   }
