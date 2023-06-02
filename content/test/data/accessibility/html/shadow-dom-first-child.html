@@ -1,0 +1,17 @@
+<!doctype html>
+<my-custom-element style="display:none"></my-custom-element>
+<script>
+  class MyCustomElement extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: 'open' });
+     setTimeout(() => {
+        var div = document.createElement('div');
+        div.innerText = "test"
+        this.shadowRoot.appendChild(div);
+        div.setAttribute("aria-label", "aria label");
+     }, 0);
+    }
+  }
+  customElements.define('my-custom-element', MyCustomElement);
+</script>

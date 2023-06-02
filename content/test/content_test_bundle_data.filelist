@@ -4258,6 +4258,8 @@ data/accessibility/html/selectmenu-open-expected-win.txt
 data/accessibility/html/selectmenu-open.html
 data/accessibility/html/selectmenu.html
 data/accessibility/html/sfx.mp3
+data/accessibility/html/shadow-dom-first-child-expected-blink.txt
+data/accessibility/html/shadow-dom-first-child.html
 data/accessibility/html/simple_spans-expected-android-external.txt
 data/accessibility/html/simple_spans.html
 data/accessibility/html/slot-display-contents-expected-auralinux.txt

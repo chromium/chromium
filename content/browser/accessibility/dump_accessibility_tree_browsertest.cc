@@ -3556,6 +3556,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MalformedMap) {
   RunHtmlTest(FILE_PATH_LITERAL("malformed-map.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ShadowDomFirstChild) {
+  RunHtmlTest(FILE_PATH_LITERAL("shadow-dom-first-child.html"));
+}
+
 //
 // AccName tests where having the full tree is desired.
 //
