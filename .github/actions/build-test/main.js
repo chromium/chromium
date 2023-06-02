@@ -12,7 +12,7 @@ sendBuildTestRequest({
   tasks: [
     ...platformTasks("linux"),
     ...platformTasks("macOS"),
-    //...platformTasks("windows"),
+    ...platformTasks("windows"),
   ],
 });
 
