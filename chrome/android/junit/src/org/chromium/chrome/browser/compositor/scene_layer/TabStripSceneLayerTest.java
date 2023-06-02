@@ -174,6 +174,7 @@ public class TabStripSceneLayerTest {
                         mStripLayoutTab.getContentOffsetY() * mDpToPx,
                         mStripLayoutTab.getDividerOffsetX() * mDpToPx,
                         mStripLayoutTab.getBottomMargin() * mDpToPx,
+                        mStripLayoutTab.getTopMargin() * mDpToPx,
                         mStripLayoutTab.getCloseButtonPadding() * mDpToPx,
                         mStripLayoutTab.getCloseButton().getOpacity(),
                         mStripLayoutTab.isStartDividerVisible(),

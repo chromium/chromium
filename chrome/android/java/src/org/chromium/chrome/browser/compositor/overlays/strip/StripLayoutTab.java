@@ -180,7 +180,8 @@ public class StripLayoutTab implements VirtualView {
     private static final int CLOSE_BUTTON_PADDING_DP = 7;
     private static final int CLOSE_BUTTON_WIDTH_DP = 48;
 
-    // Tab strip content y offset
+    // Strip Tab Offset Constants
+    private static final float TOP_MARGIN_DP = 2.f;
     private static final float FOLIO_CONTENT_OFFSET_Y = 8.f;
     private static final float DETACHED_CONTENT_OFFSET_Y = 10.f;
 
@@ -625,9 +626,9 @@ public class StripLayoutTab implements VirtualView {
      */
     public float getContentOffsetY() {
         if (TabManagementFieldTrial.isTabStripDetachedEnabled()) {
-            return DETACHED_CONTENT_OFFSET_Y;
+            return DETACHED_CONTENT_OFFSET_Y - (TOP_MARGIN_DP / 2);
         } else if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
-            return FOLIO_CONTENT_OFFSET_Y;
+            return FOLIO_CONTENT_OFFSET_Y - (TOP_MARGIN_DP / 2);
         } else {
             // If TSR is disabled, contentOffsetY will not be used. Default to 0.
             return 0.f;
@@ -667,6 +668,13 @@ public class StripLayoutTab implements VirtualView {
      */
     public float getBottomMargin() {
         return mBottomMargin;
+    }
+
+    /**
+     * @return How far to offset the top of the tab container from the top of the tab strip.
+     */
+    public float getTopMargin() {
+        return ChromeFeatureList.sTabStripRedesign.isEnabled() ? TOP_MARGIN_DP : 0;
     }
 
     /**

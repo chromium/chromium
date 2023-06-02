@@ -153,6 +153,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             StripLayoutTab[] stripTabs, int selectedTabId) {
         final int tabsCount = stripTabs != null ? stripTabs.length : 0;
 
+        // TODO(https://crbug.com/1450380): Cleanup params, as some don't change and others are now
+        //  unused.
         for (int i = 0; i < tabsCount; i++) {
             final StripLayoutTab st = stripTabs[i];
             boolean isSelected = st.getId() == selectedTabId;
@@ -165,10 +167,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     st.getDrawX() * mDpToPx, st.getDrawY() * mDpToPx, st.getWidth() * mDpToPx,
                     st.getHeight() * mDpToPx, st.getContentOffsetX() * mDpToPx,
                     st.getContentOffsetY() * mDpToPx, st.getDividerOffsetX() * mDpToPx,
-                    st.getBottomMargin() * mDpToPx, st.getCloseButtonPadding() * mDpToPx,
-                    st.getCloseButton().getOpacity(), st.isStartDividerVisible(),
-                    st.isEndDividerVisible(), st.isLoading(), st.getLoadingSpinnerRotation(),
-                    st.getBrightness(), st.getContainerOpacity(), layerTitleCache, resourceManager);
+                    st.getBottomMargin() * mDpToPx, st.getTopMargin() * mDpToPx,
+                    st.getCloseButtonPadding() * mDpToPx, st.getCloseButton().getOpacity(),
+                    st.isStartDividerVisible(), st.isEndDividerVisible(), st.isLoading(),
+                    st.getLoadingSpinnerRotation(), st.getBrightness(), st.getContainerOpacity(),
+                    layerTitleCache, resourceManager);
         }
     }
 
@@ -209,7 +212,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int handleOutlineResourceId, int closeTint, int dividerTint, int handleTint,
                 int handleOutlineTint, boolean foreground, boolean closePressed, float toolbarWidth,
                 float x, float y, float width, float height, float contentOffsetX,
-                float contentOffsetY, float dividerOffsetX, float bottomOffsetY,
+                float contentOffsetY, float dividerOffsetX, float bottomMargin, float topMargin,
                 float closeButtonPadding, float closeButtonAlpha, boolean isStartDividerVisible,
                 boolean isEndDividerVisible, boolean isLoading, float spinnerRotation,
                 float brightness, float opacity, LayerTitleCache layerTitleCache,
