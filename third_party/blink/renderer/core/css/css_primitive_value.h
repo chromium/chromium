@@ -310,6 +310,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   bool IsNumber() const;
   bool IsInteger() const;
   bool IsPercentage() const;
+  // Is this a percentage *or* a calc() with a percentage?
+  bool HasPercentage() const;
   bool IsPx() const;
   static bool IsTime(UnitType unit) {
     return unit == UnitType::kSeconds || unit == UnitType::kMilliseconds;

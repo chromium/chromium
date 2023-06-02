@@ -1170,6 +1170,12 @@
       status: "experimental",
     },
     {
+      // A kill switch for the fix for part of https://crbug.com/1180387 .
+      // Should be removed after M116 has been stable for a few weeks.
+      name: "CSSTranslatePreserveYPercent",
+      status: "stable",
+    },
+    {
       // Support for tree-scoped [1] timeline names (e.g. produced by
       // scroll-timeline).
       //

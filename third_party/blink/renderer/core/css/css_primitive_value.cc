@@ -192,6 +192,13 @@ bool CSSPrimitiveValue::IsPercentage() const {
   return To<CSSMathFunctionValue>(this)->IsPercentage();
 }
 
+bool CSSPrimitiveValue::HasPercentage() const {
+  if (IsNumericLiteralValue()) {
+    return To<CSSNumericLiteralValue>(this)->IsPercentage();
+  }
+  return To<CSSMathFunctionValue>(this)->ExpressionNode()->HasPercentage();
+}
+
 bool CSSPrimitiveValue::IsTime() const {
   if (IsNumericLiteralValue()) {
     return To<CSSNumericLiteralValue>(this)->IsTime();
